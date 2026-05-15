@@ -18,7 +18,12 @@ export default function Navbar() {
   return (
     <header className="top-navbar">
       <div className="navbar-left">
-        {/* Empty left side because the sidebar header covers the top left corner visually */}
+        <div className="sidebar-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          FlashManager
+        </div>
       </div>
       <div className="navbar-right">
         

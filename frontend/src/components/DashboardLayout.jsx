@@ -8,10 +8,10 @@ export default function DashboardLayout() {
   const { user, logout } = useContext(AuthContext);
 
   return (
-    <div className="app-layout">
-      <Sidebar user={user} onLogout={logout} />
-      <div className="main-wrapper">
-        <Navbar />
+    <div className="app-container">
+      <Navbar />
+      <div className="app-main">
+        <Sidebar user={user} onLogout={logout} />
         <main className="main-content">
           <Outlet />
         </main>
