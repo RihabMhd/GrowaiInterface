@@ -7,6 +7,13 @@
   --bg-sidebar: #ffffff;
   --bg-navbar: #1e1e2d; /* Dark navbar from screenshot */
   
+  --bg-popup: #ffffff;
+  --bg-popup-header: #f3f6f9;
+  --bg-popup-hover: #f3f6f9;
+  --border-popup: #ebedf3;
+  --text-popup-strong: #1e1e2d;
+  --text-popup-span: #b5b5c3;
+
   --text-main: #3f4254;
   --text-muted: #b5b5c3;
   --text-navbar: #ffffff;
@@ -38,6 +45,13 @@ body.dark-theme {
   --text-main: #ffffff;
   --text-muted: #565674;
   --border-color: #2b2b40;
+  
+  --bg-popup: #1e1e2d;
+  --bg-popup-header: #2c2c42;
+  --bg-popup-hover: #3d3d3d;
+  --border-popup: #444444;
+  --text-popup-strong: #ffffff;
+  --text-popup-span: #aaaaaa;
 }
 
 * {
@@ -165,11 +179,96 @@ input {
 }
 
 .sidebar-footer {
-  padding: 15px 20px;
-  border-top: 1px solid var(--border-color);
+  position: relative;
+  cursor: pointer;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-popup {
+  position: absolute;
+  bottom: 70px;
+  left: 10px;
+  width: 260px;
+  background: var(--bg-popup);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  padding: 15px;
+  z-index: 100;
+  border: 1px solid var(--border-popup);
+}
+
+.popup-header {
+  background: var(--bg-popup-header);
+  border-radius: 8px;
+  padding: 12px;
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 15px;
+}
+
+.avatar.large {
+  width: 40px;
+  height: 40px;
+  background: #ff5722; /* Orange from the photo */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.popup-user-details strong {
+  display: block;
+  color: var(--text-popup-strong);
+  font-size: 14px;
+}
+
+.popup-user-details span {
+  font-size: 12px;
+  color: var(--text-popup-span);
+}
+
+.popup-item {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-popup-strong);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.popup-item:hover {
+  background: var(--bg-popup-hover);
+}
+
+.popup-divider {
+  border: 0;
+  border-top: 1px solid var(--border-popup);
+  margin: 10px 0;
+}
+
+.logout-btn {
+  color: #ff4d4d; /* Red color for logout */
+}
+
+.arrow {
+  margin-left: auto;
+  transition: transform 0.2s;
+  color: #888;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
 }
 
 .avatar {

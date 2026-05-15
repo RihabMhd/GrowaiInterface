@@ -33,6 +33,9 @@ export default function AppRoutes() {
           
           <Route path="/apps/whatsapp" element={<PlaceholderPage title="WhatsApp PRO" />} />
           <Route path="/apps/tarifs" element={<PlaceholderPage title="Tarifs" />} />
+
+          <Route path="/settings" element={<PlaceholderPage title="Paramètres" />} />
+          <Route path="/help" element={<PlaceholderPage title="Centre d'aide" />} />
         </Route>
       </Routes>
     </BrowserRouter>

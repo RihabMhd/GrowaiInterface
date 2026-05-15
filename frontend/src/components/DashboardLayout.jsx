@@ -5,11 +5,11 @@ import Navbar from "./Navbar";
 import { AuthContext } from "../auth/AuthContext";
 
 export default function DashboardLayout() {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <div className="app-layout">
-      <Sidebar user={user} />
+      <Sidebar user={user} onLogout={logout} />
       <div className="main-wrapper">
         <Navbar />
         <main className="main-content">
