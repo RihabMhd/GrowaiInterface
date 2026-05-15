@@ -25,38 +25,38 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="glass-panel w-full max-w-md p-8 animate-fade-in">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Reset Password</h1>
-          <p className="text-gray-400">Enter your email to receive a reset link</p>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1 className="auth-title">Reset Password</h1>
+          <p className="auth-subtitle">Enter your email to receive a reset link</p>
         </div>
 
         {status.message && (
-          <div className={`p-3 rounded-lg mb-6 text-sm border ${status.type === "success" ? "bg-green-500/20 border-green-500/50 text-green-200" : "bg-red-500/20 border-red-500/50 text-red-200"}`}>
+          <div className={`alert ${status.type === "success" ? "alert-success" : "alert-error"}`}>
             {status.message}
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label className="form-label">Email</label>
             <input
               type="email"
-              className="input-field"
+              className="form-input"
               placeholder="you@agency.com"
               {...register("email", { required: "Email is required" })}
             />
-            {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
+            {errors.email && <p className="form-error">{errors.email.message}</p>}
           </div>
 
-          <button type="submit" className="btn-primary w-full mt-6" disabled={isLoading}>
+          <button type="submit" className="btn btn-primary" style={{ marginTop: '25px' }} disabled={isLoading}>
             {isLoading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <Link to="/" className="text-sm text-primary hover:text-primary-hover">
+        <div style={{ marginTop: '25px', textAlign: 'center' }}>
+          <Link to="/" className="text-link">
             &larr; Back to login
           </Link>
         </div>

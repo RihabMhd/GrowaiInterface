@@ -5,6 +5,8 @@ import ResetPassword from "../pages/ResetPassword";
 import Dashboard from "../pages/Dashboard";
 import AuthCallback from "../pages/AuthCallback";
 import ProtectedRoute from "../auth/ProtectedRoute";
+import DashboardLayout from "../components/DashboardLayout";
+import PlaceholderPage from "../pages/PlaceholderPage";
 
 export default function AppRoutes() {
   return (
@@ -14,14 +16,24 @@ export default function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+
+        {/* Authenticated Layout Routes */}
+        <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/commandes" element={<PlaceholderPage title="Commandes" />} />
+          <Route path="/clients" element={<PlaceholderPage title="Clients" />} />
+          <Route path="/products" element={<PlaceholderPage title="Products" />} />
+          <Route path="/companies" element={<PlaceholderPage title="Companies" />} />
+          <Route path="/status" element={<PlaceholderPage title="Status" />} />
+          <Route path="/team" element={<PlaceholderPage title="Team" />} />
+          <Route path="/affilies" element={<PlaceholderPage title="Affiliés" />} />
+          
+          <Route path="/sources/shopify" element={<PlaceholderPage title="Shopify Integration" />} />
+          <Route path="/sources/google-sheets" element={<PlaceholderPage title="Google Sheets Integration" />} />
+          
+          <Route path="/apps/whatsapp" element={<PlaceholderPage title="WhatsApp PRO" />} />
+          <Route path="/apps/tarifs" element={<PlaceholderPage title="Tarifs" />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

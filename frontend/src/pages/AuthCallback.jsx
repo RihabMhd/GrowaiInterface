@@ -24,11 +24,11 @@ export default function AuthCallback() {
   }, [location, login, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="text-center animate-fade-in">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <h2 className="text-xl font-medium text-gray-300">Authenticating...</h2>
-        <p className="text-gray-500 text-sm mt-2">Please wait while we connect your account</p>
+    <div className="auth-wrapper">
+      <div style={{ textAlign: 'center' }}>
+        <div className="spinner"></div>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: '500', color: 'var(--text-main)', marginBottom: '10px' }}>Authenticating...</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Please wait while we connect your account</p>
       </div>
     </div>
   );

@@ -14,12 +14,8 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (email) {
-      setValue("email", email);
-    }
-    if (token) {
-      setValue("token", token);
-    }
+    if (email) setValue("email", email);
+    if (token) setValue("token", token);
   }, [email, token, setValue]);
 
   const password = watch("password");
@@ -45,63 +41,63 @@ export default function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="glass-panel w-full max-w-md p-8 text-center">
-          <h1 className="text-2xl font-bold text-red-400 mb-4">Invalid Link</h1>
-          <p className="text-gray-300 mb-6">No reset token found in the URL. Please request a new link.</p>
-          <Link to="/forgot-password" className="btn-primary w-full">Request New Link</Link>
+      <div className="auth-wrapper">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <h1 className="auth-title" style={{ color: 'var(--danger)', marginBottom: '15px' }}>Invalid Link</h1>
+          <p className="auth-subtitle" style={{ marginBottom: '25px' }}>No reset token found in the URL. Please request a new link.</p>
+          <Link to="/forgot-password" className="btn btn-primary">Request New Link</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="glass-panel w-full max-w-md p-8 animate-fade-in">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Create New Password</h1>
-          <p className="text-gray-400">Enter your new password below</p>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1 className="auth-title">Create New Password</h1>
+          <p className="auth-subtitle">Enter your new password below</p>
         </div>
 
         {status.message && (
-          <div className={`p-3 rounded-lg mb-6 text-sm border ${status.type === "success" ? "bg-green-500/20 border-green-500/50 text-green-200" : "bg-red-500/20 border-red-500/50 text-red-200"}`}>
+          <div className={`alert ${status.type === "success" ? "alert-success" : "alert-error"}`}>
             {status.message}
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" {...register("token")} />
           <input type="hidden" {...register("email")} />
 
-          <div>
-            <label className="block text-sm font-medium mb-1">New Password</label>
+          <div className="form-group">
+            <label className="form-label">New Password</label>
             <input
               type="password"
-              className="input-field"
+              className="form-input"
               placeholder="••••••••"
               {...register("password", { 
                 required: "Password is required",
                 minLength: { value: 8, message: "Password must be at least 8 characters" }
               })}
             />
-            {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>}
+            {errors.password && <p className="form-error">{errors.password.message}</p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Confirm Password</label>
+          <div className="form-group">
+            <label className="form-label">Confirm Password</label>
             <input
               type="password"
-              className="input-field"
+              className="form-input"
               placeholder="••••••••"
               {...register("password_confirmation", { 
                 required: "Please confirm your password",
                 validate: value => value === password || "Passwords do not match"
               })}
             />
-            {errors.password_confirmation && <p className="text-red-400 text-xs mt-1">{errors.password_confirmation.message}</p>}
+            {errors.password_confirmation && <p className="form-error">{errors.password_confirmation.message}</p>}
           </div>
 
-          <button type="submit" className="btn-primary w-full mt-6" disabled={isLoading || status.type === "success"}>
+          <button type="submit" className="btn btn-primary" style={{ marginTop: '25px' }} disabled={isLoading || status.type === "success"}>
             {isLoading ? "Saving..." : "Reset Password"}
           </button>
         </form>
