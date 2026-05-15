@@ -20,6 +20,8 @@ export default function AppRoutes() {
         {/* Authenticated Layout Routes */}
         <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/commandes/toutes" element={<PlaceholderPage title="Toutes les commandes" />} />
+          <Route path="/commandes/abandonnees" element={<PlaceholderPage title="Commandes abandonnées" />} />
           <Route path="/commandes" element={<PlaceholderPage title="Commandes" />} />
           <Route path="/clients" element={<PlaceholderPage title="Clients" />} />
           <Route path="/products" element={<PlaceholderPage title="Products" />} />

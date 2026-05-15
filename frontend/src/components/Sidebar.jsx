@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 
 // Unique SVG icons matching the dark-themed screenshot
 const Icons = {
@@ -104,14 +104,43 @@ const Icons = {
       <circle cx="12" cy="12" r="3"></circle>
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
     </svg>
+  ),
+  cart: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1"></circle>
+      <circle cx="20" cy="21" r="1"></circle>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+    </svg>
+  ),
+  cartX: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1"></circle>
+      <circle cx="20" cy="21" r="1"></circle>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      <line x1="13" y1="9" x2="17" y2="13"></line>
+      <line x1="17" y1="9" x2="13" y2="13"></line>
+    </svg>
   )
 };
 
 export default function Sidebar({ user, onLogout }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isCommandesOpen, setIsCommandesOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Auto-expand Commandes if on a sub-route
+  useEffect(() => {
+    if (location.pathname.startsWith("/commandes")) {
+      setIsCommandesOpen(true);
+    }
+  }, [location.pathname]);
 
   const togglePopup = () => setIsPopupOpen(!isPopupOpen);
+  const toggleCommandes = (e) => {
+    e.preventDefault();
+    setIsCommandesOpen(!isCommandesOpen);
+  };
 
   const navLinks = [
     { name: "Tableau de bord", path: "/dashboard", icon: Icons.dashboard },
@@ -138,18 +167,54 @@ export default function Sidebar({ user, onLogout }) {
     <aside className="sidebar">
       <div className="sidebar-content">
         <ul>
-          {navLinks.map((link, idx) => (
-            <li key={idx}>
-              <NavLink
-                to={link.path}
-                className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-                end={link.path === "/dashboard"}
-              >
-                {link.icon} {/* Corrected: Render icon as JSX element */}
-                {link.name}
-              </NavLink>
-            </li>
-          ))}
+          {navLinks.map((link, idx) => {
+            if (link.name === "Commandes") {
+              const isParentActive = location.pathname.startsWith("/commandes");
+              return (
+                <li key={idx}>
+                  <div 
+                    className={`sidebar-link ${isParentActive ? 'parent-active' : ''}`}
+                    onClick={toggleCommandes}
+                    style={{ cursor: 'pointer', justifyContent: 'space-between' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      {link.icon}
+                      {link.name}
+                    </div>
+                    <svg 
+                      width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" 
+                      style={{ transition: 'transform 0.2s', transform: isCommandesOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }}
+                    >
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </div>
+                  
+                  {isCommandesOpen && (
+                    <div className="sidebar-submenu">
+                      <NavLink to="/commandes/toutes" className={({ isActive }) => `sidebar-sublink ${isActive ? "active" : ""}`}>
+                        {Icons.cart} Toutes
+                      </NavLink>
+                      <NavLink to="/commandes/abandonnees" className={({ isActive }) => `sidebar-sublink ${isActive ? "active" : ""}`}>
+                        {Icons.cartX} Abandonnées
+                      </NavLink>
+                    </div>
+                  )}
+                </li>
+              );
+            }
+            return (
+              <li key={idx}>
+                <NavLink
+                  to={link.path}
+                  className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+                  end={link.path === "/dashboard"}
+                >
+                  {link.icon}
+                  {link.name}
+                </NavLink>
+              </li>
+            );
+          })}
         </ul>
 
         <h3 className="sidebar-menu-title">Sources de commandes</h3>
