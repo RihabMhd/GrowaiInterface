@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 import Dashboard from "../pages/Dashboard";
 import AuthCallback from "../pages/AuthCallback";
 import ProtectedRoute from "../auth/ProtectedRoute";
@@ -8,11 +10,10 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-
         <Route path="/" element={<Login />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
-
         <Route
           path="/dashboard"
           element={
@@ -21,7 +22,6 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );
