@@ -9,6 +9,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import PlaceholderPage from "../pages/PlaceholderPage";
 import Team from "../pages/Team";
 import Help from "../pages/Help";
+import Status from "../pages/status";
 
 import Orders from "../pages/Orders";
 
@@ -30,7 +31,7 @@ export default function AppRoutes() {
           <Route path="/clients" element={<PlaceholderPage title="Clients" />} />
           <Route path="/products" element={<PlaceholderPage title="Products" />} />
           <Route path="/companies" element={<PlaceholderPage title="Companies" />} />
-          <Route path="/status" element={<PlaceholderPage title="Status" />} />
+          <Route path="/status" element={<Status />} />
           <Route path="/team" element={<Team />} />
           <Route path="/affilies" element={<PlaceholderPage title="Affiliés" />} />
           
