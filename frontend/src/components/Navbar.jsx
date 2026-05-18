@@ -54,7 +54,7 @@ export default function Navbar() {
     <header className="top-navbar">
       <div className="navbar-left">
         <div className="sidebar-logo" style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
-          <span style={{ fontSize: "1.35rem", fontWeight: 800, letterSpacing: "0.5px", color: "var(--text-main)" }}>FlashManager</span>
+          <span style={{ fontSize: "1.35rem", fontWeight: 800, letterSpacing: "0.5px", color: "var(--text-main)" }}>Growai</span>
         </div>
       </div>
       <div className="navbar-right" style={{ display: "flex", alignItems: "center", gap: "16px" }}>

@@ -66,8 +66,13 @@ export default function Orders() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [productFilter, setProductFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [fulfillmentFilter, setFulfillmentFilter] = useState("all");
   const [periodFilter, setPeriodFilter] = useState("all");
   const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
+
+  // Dropdown open states for custom selects
+  const [openDropdown, setOpenDropdown] = useState(null); // 'source'|'status'|'fulfillment'|'product'
 
   // Selection for Order Details Popup
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -112,7 +117,7 @@ export default function Orders() {
     }
   };
 
-  // Fetch products (for dropdown filter & order creation choice)
+  // Fetch products (for admin order creation choice — agents use their assigned products from user context)
   const fetchProducts = async () => {
     try {
       const response = await api.get("/auth/team");
@@ -122,12 +127,31 @@ export default function Orders() {
     }
   };
 
+  // For agent: use their assigned products (from user.products); if none, fall back to all team products
+  const isAgent = user?.role === 'staff';
+  const agentProducts = user?.products || [];
+  // The products shown in the product filter dropdown
+  const filterableProducts = isAgent && agentProducts.length > 0 ? agentProducts : products;
+  // The products shown in the create order modal
+  const creatableProducts = isAgent && agentProducts.length > 0 ? agentProducts : products;
+
   useEffect(() => {
     fetchOrdersData();
   }, [location.pathname, search, statusFilter]);
 
   useEffect(() => {
     fetchProducts();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.target.closest('.custom-select-wrapper')) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   // Handle Quick Order Creation (triggers Auto-Dispatch Round-Robin)
@@ -206,14 +230,20 @@ export default function Orders() {
     }
   };
 
-  // Apply frontend products & period filtering if selected
+  // Apply frontend products, period & source filtering
   const filteredOrders = orders.filter(order => {
     // 1. Product Filter
     if (productFilter !== "all" && !order.items.some(item => item.product_id === parseInt(productFilter))) {
       return false;
     }
     
-    // 2. Period Filter
+    // 2. Source Filter (based on order shop/source)
+    if (sourceFilter !== "all") {
+      const shopName = (order.shop?.name || "").toLowerCase();
+      if (!shopName.includes(sourceFilter.toLowerCase())) return false;
+    }
+    
+    // 3. Period Filter
     if (periodFilter !== "all") {
       const orderDate = new Date(order.created_at);
       const today = new Date();
@@ -233,6 +263,96 @@ export default function Orders() {
     
     return true;
   });
+
+  // ─── Custom Dropdown Component ─────────────────────────────────────────────
+  const CustomSelect = ({ id, value, onChange, options, placeholder }) => {
+    const isOpen = openDropdown === id;
+    const selected = options.find(o => o.value === value);
+
+    return (
+      <div
+        className="custom-select-wrapper"
+        style={{ position: "relative" }}
+      >
+        {/* Trigger */}
+        <div
+          onClick={() => setOpenDropdown(isOpen ? null : id)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            background: "var(--bg-app)",
+            border: isOpen ? "1px solid #7239ea" : "1px solid var(--border-color)",
+            color: "var(--text-main)",
+            fontSize: "0.8rem",
+            cursor: "pointer",
+            userSelect: "none",
+            transition: "border-color 0.2s",
+            minWidth: "130px"
+          }}
+        >
+          {selected?.icon && <span style={{ display:"flex", alignItems:"center", flexShrink:0, color:"var(--text-muted)" }}>{selected.icon}</span>}
+          {selected?.dot && (
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: selected.dot, flexShrink: 0 }} />
+          )}
+          <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {selected?.label || placeholder}
+          </span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+            style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", flexShrink: 0 }}>
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+
+        {/* Dropdown panel */}
+        {isOpen && (
+          <div style={{
+            position: "absolute",
+            top: "calc(100% + 6px)",
+            left: 0,
+            minWidth: "200px",
+            background: "#18181b",
+            border: "1px solid rgba(114,57,234,0.4)",
+            borderRadius: "10px",
+            padding: "6px",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.6)",
+            zIndex: 9000,
+            maxHeight: "280px",
+            overflowY: "auto"
+          }}>
+            {options.map(opt => (
+              <div
+                key={opt.value}
+                onClick={() => { onChange(opt.value); setOpenDropdown(null); }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "9px 12px",
+                  borderRadius: "7px",
+                  cursor: "pointer",
+                  fontSize: "0.82rem",
+                  fontWeight: opt.value === value ? "700" : "500",
+                  background: opt.value === value ? "rgba(114,57,234,0.25)" : "transparent",
+                  color: opt.value === value ? "#c4a7ff" : "var(--text-main)",
+                  transition: "background 0.15s"
+                }}
+                className="custom-select-item-hover"
+              >
+                {opt.icon && <span style={{ display:"flex", alignItems:"center", flexShrink:0, color: opt.value === value ? "#c4a7ff" : "var(--text-muted)" }}>{opt.icon}</span>}
+                {opt.dot && (
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: opt.dot, flexShrink: 0 }} />
+                )}
+                <span>{opt.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const isAdmin = user?.role === "admin";
   const currencySymbol = "DA";
@@ -473,82 +593,115 @@ export default function Orders() {
 
       </div>
 
-      {/* Filter bar exactly matching reference layout */}
+      {/* ── Premium Filter Bar ─────────────────────────────────────── */}
+      <style>{`
+        .custom-select-item-hover:hover { background: rgba(114,57,234,0.12) !important; }
+        .custom-select-wrapper ::-webkit-scrollbar { width: 5px; }
+        .custom-select-wrapper ::-webkit-scrollbar-track { background: transparent; }
+        .custom-select-wrapper ::-webkit-scrollbar-thumb { background: rgba(114,57,234,0.4); border-radius: 10px; }
+        .btn-new-order-hover:hover { background: rgba(114,57,234,0.2) !important; }
+        .date-tab-hover:hover { color: var(--text-main) !important; }
+        .dropdown-item-hover:hover { background: rgba(255,255,255,0.06) !important; }
+      `}</style>
       <div style={{
-        display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr 1fr", gap: "12px", 
-        marginBottom: "20px", background: "var(--bg-card)", padding: "12px", 
+        display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr 1fr", gap: "10px",
+        marginBottom: "20px", background: "var(--bg-card)", padding: "12px",
         borderRadius: "12px", border: "1px solid var(--border-color)"
       }}>
-        
-        {/* Search */}
+
+        {/* ── Search ── */}
         <div style={{ position: "relative" }}>
-          <input 
-            type="text" 
-            placeholder="Search orders..." 
+          <input
+            type="text"
+            placeholder="Search orders..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
-              width: "100%", padding: "8px 12px 8px 32px", borderRadius: "8px", 
+              width: "100%", padding: "8px 12px 8px 34px", borderRadius: "8px",
               background: "var(--bg-app)", border: "1px solid var(--border-color)",
-              color: "var(--text-main)", fontSize: "0.8rem", outline: "none"
+              color: "var(--text-main)", fontSize: "0.8rem", outline: "none",
+              boxSizing: "border-box"
             }}
           />
-          <svg style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: "14px", height: "14px", color: "var(--text-muted)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <svg style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: "14px", height: "14px", color: "var(--text-muted)", pointerEvents: "none" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
 
-        {/* Dropdown 1: All Sources */}
-        <select style={{
-          padding: "8px 12px", borderRadius: "8px", background: "var(--bg-app)", 
-          border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none"
-        }}>
-          <option>All Sources</option>
-          <option>Shopify</option>
-          <option>Manual</option>
-        </select>
+        {/* ── Sources ── */}
+        <CustomSelect
+          id="source"
+          value={sourceFilter}
+          onChange={setSourceFilter}
+          placeholder="All Sources"
+          options={[
+            { value: "all",           label: "All Sources",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> },
+            { value: "shopify",       label: "Shopify",       icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
+            { value: "facebook",      label: "Facebook",      icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
+            { value: "instagram",     label: "Instagram",     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> },
+            { value: "tiktok",        label: "TikTok",        icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg> },
+            { value: "snapchat",      label: "Snapchat",      icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C8.5 2 6 4.5 6 8v1.5c-.8.2-2 .8-2 1.5 0 .5.5 1 1.5 1.2-.3.6-.8 1.3-1.5 1.8 0 0 3 .5 4 2 0 0 1 1 4 1s4-1 4-1c1-1.5 4-2 4-2-.7-.5-1.2-1.2-1.5-1.8 1-.2 1.5-.7 1.5-1.2 0-.7-1.2-1.3-2-1.5V8c0-3.5-2.5-6-6-6z"/></svg> },
+            { value: "whatsapp",      label: "WhatsApp",      icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> },
+            { value: "google_sheets", label: "Google Sheets", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg> },
+          ]}
+        />
 
-        {/* Dropdown 2: All Status */}
-        <select 
+        {/* ── Status ── */}
+        <CustomSelect
+          id="status"
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{
-            padding: "8px 12px", borderRadius: "8px", background: "var(--bg-app)", 
-            border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none"
-          }}
-        >
-          <option value="all">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="processing">Processing</option>
-          <option value="shipped">Shipped</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-          <option value="returned">Returned</option>
-        </select>
+          onChange={setStatusFilter}
+          placeholder="All Status"
+          options={[
+            { value: "all",        label: "All Status",      icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
+            { value: "pending",    label: "Nouveau",         dot: "#3b82f6" },
+            { value: "confirmed",  label: "Confirmé",        dot: "#22c55e" },
+            { value: "no_answer",  label: "Pas de réponse",  dot: "#f59e0b" },
+            { value: "callback",   label: "Rappel",          dot: "#a855f7" },
+            { value: "cancelled",  label: "Annulé",          dot: "#ef4444" },
+            { value: "duplicate",  label: "Doublon",         dot: "#94a3b8" },
+            { value: "wrong_num",  label: "Mauvais numéro",  dot: "#f97316" },
+          ]}
+        />
 
-        {/* Dropdown 3: All Fulfillment */}
-        <select style={{
-          padding: "8px 12px", borderRadius: "8px", background: "var(--bg-app)", 
-          border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none"
-        }}>
-          <option>All Fulfillment</option>
-          <option>Unfulfilled</option>
-          <option>Fulfilled</option>
-        </select>
+        {/* ── Fulfillment ── */}
+        <CustomSelect
+          id="fulfillment"
+          value={fulfillmentFilter}
+          onChange={setFulfillmentFilter}
+          placeholder="All Fulfillment"
+          options={[
+            { value: "all",               label: "All Fulfillment",    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> },
+            { value: "unfulfilled",        label: "Unfulfilled",        dot: "#f59e0b" },
+            { value: "label_created",      label: "Label Created",      dot: "#a855f7" },
+            { value: "label_purchased",    label: "Label Purchased",    dot: "#a855f7" },
+            { value: "label_printed",      label: "Label Printed",      dot: "#8b5cf6" },
+            { value: "confirmed",          label: "Confirmed",          dot: "#22c55e" },
+            { value: "in_transit",         label: "In Transit",         icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> },
+            { value: "out_for_delivery",   label: "Out for Delivery",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> },
+            { value: "delivered",          label: "Delivered",          dot: "#22c55e" },
+            { value: "attempted_delivery", label: "Attempted Delivery", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> },
+            { value: "delivery_failed",    label: "Delivery Failed",    dot: "#ef4444" },
+            { value: "delayed",            label: "Delayed",            dot: "#f59e0b" },
+            { value: "carrier_picked_up",  label: "Carrier Picked Up",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> },
+            { value: "fulfilled",          label: "Fulfilled",          icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg> },
+            { value: "partial",            label: "Partial",            icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/></svg> },
+          ]}
+        />
 
-        {/* Dropdown 4: Tous les produits */}
-        <select 
+        {/* ── Products (agent sees only their assigned products, or all if none assigned) ── */}
+        <CustomSelect
+          id="product"
           value={productFilter}
-          onChange={(e) => setProductFilter(e.target.value)}
-          style={{
-            padding: "8px 12px", borderRadius: "8px", background: "var(--bg-app)", 
-            border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none"
-          }}
-        >
-          <option value="all">Tous les produits</option>
-          {products.map(p => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
+          onChange={setProductFilter}
+          placeholder="Tous les produits"
+          options={[
+            { value: "all", label: "Tous les produits", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> },
+            ...filterableProducts.map(p => ({
+              value: String(p.id),
+              label: p.name,
+              icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            }))
+          ]}
+        />
 
       </div>
 
