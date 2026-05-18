@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { Package, Plus, Search, LayoutGrid, SlidersHorizontal, CheckCircle, FileText, Archive, Boxes } from 'lucide-react';
 import api from '../api/axios';
 import ProductForm from '../components/ProductForm';
+
+const StatCard = ({ icon: Icon, iconColor, label, value }) => (
+  <div className="stat-card">
+    <div className="stat-card-header">
+      <Icon size={16} color={iconColor} />
+      <span className="stat-card-label">{label}</span>
+    </div>
+    <div className="stat-card-value">{value}</div>
+  </div>
+);
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -10,6 +21,7 @@ const Products = () => {
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [viewMode, setViewMode] = useState('grid');
 
   const fetchProducts = async (page = 1) => {
     setLoading(true);
@@ -20,7 +32,6 @@ const Products = () => {
         ...(searchTerm && { search: searchTerm }),
         ...(filterStatus && { status: filterStatus }),
       };
-
       const response = await api.get('/products', { params });
       setProducts(response.data.data);
       setPagination({
@@ -39,10 +50,8 @@ const Products = () => {
     try {
       if (editingProduct) {
         await api.put(`/products/${editingProduct.id}`, productData);
-        alert('Product updated successfully');
       } else {
         await api.post('/products', productData);
-        alert('Product created successfully');
       }
       setShowProductModal(false);
       setEditingProduct(null);
@@ -57,7 +66,6 @@ const Products = () => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       await api.delete(`/products/${id}`);
-      alert('Product deleted successfully');
       fetchProducts();
     } catch (error) {
       console.error('Failed to delete product:', error);
@@ -65,270 +73,261 @@ const Products = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
+  useEffect(() => { fetchProducts(); }, []);
   useEffect(() => {
     const timer = setTimeout(() => fetchProducts(1), 500);
     return () => clearTimeout(timer);
   }, [searchTerm, filterStatus]);
 
+  const activeCount = products.filter(p => p.status === 'active').length;
+  const draftCount = products.filter(p => p.status === 'draft').length;
+  const totalInventory = products.reduce((acc, p) => acc + (p.total_stock || 0), 0);
+  const now = new Date();
+  const syncTime = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
   return (
-    <div className="main-content">
-      <div className="page-header">
+    <div className="products-page">
+
+      {/* Header */}
+      <div className="products-header">
         <div>
-          <div className="page-title">Products</div>
-          <div className="page-subtitle">Manage your product catalog</div>
+          <div className="products-title-wrapper">
+            <div className="products-title-icon">
+              <Package size={18} />
+            </div>
+            <h1 className="products-title">Products</h1>
+          </div>
+          <p className="products-subtitle">
+            Shopify product catalog
+            <span className="products-sync-info">· Last sync {syncTime}</span>
+          </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingProduct(null);
-            setShowProductModal(true);
-          }}
-          className="btn btn-primary"
-        >
-          + New product
-        </button>
+        <div className="products-button-group">
+          <button
+            onClick={() => { setEditingProduct(null); setShowProductModal(true); }}
+            className="btn-primary-action"
+          >
+            <Plus size={14} />
+            New Product
+          </button>
+          <button className="btn-secondary-action">
+            <span>$</span>
+            Connect your Shop
+          </button>
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="card" style={{ marginBottom: '24px', padding: '20px' }}>
-        <div className="form-row">
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="form-input"
-          />
+      {/* Stats — only when products exist */}
+      {products.length > 0 && (
+        <div className="stats-grid">
+          <StatCard icon={Package} iconColor="#60a5fa" label="Total Products" value={pagination.total || products.length} />
+          <StatCard icon={CheckCircle} iconColor="#4ade80" label="Active" value={activeCount} />
+          <StatCard icon={FileText} iconColor="#fb923c" label="Draft" value={draftCount} />
+          <StatCard icon={Boxes} iconColor="#a78bfa" label="Total Inventory" value={totalInventory} />
+        </div>
+      )}
+
+      {/* Search & Filter Bar — only when products exist */}
+      {products.length > 0 && (
+        <div className="search-filter-bar">
+          <div className="search-input-wrapper">
+            <Search size={14} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="form-select"
+            onChange={e => setFilterStatus(e.target.value)}
+            className="filter-select"
           >
-            <option value="">All status</option>
+            <option value="">All Status</option>
             <option value="active">Active</option>
             <option value="draft">Draft</option>
             <option value="archived">Archived</option>
           </select>
-        </div>
-      </div>
-
-      {/* Products Table */}
-      {loading ? (
-        <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-          <div className="spinner"></div>
-        </div>
-      ) : products.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-          <p>No products found. Create your first product!</p>
-        </div>
-      ) : (
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Status</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Vendor</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => (
-                <tr key={product.id}>
-                  <td>
-                    <div className="product-info">
-                      {product.image && (
-                        <img src={product.image} alt={product.title} className="product-thumb" />
-                      )}
-                      <div>
-                        <div className="product-title">{product.title}</div>
-                        <div className="product-handle">{product.handle}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`status-badge status-${product.status}`}>
-                      {product.status}
-                    </span>
-                  </td>
-                  <td>${product.min_price || product.variants?.[0]?.price || 0}</td>
-                  <td>{product.total_stock || 0} units</td>
-                  <td>{product.vendor || '-'}</td>
-                  <td>
-                    <button
-                      onClick={() => {
-                        setEditingProduct(product);
-                        setShowProductModal(true);
-                      }}
-                      className="action-btn edit-btn"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => deleteProduct(product.id)}
-                      className="action-btn delete-btn"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <button
+            className={`filter-button ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="Grid view"
+          >
+            <LayoutGrid size={15} />
+          </button>
+          <button
+            className={`filter-button ${viewMode === 'table' ? 'active' : ''}`}
+            onClick={() => setViewMode('table')}
+            title="Table view"
+          >
+            <SlidersHorizontal size={15} />
+          </button>
         </div>
       )}
 
-      {/* Product Form Modal */}
+      {/* Content */}
+      {loading ? (
+        <div className="loading-container">
+          <div className="spinner-dark" />
+        </div>
+      ) : products.length === 0 ? (
+        <div className="empty-state-container">
+          <div className="empty-state-icon">
+            <Package size={32} />
+          </div>
+          <h3 className="empty-state-title">Your catalog is empty</h3>
+          <p className="empty-state-text">
+            Create products manually for any channel (Instagram, WhatsApp, TikTok, ...) or connect Shopify to import yours.
+          </p>
+          <div className="empty-state-actions">
+            <button
+              onClick={() => { setEditingProduct(null); setShowProductModal(true); }}
+              className="btn-primary-action"
+            >
+              <Plus size={14} />
+              New Product
+            </button>
+            <button className="btn-secondary-action">
+              <span>$</span>
+              Connect your Shop
+            </button>
+          </div>
+        </div>
+      ) : viewMode === 'grid' ? (
+        <div>
+          <div className="products-grid">
+            {products.map((product) => {
+              const price = product.min_price || product.variants?.[0]?.price || 0;
+              const cost = product.cost || (price * 0.5);
+              const margin = price > 0 ? Math.round(((price - cost) / price) * 100) : 0;
+              const stock = product.total_stock || 0;
+              return (
+                <div key={product.id} className="product-card">
+                  {product.image ? (
+                    <img src={product.image} alt={product.title} className="product-card-image" />
+                  ) : (
+                    <div className="product-card-image-placeholder">
+                      <Package size={28} />
+                    </div>
+                  )}
+                  <div className="product-card-header">
+                    <span className="product-card-title">{product.title}</span>
+                    <span className={`status-badge status-${product.status || 'draft'}`}>
+                      {(product.status || 'draft').toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="product-card-meta">{product.type || 'General'}</div>
+                  <div className="product-card-price">${Number(price).toFixed(2)}</div>
+                  {stock > 0 && <div className="product-card-stock">{stock} in stock</div>}
+                  <div className="product-card-cost">
+                    <span className="product-card-cost-label">Cost: </span>
+                    <span className="product-card-cost-value">${Number(cost).toFixed(2)}</span>
+                    <span style={{ marginLeft: 'auto', color: margin >= 30 ? 'var(--success)' : 'var(--warning)', fontWeight: '600' }}>{margin}%</span>
+                  </div>
+                  <div className="product-card-actions">
+                    <button
+                      onClick={() => { setEditingProduct(product); setShowProductModal(true); }}
+                      className="btn-edit"
+                    >Edit</button>
+                    <button
+                      onClick={() => deleteProduct(product.id)}
+                      className="btn-delete"
+                    >Delete</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="table-footer">
+            Showing {products.length} of {pagination.total || products.length} products
+          </div>
+        </div>
+      ) : (
+        <div className="card">
+          <div style={{ overflowX: 'auto' }}>
+            <table className="products-table">
+              <thead>
+                <tr>
+                  {['PRODUCT', 'SOURCE', 'STATUS', 'TYPE', 'VENDOR', 'PRICE', 'COST', 'MARGIN', 'ACTIONS'].map(col => (
+                    <th key={col} className={col === 'COST' ? 'th-cost' : ''}>{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => {
+                  const price = product.min_price || product.variants?.[0]?.price || 0;
+                  const cost = product.cost || (price * 0.5);
+                  const margin = price > 0 ? Math.round(((price - cost) / price) * 100) : 0;
+                  return (
+                    <tr key={product.id}>
+                      <td>
+                        <div className="product-cell">
+                          {product.image ? (
+                            <img src={product.image} alt={product.title} className="product-image" />
+                          ) : (
+                            <div className="product-image-placeholder">
+                              <Package size={18} />
+                            </div>
+                          )}
+                          <span className="product-name">{product.title}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="cell-text">Manual</span>
+                      </td>
+                      <td>
+                        <span className={`status-badge status-${product.status || 'draft'}`}>
+                          {(product.status || 'draft').toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="cell-text">{product.type || '-'}</td>
+                      <td className="cell-text">{product.vendor || '-'}</td>
+                      <td className="cell-text-strong">${Number(price).toFixed(2)}</td>
+                      <td className="cell-text-warning">${Number(cost).toFixed(2)}</td>
+                      <td className={margin >= 30 ? 'cell-text-success' : 'cell-text-strong'}>{margin}%</td>
+                      <td>
+                        <div className="table-actions">
+                          <button
+                            onClick={() => { setEditingProduct(product); setShowProductModal(true); }}
+                            className="btn-edit"
+                          >Edit</button>
+                          <button
+                            onClick={() => deleteProduct(product.id)}
+                            className="btn-delete"
+                          >Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="table-footer">
+            Showing {products.length} of {pagination.total || products.length} products
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
       {showProductModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <button className="modal-close" onClick={() => setShowProductModal(false)}>
-              ×
-            </button>
+            <button
+              onClick={() => setShowProductModal(false)}
+              className="modal-close"
+            >×</button>
             <ProductForm
               product={editingProduct}
               onSave={saveProduct}
-              onCancel={() => {
-                setShowProductModal(false);
-                setEditingProduct(null);
-              }}
+              onCancel={() => { setShowProductModal(false); setEditingProduct(null); }}
               shopId={1}
             />
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .products-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .products-table th {
-          text-align: left;
-          padding: 16px 20px;
-          background: var(--bg-app);
-          border-bottom: 1px solid var(--border-color);
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--text-muted);
-          text-transform: uppercase;
-        }
-
-        .products-table td {
-          padding: 16px 20px;
-          border-bottom: 1px solid var(--border-color);
-        }
-
-        .product-info {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .product-thumb {
-          width: 48px;
-          height: 48px;
-          border-radius: 8px;
-          object-fit: cover;
-        }
-
-        .product-title {
-          font-weight: 600;
-          color: var(--text-main);
-          margin-bottom: 4px;
-        }
-
-        .product-handle {
-          font-size: 12px;
-          color: var(--text-muted);
-        }
-
-        .status-badge {
-          display: inline-block;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 500;
-        }
-
-        .status-active {
-          background: var(--success-light);
-          color: var(--success);
-        }
-
-        .status-draft {
-          background: var(--warning-light);
-          color: var(--warning);
-        }
-
-        .status-archived {
-          background: var(--danger-light);
-          color: var(--danger);
-        }
-
-        .action-btn {
-          padding: 6px 12px;
-          margin: 0 4px;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 12px;
-        }
-
-        .edit-btn {
-          background: var(--primary-light);
-          color: var(--primary);
-        }
-
-        .delete-btn {
-          background: var(--danger-light);
-          color: var(--danger);
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          overflow-y: auto;
-        }
-
-        .modal-content {
-          position: relative;
-          max-width: 900px;
-          width: 90%;
-          max-height: 90vh;
-          overflow-y: auto;
-          background: var(--bg-card);
-          border-radius: 12px;
-        }
-
-        .modal-close {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          width: 32px;
-          height: 32px;
-          background: var(--bg-app);
-          border: none;
-          border-radius: 50%;
-          font-size: 20px;
-          cursor: pointer;
-          z-index: 10;
-        }
-      `}</style>
     </div>
   );
 };
