@@ -1,8 +1,10 @@
 import { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
 
   return (
     <div>
@@ -15,14 +17,14 @@ export default function Dashboard() {
               <rect x="14" y="14" width="7" height="7" rx="1" />
               <rect x="3" y="14" width="7" height="7" rx="1" />
             </svg>
-            Tableau de bord
+            {t("tableau_de_bord")}
           </h2>
-          <p className="page-subtitle">Surveillez les indicateurs clés et la performance</p>
+          <p className="page-subtitle">{t("suivre_indicateurs")}</p>
         </div>
         <select className="select-input">
-          <option>Aujourd'hui</option>
-          <option>Hier</option>
-          <option>Les 7 derniers jours</option>
+          <option>{t("aujourd_hui")}</option>
+          <option>{t("hier")}</option>
+          <option>{t("les_7_derniers_jours") || "Les 7 derniers jours"}</option>
         </select>
       </div>
 
@@ -34,7 +36,7 @@ export default function Dashboard() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="card-title">Total Commandes</div>
+              <div className="card-title">{t("total_commandes")}</div>
             </div>
           </div>
           <div className="card-value">0</div>
@@ -46,7 +48,7 @@ export default function Dashboard() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="card-title">Confirmées</div>
+              <div className="card-title">{t("confirmees")}</div>
             </div>
           </div>
           <div className="card-value">0</div>
@@ -58,7 +60,7 @@ export default function Dashboard() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="card-title">En Attente</div>
+              <div className="card-title">{t("en_attente")}</div>
             </div>
           </div>
           <div className="card-value">0</div>
@@ -70,7 +72,7 @@ export default function Dashboard() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="card-title">Annulées</div>
+              <div className="card-title">{t("annulees")}</div>
             </div>
           </div>
           <div className="card-value">0</div>
@@ -82,7 +84,7 @@ export default function Dashboard() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="card-title" style={{ fontSize: '0.65rem' }}>Temps Moyen<br/>Confirmation</div>
+              <div className="card-title" style={{ fontSize: '0.65rem' }}>{t("temps_moyen")}<br/>Confirmation</div>
             </div>
           </div>
           <div className="card-value" style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>— Aucune donnée</div>
@@ -99,8 +101,8 @@ export default function Dashboard() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
             </div>
             <div>
-              <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>Revenus</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Des commandes confirmées</div>
+              <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>{t("revenus") || "Revenus"}</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t("commandes_confirmees") || "Des commandes confirmées"}</div>
             </div>
             <div className="badge badge-success">+0%</div>
           </div>
@@ -113,35 +115,35 @@ export default function Dashboard() {
             <div className="card-icon icon-primary" style={{ height: '30px', width: '30px' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
             </div>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>Aperçu</div>
+            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>{t("apercu") || "Aperçu"}</div>
           </div>
           
           <div className="data-list" style={{ marginTop: '20px' }}>
             <div className="data-item">
               <div className="data-item-label">
                 <div className="data-item-dot dot-primary"></div>
-                Produits
+                {t("produits")}
               </div>
               <div className="data-item-value">0</div>
             </div>
             <div className="data-item">
               <div className="data-item-label">
                 <div className="data-item-dot dot-success"></div>
-                Clients
+                {t("clients")}
               </div>
               <div className="data-item-value">1</div>
             </div>
             <div className="data-item">
               <div className="data-item-label">
                 <div className="data-item-dot dot-warning"></div>
-                Membres d'équipe
+                {t("membres_equipe") || "Membres d'équipe"}
               </div>
               <div className="data-item-value">0</div>
             </div>
             <div className="data-item">
               <div className="data-item-label">
                 <div className="data-item-dot dot-success"></div>
-                Livrées
+                {t("livrees") || "Livrées"}
               </div>
               <div className="data-item-value">0</div>
             </div>
@@ -154,7 +156,7 @@ export default function Dashboard() {
             <div className="card-icon icon-success" style={{ height: '30px', width: '30px' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             </div>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>Taux de confirmation</div>
+            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>{t("taux_confirmation")}</div>
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}>
@@ -172,7 +174,7 @@ export default function Dashboard() {
         <div className="card" style={{ gridColumn: 'span 1' }}>
            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-               <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Forfait & utilisation</h3>
+               <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>{t("forfait_utilisation") || "Forfait & utilisation"}</h3>
                <span style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'var(--border-color)', borderRadius: '4px', fontWeight: 600 }}>FREE</span>
              </div>
              <div className="card-icon icon-purple" style={{ height: '30px', width: '30px', cursor: 'pointer' }}>
@@ -186,7 +188,7 @@ export default function Dashboard() {
            </div>
 
            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '15px' }}>
-             <span>Période de<br/>Facturation</span>
+             <span>{t("periode_facturation") || "Période de Facturation"}</span>
              <span style={{ textAlign: 'right' }}>1 mai → 1 juin · Jour 15 sur<br/>31</span>
            </div>
 
@@ -195,7 +197,7 @@ export default function Dashboard() {
                 <div style={{ width: '80px', height: '80px', borderRadius: '50%', border: '4px solid var(--border-color)', borderTopColor: 'var(--purple)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
                   <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>1<span style={{ fontSize: '0.7rem' }}>%</span></span>
                 </div>
-                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--purple)', letterSpacing: '0.5px' }}>COMMANDES</div>
+                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--purple)', letterSpacing: '0.5px' }}>{t("commandes")}</div>
                 <div style={{ fontSize: '0.9rem', fontWeight: 700, margin: '5px 0' }}>1 <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 400 }}>/ 100</span></div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Projection: 2 sur la période</div>
              </div>
@@ -203,7 +205,7 @@ export default function Dashboard() {
                 <div style={{ width: '80px', height: '80px', borderRadius: '50%', border: '4px solid var(--border-color)', borderTopColor: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
                   <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>0<span style={{ fontSize: '0.7rem' }}>%</span></span>
                 </div>
-                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--success)', letterSpacing: '0.5px' }}>BOUTIQUES</div>
+                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--success)', letterSpacing: '0.5px' }}>{t("boutiques") || "BOUTIQUES"}</div>
                 <div style={{ fontSize: '0.9rem', fontWeight: 700, margin: '5px 0' }}>0 <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 400 }}>/ 1</span></div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Boutiques connectées</div>
              </div>

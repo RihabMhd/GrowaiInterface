@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 
 // Unique SVG icons matching the dark-themed screenshot
 const Icons = {
@@ -128,6 +129,7 @@ export default function Sidebar({ user, onLogout }) {
   const [isCommandesOpen, setIsCommandesOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
 
   // Auto-expand Commandes if on a sub-route
   useEffect(() => {
@@ -143,14 +145,14 @@ export default function Sidebar({ user, onLogout }) {
   };
 
   const navLinks = [
-    { name: "Tableau de bord", path: "/dashboard", icon: Icons.dashboard },
-    { name: "Commandes", path: "/commandes", icon: Icons.commandes },
-    { name: "Clients", path: "/clients", icon: Icons.clients },
-    { name: "Products", path: "/products", icon: Icons.products },
-    { name: "Companies", path: "/companies", icon: Icons.companies },
-    { name: "Status", path: "/status", icon: Icons.status },
-    { name: "Team", path: "/team", icon: Icons.team },
-    { name: "Affiliés", path: "/affilies", icon: Icons.affilies },
+    { keyName: "tableau_de_bord", name: t("tableau_de_bord"), path: "/dashboard", icon: Icons.dashboard },
+    { keyName: "commandes", name: t("commandes"), path: "/commandes", icon: Icons.commandes },
+    { keyName: "clients", name: t("clients"), path: "/clients", icon: Icons.clients },
+    { keyName: "produits", name: t("produits"), path: "/products", icon: Icons.products },
+    { keyName: "entreprises", name: t("entreprises"), path: "/companies", icon: Icons.companies },
+    { keyName: "status", name: t("status"), path: "/status", icon: Icons.status },
+    { keyName: "equipe", name: t("equipe"), path: "/team", icon: Icons.team },
+    { keyName: "affilies", name: t("affilies"), path: "/affilies", icon: Icons.affilies },
   ];
 
   const sourceLinks = [
@@ -160,15 +162,25 @@ export default function Sidebar({ user, onLogout }) {
 
   const appLinks = [
     { name: "WhatsApp", path: "/apps/whatsapp", icon: Icons.whatsapp, badge: "PRO" },
-    { name: "Tarifs", path: "/apps/tarifs", icon: Icons.tarifs },
+    { name: t("tarifs") || "Tarifs", path: "/apps/tarifs", icon: Icons.tarifs },
   ];
+
+  const isAdmin = user?.role === "admin";
+  const isAgent = user?.role === "staff";
+
+  const filteredNavLinks = navLinks.filter(link => {
+    if (isAgent) {
+      return link.path === "/commandes";
+    }
+    return true;
+  });
 
   return (
     <aside className="sidebar">
       <div className="sidebar-content">
         <ul>
-          {navLinks.map((link, idx) => {
-            if (link.name === "Commandes") {
+          {filteredNavLinks.map((link, idx) => {
+            if (link.keyName === "commandes") {
               const isParentActive = location.pathname.startsWith("/commandes");
               return (
                 <li key={idx}>
@@ -192,10 +204,10 @@ export default function Sidebar({ user, onLogout }) {
                   {isCommandesOpen && (
                     <div className="sidebar-submenu">
                       <NavLink to="/commandes/toutes" className={({ isActive }) => `sidebar-sublink ${isActive ? "active" : ""}`}>
-                        {Icons.cart} Toutes
+                        {Icons.cart} {t("toutes")}
                       </NavLink>
                       <NavLink to="/commandes/abandonnees" className={({ isActive }) => `sidebar-sublink ${isActive ? "active" : ""}`}>
-                        {Icons.cartX} Abandonnées
+                        {Icons.cartX} {t("abandonnees")}
                       </NavLink>
                     </div>
                   )}
@@ -217,42 +229,54 @@ export default function Sidebar({ user, onLogout }) {
           })}
         </ul>
 
-        <h3 className="sidebar-menu-title">Sources de commandes</h3>
-        <ul>
-          {sourceLinks.map((link, idx) => (
-            <li key={idx}>
-              <NavLink
-                to={link.path}
-                className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-              >
-                {link.icon}
-                {link.name}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        {isAdmin && (
+          <>
+            <h3 className="sidebar-menu-title">{t("sources_de_commandes")}</h3>
+            <ul>
+              {sourceLinks.map((link, idx) => (
+                <li key={idx}>
+                  <NavLink
+                    to={link.path}
+                    className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+                  >
+                    {link.icon}
+                    {link.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
 
-        <h3 className="sidebar-menu-title">Applications</h3>
-        <ul>
-          {appLinks.map((link, idx) => (
-            <li key={idx}>
-              <NavLink
-                to={link.path}
-                className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
-              >
-                {link.icon}
-                {link.name}
-                {link.badge && <span className="sidebar-badge">{link.badge}</span>}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+            <h3 className="sidebar-menu-title">{t("applications")}</h3>
+            <ul>
+              {appLinks.map((link, idx) => (
+                <li key={idx}>
+                  <NavLink
+                    to={link.path}
+                    className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+                  >
+                    {link.icon}
+                    {link.name}
+                    {link.badge && <span className="sidebar-badge">{link.badge}</span>}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
       <div className={`sidebar-footer ${isPopupOpen ? 'active' : ''}`} onClick={togglePopup}>
-        <div className="avatar">
-          {user?.name ? user.name.charAt(0).toUpperCase() : "R"}
-        </div>
+        {user?.avatar_url ? (
+          <img 
+            src={user.avatar_url} 
+            alt={user.name} 
+            style={{ width: "35px", height: "35px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--border-color)" }} 
+          />
+        ) : (
+          <div className="avatar">
+            {user?.name ? user.name.charAt(0).toUpperCase() : "R"}
+          </div>
+        )}
         <div className="user-info">
           <div className="user-name">{user?.name || "Rihab Mahdi"}</div>
           <div className="user-email">{user?.email || "rihabmahdi19@gmail.com"}</div>
@@ -262,9 +286,17 @@ export default function Sidebar({ user, onLogout }) {
         {isPopupOpen && (
           <div className="user-popup" onClick={(e) => e.stopPropagation()}>
             <div className="popup-header">
-              <div className="avatar large">
-                {user?.name ? user.name.charAt(0).toUpperCase() : "R"}
-              </div>
+              {user?.avatar_url ? (
+                <img 
+                  src={user.avatar_url} 
+                  alt={user.name} 
+                  style={{ width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--border-color)" }} 
+                />
+              ) : (
+                <div className="avatar large">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : "R"}
+                </div>
+              )}
               <div className="popup-user-details">
                 <strong>{user?.name || "Rihab Mahdi"}</strong>
                 <span>{user?.email || "rihabmahdi19@gmail.com"}</span>
@@ -274,18 +306,18 @@ export default function Sidebar({ user, onLogout }) {
             <div className="popup-menu">
               <button className="popup-item" onClick={() => { navigate("/settings"); setIsPopupOpen(false); }}>
                 <div className="popup-icon-wrapper">{Icons.settings}</div>
-                Paramètres
+                {t("modifier") === "Modifier" ? "Paramètres" : t("modifier") === "Edit" ? "Settings" : "الإعدادات"}
               </button>
               <button className="popup-item" onClick={() => { navigate("/help"); setIsPopupOpen(false); }}>
                 <div className="popup-icon-wrapper">{Icons.help}</div>
-                Centre d'aide
+                {t("help_title")}
               </button>
               
               <hr className="popup-divider" />
               
               <button className="popup-item logout-btn" onClick={() => { onLogout(); setIsPopupOpen(false); }}>
                 <div className="popup-icon-wrapper">{Icons.logout}</div>
-                Déconnexion
+                {t("deconnexion")}
               </button>
             </div>
           </div>

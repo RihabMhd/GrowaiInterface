@@ -842,3 +842,26 @@ body:not(.dark-theme) .popup-icon-wrapper {
   font-size: 0.9rem;
   outline: none;
 }
+
+.assigned-products-area-hover:hover {
+  border-color: var(--purple) !important;
+}
+
+.btn-action-hover:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--purple) !important;
+  border-color: var(--purple) !important;
+}
+
+.currency-item-hover:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.product-item-hover:hover {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.lang-option-hover:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: var(--text-main) !important;
+}

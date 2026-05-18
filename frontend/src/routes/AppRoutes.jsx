@@ -7,6 +7,10 @@ import AuthCallback from "../pages/AuthCallback";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import DashboardLayout from "../components/DashboardLayout";
 import PlaceholderPage from "../pages/PlaceholderPage";
+import Team from "../pages/Team";
+import Help from "../pages/Help";
+
+import Orders from "../pages/Orders";
 
 export default function AppRoutes() {
   return (
@@ -20,14 +24,14 @@ export default function AppRoutes() {
         {/* Authenticated Layout Routes */}
         <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/commandes/toutes" element={<PlaceholderPage title="Toutes les commandes" />} />
-          <Route path="/commandes/abandonnees" element={<PlaceholderPage title="Commandes abandonnées" />} />
-          <Route path="/commandes" element={<PlaceholderPage title="Commandes" />} />
+          <Route path="/commandes/toutes" element={<Orders />} />
+          <Route path="/commandes/abandonnees" element={<Orders />} />
+          <Route path="/commandes" element={<Orders />} />
           <Route path="/clients" element={<PlaceholderPage title="Clients" />} />
           <Route path="/products" element={<PlaceholderPage title="Products" />} />
           <Route path="/companies" element={<PlaceholderPage title="Companies" />} />
           <Route path="/status" element={<PlaceholderPage title="Status" />} />
-          <Route path="/team" element={<PlaceholderPage title="Team" />} />
+          <Route path="/team" element={<Team />} />
           <Route path="/affilies" element={<PlaceholderPage title="Affiliés" />} />
           
           <Route path="/sources/shopify" element={<PlaceholderPage title="Shopify Integration" />} />
@@ -37,7 +41,7 @@ export default function AppRoutes() {
           <Route path="/apps/tarifs" element={<PlaceholderPage title="Tarifs" />} />
 
           <Route path="/settings" element={<PlaceholderPage title="Paramètres" />} />
-          <Route path="/help" element={<PlaceholderPage title="Centre d'aide" />} />
+          <Route path="/help" element={<Help />} />
         </Route>
       </Routes>
     </BrowserRouter>
