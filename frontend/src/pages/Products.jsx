@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import ProductForm from '../components/ProductForm';
 
 const Products = () => {
@@ -11,8 +11,6 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
 
-  const API_BASE = 'http://localhost:8000/api';
-
   const fetchProducts = async (page = 1) => {
     setLoading(true);
     try {
@@ -23,7 +21,7 @@ const Products = () => {
         ...(filterStatus && { status: filterStatus }),
       };
 
-      const response = await axios.get(`${API_BASE}/products`, { params });
+      const response = await api.get('/products', { params });
       setProducts(response.data.data);
       setPagination({
         current_page: response.data.current_page,
@@ -40,10 +38,10 @@ const Products = () => {
   const saveProduct = async (productData) => {
     try {
       if (editingProduct) {
-        await axios.put(`${API_BASE}/products/${editingProduct.id}`, productData);
+        await api.put(`/products/${editingProduct.id}`, productData);
         alert('Product updated successfully');
       } else {
-        await axios.post(`${API_BASE}/products`, productData);
+        await api.post('/products', productData);
         alert('Product created successfully');
       }
       setShowProductModal(false);
@@ -58,7 +56,7 @@ const Products = () => {
   const deleteProduct = async (id) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
-      await axios.delete(`${API_BASE}/products/${id}`);
+      await api.delete(`/products/${id}`);
       alert('Product deleted successfully');
       fetchProducts();
     } catch (error) {

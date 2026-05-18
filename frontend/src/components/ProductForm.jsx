@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 
 const ProductForm = ({ product, onSave, onCancel, shopId = 1 }) => {
   const [formData, setFormData] = useState({
