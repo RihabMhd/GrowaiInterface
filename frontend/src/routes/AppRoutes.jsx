@@ -10,6 +10,7 @@ import PlaceholderPage from "../pages/PlaceholderPage";
 import Team from "../pages/Team";
 import Help from "../pages/Help";
 import Status from "../pages/status";
+import Products from "../pages/Products";
 
 import Orders from "../pages/Orders";
 
@@ -29,7 +30,7 @@ export default function AppRoutes() {
           <Route path="/commandes/abandonnees" element={<Orders />} />
           <Route path="/commandes" element={<Orders />} />
           <Route path="/clients" element={<PlaceholderPage title="Clients" />} />
-          <Route path="/products" element={<PlaceholderPage title="Products" />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/companies" element={<PlaceholderPage title="Companies" />} />
           <Route path="/status" element={<Status />} />
           <Route path="/team" element={<Team />} />
