@@ -66,7 +66,7 @@ const translations = {
 
     // Help Center / Documentation
     help_title: "Centre d'aide",
-    help_intro: "Dans Growai, les quotas et commissions font partie des fonctionnalités de gestion d'équipe qui vous aident à gérer vos agents efficacement.",
+    help_intro: "Dans FlashManager, les quotas et commissions font partie des fonctionnalités de gestion d'équipe qui vous aident à gérer vos agents efficacement.",
     help_quotas_title: "Quotas",
     help_quotas_text: "Cette fonctionnalité vous permet de définir une limite sur le nombre de commandes qu'un agent peut traiter au cours d'une certaine période. Lorsque vous activez la distribution automatique (Auto-Dispatch), les nouvelles commandes sont attribuées aux agents en fonction de leurs quotas. Par exemple, si un agent a un quota de 50, il recevra des commandes jusqu'à ce qu'il atteigne cette limite, puis le système passera à l'agent suivant.",
     help_commissions_title: "Commissions",
@@ -139,7 +139,7 @@ const translations = {
 
     // Help Center / Documentation
     help_title: "Help Center",
-    help_intro: "In Growai, quotas and commissions are part of the team management features that help you manage your agents effectively.",
+    help_intro: "In FlashManager, quotas and commissions are part of the team management features that help you manage your agents effectively.",
     help_quotas_title: "Quotas",
     help_quotas_text: "This feature allows you to set a limit on the number of orders an agent can handle within a certain period. When you turn on Auto-Dispatch, new orders are assigned to agents based on their quotas. For example, if an agent has a quota of 50, they will receive orders until they reach that limit, and then the system will move to the next agent.",
     help_commissions_title: "Commissions",
@@ -212,7 +212,7 @@ const translations = {
 
     // Help Center / Documentation
     help_title: "مركز المساعدة",
-    help_intro: "في Growai، تعتبر الحصص والعمولات جزءًا من ميزات إدارة الفريق التي تساعدك على إدارة وكلاءك بفعالية.",
+    help_intro: "في FlashManager، تعتبر الحصص والعمولات جزءًا من ميزات إدارة الفريق التي تساعدك على إدارة وكلاءك بفعالية.",
     help_quotas_title: "الحصص (Quotas)",
     help_quotas_text: "تتيح لك هذه الميزة تحديد حد أقصى لعدد الطلبات التي يمكن للوكيل التعامل معها خلال فترة معينة. عند تشغيل التوزيع التلقائي (Auto-Dispatch)، يتم تعيين الطلبات الجديدة للوكلاء بناءً على حصصهم. على سبيل المثال، إذا كان لدى الوكيل حصة قدرها 50، فسيتلقى الطلبات حتى يصل إلى هذا الحد، ثم ينتقل النظام إلى الوكيل التالي.",
     help_commissions_title: "العمولات (Commissions)",

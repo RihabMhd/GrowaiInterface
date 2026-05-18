@@ -23,8 +23,8 @@ export default function DashboardLayout() {
     <div className="app-container">
       <Navbar />
       <div className="app-main">
-        <Sidebar user={user} onLogout={logout} />
-        <main className="main-content">
+        {user?.role !== "staff" && <Sidebar user={user} onLogout={logout} />}
+        <main className="main-content" style={user?.role === "staff" ? { padding: "30px", flex: 1, overflowY: "auto" } : {}}>
           <Outlet />
         </main>
       </div>

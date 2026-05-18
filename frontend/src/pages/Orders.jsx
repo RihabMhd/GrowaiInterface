@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
@@ -46,6 +46,7 @@ export default function Orders() {
   const { user } = useContext(AuthContext);
   const { t } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Determine if viewing abandoned orders based on URL path
   const isAbandonedPage = location.pathname.includes("abandonnees");
@@ -65,6 +66,8 @@ export default function Orders() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [productFilter, setProductFilter] = useState("all");
+  const [periodFilter, setPeriodFilter] = useState("all");
+  const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
 
   // Selection for Order Details Popup
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -203,10 +206,32 @@ export default function Orders() {
     }
   };
 
-  // Apply frontend products filtering if selected
+  // Apply frontend products & period filtering if selected
   const filteredOrders = orders.filter(order => {
-    if (productFilter === "all") return true;
-    return order.items.some(item => item.product_id === parseInt(productFilter));
+    // 1. Product Filter
+    if (productFilter !== "all" && !order.items.some(item => item.product_id === parseInt(productFilter))) {
+      return false;
+    }
+    
+    // 2. Period Filter
+    if (periodFilter !== "all") {
+      const orderDate = new Date(order.created_at);
+      const today = new Date();
+      
+      if (periodFilter === "today") {
+        return orderDate.toDateString() === today.toDateString();
+      } else if (periodFilter === "yesterday") {
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        return orderDate.toDateString() === yesterday.toDateString();
+      } else if (periodFilter === "this_week") {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(today.getDate() - 7);
+        return orderDate >= oneWeekAgo;
+      }
+    }
+    
+    return true;
   });
 
   const isAdmin = user?.role === "admin";
@@ -235,7 +260,7 @@ export default function Orders() {
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <path d="M16 10a4 4 0 0 1-8 0"></path>
             </svg>
-            {isAbandonedPage ? "Commandes abandonnées" : "Commandes"}
+            {isAbandonedPage ? "Abandoned Orders" : "Orders"}
             <span style={{
               fontSize: "0.65rem", padding: "2px 8px", background: "rgba(137,80,252,0.1)", 
               color: "var(--purple)", borderRadius: "4px", fontWeight: "700"
@@ -243,45 +268,149 @@ export default function Orders() {
               • just now
             </span>
           </h2>
-          <p className="page-subtitle">Suivre, assigner et analyser les commandes de vos boutiques</p>
+          <p className="page-subtitle">Track, assign, and analyze your orders</p>
         </div>
 
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "8px" }}>
-            <button 
-              onClick={() => setStatusFilter("all")}
-              style={{
-                padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600",
-                background: statusFilter === "all" ? "var(--bg-card)" : "transparent",
-                color: statusFilter === "all" ? "var(--text-main)" : "var(--text-muted)",
-                transition: "all 0.2s"
-              }}
-            >
-              All
-            </button>
-            <button 
-              onClick={() => setStatusFilter("pending")}
-              style={{
-                padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600",
-                background: statusFilter === "pending" ? "var(--bg-card)" : "transparent",
-                color: statusFilter === "pending" ? "var(--text-main)" : "var(--text-muted)",
-                transition: "all 0.2s"
-              }}
-            >
-              Today
-            </button>
+          {/* Period Filter Tabs */}
+          <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "8px", gap: "2px" }}>
+            {["all", "today", "yesterday", "this_week"].map((period) => {
+              const labelMap = {
+                all: "All",
+                today: "Today",
+                yesterday: "Yesterday",
+                this_week: "This week"
+              };
+              const isActive = periodFilter === period;
+              return (
+                <button
+                  key={period}
+                  onClick={() => setPeriodFilter(period)}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    fontSize: "0.75rem",
+                    fontWeight: "600",
+                    background: isActive ? "var(--bg-card)" : "transparent",
+                    color: isActive ? "var(--text-main)" : "var(--text-muted)",
+                    border: "none",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                  className={isActive ? "" : "date-tab-hover"}
+                >
+                  {labelMap[period]}
+                </button>
+              );
+            })}
+            
+            {/* More dropdown */}
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => setIsMoreDropdownOpen(!isMoreDropdownOpen)}
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: "6px",
+                  fontSize: "0.75rem",
+                  fontWeight: "600",
+                  background: "transparent",
+                  color: "var(--text-muted)",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px"
+                }}
+              >
+                More <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              {isMoreDropdownOpen && (
+                <div style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  backgroundColor: "#18181b",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "8px",
+                  padding: "4px",
+                  minWidth: "140px",
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                  zIndex: 1000,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "2px"
+                }}>
+                  <button 
+                    onClick={() => { setPeriodFilter("all"); setIsMoreDropdownOpen(false); }}
+                    style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px" }}
+                    className="dropdown-item-hover"
+                  >
+                    Clear Filter
+                  </button>
+                  <button 
+                    onClick={() => { navigate(isAbandonedPage ? "/commandes/toutes" : "/commandes/abandonnees"); setIsMoreDropdownOpen(false); }}
+                    style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px" }}
+                    className="dropdown-item-hover"
+                  >
+                    {isAbandonedPage ? "Toutes les commandes" : "Commandes abandonnées"}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* New Order Button styled exactly like the screenshot */}
           <button 
-            className="btn btn-primary" 
             onClick={() => setIsCreateModalOpen(true)}
             style={{ 
-              background: "var(--purple)", width: "auto", padding: "8px 16px", borderRadius: "8px", 
-              fontSize: "0.75rem", fontWeight: "600" 
+              background: "rgba(114, 57, 234, 0.08)",
+              border: "1px solid #7239ea",
+              color: "#fff",
+              padding: "8px 16px",
+              borderRadius: "8px", 
+              fontSize: "0.75rem",
+              fontWeight: "700",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              cursor: "pointer",
+              transition: "all 0.2s"
             }}
+            className="btn-new-order-hover"
           >
-            + New Order
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New Order
           </button>
         </div>
+      </div>
+
+      {/* Elegant sub-navigation tab bar on the page */}
+      <div style={{ display: "flex", gap: "24px", borderBottom: "1px solid var(--border-color)", marginBottom: "20px", paddingBottom: "2px" }}>
+        <button 
+          onClick={() => navigate("/commandes/toutes")}
+          style={{
+            background: "none", border: "none", padding: "10px 0", cursor: "pointer", fontSize: "0.85rem", fontWeight: "700",
+            color: !isAbandonedPage ? "var(--purple)" : "var(--text-muted)",
+            borderBottom: !isAbandonedPage ? "2px solid var(--purple)" : "2px solid transparent",
+            transition: "all 0.2s"
+          }}
+        >
+          Toutes les commandes
+        </button>
+        <button 
+          onClick={() => navigate("/commandes/abandonnees")}
+          style={{
+            background: "none", border: "none", padding: "10px 0", cursor: "pointer", fontSize: "0.85rem", fontWeight: "700",
+            color: isAbandonedPage ? "var(--purple)" : "var(--text-muted)",
+            borderBottom: isAbandonedPage ? "2px solid var(--purple)" : "2px solid transparent",
+            transition: "all 0.2s"
+          }}
+        >
+          Commandes abandonnées
+        </button>
       </div>
 
       {/* Metrics Row (5 Cards exactly matching references) */}
