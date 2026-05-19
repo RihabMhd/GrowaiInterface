@@ -130,6 +130,7 @@ export default function AdminOrders() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [newOrder, setNewOrder] = useState({ notes: "", product_id: "", quantity: 1 });
+    const [sidebarTab, setSidebarTab] = useState("details");
 
     // ── Data fetching ──────────────────────────────────────────────────────────
     const fetchOrders = async () => {
@@ -433,10 +434,10 @@ export default function AdminOrders() {
                                 const statusStyle = getStatusStyle(order.status);
                                 const isPaid = order.financial_status === "paid";
                                 return (
-                                    <tr key={order.id} style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} className="table-row-hover">
+                                    <tr key={order.id} onClick={() => setSelectedOrder(order)} style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s", cursor: "pointer" }} className="table-row-hover">
                                         <style>{`.table-row-hover:hover { background: rgba(255,255,255,0.01); } .custom-select-item-hover:hover { background: rgba(114,57,234,0.15) !important; }`}</style>
                                         <td style={{ padding: "14px 18px", fontWeight: "700" }}>
-                                            <span onClick={() => setSelectedOrder(order)} style={{ color: "var(--purple)", cursor: "pointer", textDecoration: "underline" }}>{order.order_number}</span>
+                                            <span style={{ color: "var(--purple)", cursor: "pointer", textDecoration: "underline" }}>{order.order_number}</span>
                                         </td>
                                         <td style={{ padding: "14px 18px" }}>
                                             <div style={{ fontWeight: "600" }}>{order.client?.name || order.customer_name || "—"}</div>
@@ -615,6 +616,296 @@ export default function AdminOrders() {
                     </div>
                 </div>
             )}
+
+            {/* ── ORDER DETAIL SIDEBAR ── */}
+            {selectedOrder && (
+                <>
+                    {/* Overlay */}
+                    <div
+                        onClick={() => setSelectedOrder(null)}
+                        style={{
+                            position: "fixed",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: "rgba(0, 0, 0, 0.5)",
+                            zIndex: 8000,
+                            animation: "fadeIn 0.2s ease"
+                        }}
+                    />
+
+                    {/* Sidebar */}
+                    <div
+                        style={{
+                            position: "fixed",
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            width: "100%",
+                            maxWidth: "500px",
+                            background: "var(--bg-card)",
+                            borderLeft: "1px solid var(--border-color)",
+                            zIndex: 8001,
+                            display: "flex",
+                            flexDirection: "column",
+                            animation: "slideIn 0.3s ease",
+                            overflow: "hidden"
+                        }}
+                    >
+                        {/* Header */}
+                        <div style={{ padding: "20px", borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                                <div>
+                                    <h3 style={{ fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main)", margin: 0 }}>
+                                        {selectedOrder.order_number}
+                                    </h3>
+                                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
+                                        {new Date(selectedOrder.created_at).toLocaleDateString()} {new Date(selectedOrder.created_at).toLocaleTimeString()}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedOrder(null)}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        color: "var(--text-muted)",
+                                        cursor: "pointer",
+                                        padding: "4px",
+                                        display: "flex",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Status Badge */}
+                            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                                <span
+                                    style={{
+                                        display: "inline-block",
+                                        padding: "6px 12px",
+                                        borderRadius: "6px",
+                                        background: getStatusStyle(selectedOrder.status).bg,
+                                        color: getStatusStyle(selectedOrder.status).text,
+                                        fontSize: "0.75rem",
+                                        fontWeight: "700"
+                                    }}
+                                >
+                                    ● {selectedOrder.status.toUpperCase()}
+                                </span>
+                                {selectedOrder.items?.some(i => !i.fulfillment_status || i.fulfillment_status === "unfulfilled") && (
+                                    <span style={{ display: "inline-block", padding: "6px 12px", borderRadius: "6px", background: "rgba(255,152,0,0.1)", color: "#ff9800", fontSize: "0.75rem", fontWeight: "700" }}>
+                                        ⬤ UNFULFILLED
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Tabs */}
+                        <div style={{ display: "flex", borderBottom: "1px solid var(--border-color)", paddingX: "20px" }}>
+                            {["details", "history"].map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setSidebarTab(tab)}
+                                    style={{
+                                        flex: 1,
+                                        padding: "12px",
+                                        background: "none",
+                                        border: "none",
+                                        borderBottom: sidebarTab === tab ? "2px solid var(--purple)" : "none",
+                                        color: sidebarTab === tab ? "var(--text-main)" : "var(--text-muted)",
+                                        fontSize: "0.85rem",
+                                        fontWeight: "600",
+                                        cursor: "pointer",
+                                        transition: "all 0.2s"
+                                    }}
+                                >
+                                    {tab === "details" ? "Details" : "History"}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Content */}
+                        <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+                            {sidebarTab === "details" ? (
+                                <>
+                                    {/* Customer Info */}
+                                    <div style={{ marginBottom: "24px" }}>
+                                        <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "12px", textTransform: "uppercase" }}>Customer</h4>
+                                        <div style={{ display: "flex", gap: "12px", padding: "12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)" }}>
+                                            <div
+                                                style={{
+                                                    width: "40px",
+                                                    height: "40px",
+                                                    borderRadius: "50%",
+                                                    background: "var(--purple)",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    color: "white",
+                                                    fontWeight: "700",
+                                                    flexShrink: 0
+                                                }}
+                                            >
+                                                {(selectedOrder.client?.name || selectedOrder.customer_name || "C")[0]?.toUpperCase()}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontWeight: "600", color: "var(--text-main)", marginBottom: "2px" }}>
+                                                    {selectedOrder.client?.name || selectedOrder.customer_name || "Unknown"}
+                                                </div>
+                                                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                                                    {selectedOrder.client?.phone || selectedOrder.customer_phone || "—"}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Items */}
+                                    <div style={{ marginBottom: "24px" }}>
+                                        <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "12px", textTransform: "uppercase" }}>Items ({selectedOrder.items?.length || 0})</h4>
+                                        {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                                {selectedOrder.items.map((item, idx) => (
+                                                    <div key={idx} style={{ display: "flex", gap: "12px", padding: "12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)" }}>
+                                                        <div
+                                                            style={{
+                                                                width: "48px",
+                                                                height: "48px",
+                                                                borderRadius: "6px",
+                                                                background: "rgba(114,57,234,0.1)",
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+                                                                color: "var(--purple)",
+                                                                fontSize: "1.2rem",
+                                                                flexShrink: 0
+                                                            }}
+                                                        >
+                                                            📦
+                                                        </div>
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <div style={{ fontWeight: "600", color: "var(--text-main)", marginBottom: "4px" }}>
+                                                                {item.product_name || "Unknown Product"}
+                                                            </div>
+                                                            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "4px" }}>
+                                                                SKU: {item.sku || "N/A"}
+                                                            </div>
+                                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-main)" }}>
+                                                                    {item.price || 0} {selectedOrder.currency || currencySymbol}
+                                                                </span>
+                                                                <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>x{item.quantity || 1}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>No items in this order</div>
+                                        )}
+                                    </div>
+
+                                    {/* Pricing */}
+                                    <div style={{ marginBottom: "24px", padding: "16px", borderRadius: "8px", background: "rgba(255,255,255,0.02)" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Subtotal</span>
+                                            <span style={{ color: "var(--text-main)", fontWeight: "600" }}>{selectedOrder.subtotal || 0} {selectedOrder.currency || currencySymbol}</span>
+                                        </div>
+                                        {selectedOrder.shipping_cost && (
+                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                                <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Shipping</span>
+                                                <span style={{ color: "var(--text-main)", fontWeight: "600" }}>{selectedOrder.shipping_cost} {selectedOrder.currency || currencySymbol}</span>
+                                            </div>
+                                        )}
+                                        {selectedOrder.tax && (
+                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                                <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Tax</span>
+                                                <span style={{ color: "var(--text-main)", fontWeight: "600" }}>{selectedOrder.tax} {selectedOrder.currency || currencySymbol}</span>
+                                            </div>
+                                        )}
+                                        <div style={{ borderTop: "1px solid var(--border-color)", marginTop: "8px", paddingTop: "8px", display: "flex", justifyContent: "space-between" }}>
+                                            <span style={{ fontWeight: "700", color: "var(--text-main)" }}>Total</span>
+                                            <span style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "1.1rem" }}>{selectedOrder.total_price} {selectedOrder.currency || currencySymbol}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Notes */}
+                                    {selectedOrder.notes && (
+                                        <div>
+                                            <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "8px", textTransform: "uppercase" }}>Notes</h4>
+                                            <div style={{ padding: "12px", borderRadius: "8px", background: "rgba(255,152,0,0.08)", borderLeft: "3px solid #ff9800" }}>
+                                                <p style={{ fontSize: "0.85rem", color: "var(--text-main)", margin: 0 }}>{selectedOrder.notes}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                                    <p>Order history not yet available</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer Actions */}
+                        <div style={{ padding: "16px 20px", borderTop: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)", display: "flex", gap: "12px" }}>
+                            <button
+                                onClick={() => handleUpdateStatus(selectedOrder.id, "processing")}
+                                style={{
+                                    flex: 1,
+                                    padding: "10px",
+                                    borderRadius: "6px",
+                                    background: "var(--purple)",
+                                    color: "white",
+                                    border: "none",
+                                    fontWeight: "600",
+                                    fontSize: "0.8rem",
+                                    cursor: "pointer",
+                                    transition: "opacity 0.2s"
+                                }}
+                                className="action-btn-hover"
+                            >
+                                Change Status
+                            </button>
+                            <button
+                                style={{
+                                    flex: 1,
+                                    padding: "10px",
+                                    borderRadius: "6px",
+                                    background: "rgba(255,255,255,0.05)",
+                                    color: "var(--text-main)",
+                                    border: "1px solid var(--border-color)",
+                                    fontWeight: "600",
+                                    fontSize: "0.8rem",
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                }}
+                                className="secondary-btn-hover"
+                            >
+                                Create Parcel
+                            </button>
+                        </div>
+                    </div>
+
+                    <style>{`
+                        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+                        .action-btn-hover:hover { opacity: 0.9; }
+                        .secondary-btn-hover:hover { background: rgba(255,255,255,0.08); }
+                    `}</style>
+                </>
+            )}
+
+            <style>{`
+                .table-row-hover:hover { background: rgba(255,255,255,0.01); cursor: pointer; }
+                .custom-select-item-hover:hover { background: rgba(114,57,234,0.15) !important; }
+                .date-tab-hover:hover { background: rgba(255,255,255,0.05); }
+                .dropdown-item-hover:hover { background: rgba(255,255,255,0.08); }
+            `}</style>
         </div>
     );
 }
