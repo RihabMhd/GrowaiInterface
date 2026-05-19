@@ -11,8 +11,12 @@ import Team from "../pages/Team";
 import Help from "../pages/Help";
 import Status from "../pages/status";
 import Products from "../pages/Products";
-
 import Orders from "../pages/Orders";
+import ClientsPage from "../pages/ClientsPage";
+import CompaniesPage from "../pages/CompaniesPage";
+import AffiliatesPage from "../pages/AffiliatesPage";
+import ShopifyIntegrationPage from "../pages/ShopifyIntegrationPage";
+import GoogleIntegrationPage from "../pages/GoogleIntegrationPage.";
 
 export default function AppRoutes() {
   return (
@@ -29,15 +33,15 @@ export default function AppRoutes() {
           <Route path="/commandes/toutes" element={<Orders />} />
           <Route path="/commandes/abandonnees" element={<Orders />} />
           <Route path="/commandes" element={<Orders />} />
-          <Route path="/clients" element={<PlaceholderPage title="Clients" />} />
+          <Route path="/clients" element={<ClientsPage />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/companies" element={<PlaceholderPage title="Companies" />} />
+          <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/status" element={<Status />} />
           <Route path="/team" element={<Team />} />
-          <Route path="/affilies" element={<PlaceholderPage title="Affiliés" />} />
+          <Route path="/affilies" element={<AffiliatesPage />} />
           
-          <Route path="/sources/shopify" element={<PlaceholderPage title="Shopify Integration" />} />
-          <Route path="/sources/google-sheets" element={<PlaceholderPage title="Google Sheets Integration" />} />
+          <Route path="/sources/shopify" element={<ShopifyIntegrationPage />} />
+          <Route path="/sources/google-sheets" element={<GoogleIntegrationPage />} />
           
           <Route path="/apps/whatsapp" element={<PlaceholderPage title="WhatsApp PRO" />} />
           <Route path="/apps/tarifs" element={<PlaceholderPage title="Tarifs" />} />
