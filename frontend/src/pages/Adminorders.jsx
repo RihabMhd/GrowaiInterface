@@ -157,11 +157,8 @@ export default function AdminOrders() {
     const fetchProducts = async () => {
         try {
             const res = await api.get("/products");
-
             console.log("Products API response:", res.data);
-
             let list = [];
-
             if (Array.isArray(res.data)) {
                 list = res.data;
             } else if (Array.isArray(res.data.products)) {
@@ -169,9 +166,7 @@ export default function AdminOrders() {
             } else if (Array.isArray(res.data.data)) {
                 list = res.data.data;
             }
-
             setProducts(list);
-
         } catch (err) {
             console.error("Error fetching products:", err);
             setProducts([]);
@@ -261,7 +256,6 @@ export default function AdminOrders() {
         return true;
     });
 
-    // ── Render ─────────────────────────────────────────────────────────────────
     return (
         <div style={{ color: "var(--text-main)", minHeight: "100%", paddingBottom: "40px" }}>
 
@@ -396,7 +390,7 @@ export default function AdminOrders() {
                     ]}
                 />
 
-                {/* Agent Filter (Admin exclusive) */}
+                {/* Agent Filter */}
                 <CustomSelect id="agent" value={agentFilter} onChange={setAgentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les agents"
                     options={[
                         { value: "all", label: "Tous les agents", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg> },
@@ -429,7 +423,7 @@ export default function AdminOrders() {
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
                         <thead>
                             <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
-                                {["ORDER", "CLIENT", "ARTICLES", "TOTAL", "STATUS", "AGENT", "TRACKING", "DATE", "ACTION"].map(h => (
+                                {["ORDER", "CLIENT", "ARTICLES", "TOTAL", "STATUS", "AGENT", "DATE"].map(h => (
                                     <th key={h} style={{ padding: "14px 18px", fontWeight: "600", color: "var(--text-muted)", fontSize: "0.72rem", letterSpacing: "0.5px" }}>{h}</th>
                                 ))}
                             </tr>
@@ -441,19 +435,13 @@ export default function AdminOrders() {
                                 return (
                                     <tr key={order.id} style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s" }} className="table-row-hover">
                                         <style>{`.table-row-hover:hover { background: rgba(255,255,255,0.01); } .custom-select-item-hover:hover { background: rgba(114,57,234,0.15) !important; }`}</style>
-
-                                        {/* Order # */}
                                         <td style={{ padding: "14px 18px", fontWeight: "700" }}>
                                             <span onClick={() => setSelectedOrder(order)} style={{ color: "var(--purple)", cursor: "pointer", textDecoration: "underline" }}>{order.order_number}</span>
                                         </td>
-
-                                        {/* Client */}
                                         <td style={{ padding: "14px 18px" }}>
                                             <div style={{ fontWeight: "600" }}>{order.client?.name || order.customer_name || "—"}</div>
                                             <div style={{ color: "var(--text-muted)", fontSize: "0.72rem", marginTop: "2px" }}>{order.client?.phone || order.customer_phone || "—"}</div>
                                         </td>
-
-                                        {/* Items */}
                                         <td style={{ padding: "14px 18px" }}>
                                             {order.items?.length > 0 ? order.items.map((item, idx) => (
                                                 <div key={idx} style={{ fontSize: "0.78rem", marginBottom: "3px" }}>
@@ -461,23 +449,17 @@ export default function AdminOrders() {
                                                 </div>
                                             )) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                                         </td>
-
-                                        {/* Total */}
                                         <td style={{ padding: "14px 18px" }}>
                                             <div style={{ fontWeight: "700" }}>{order.total_price} {order.currency || currencySymbol}</div>
                                             <span style={{ display: "inline-block", fontSize: "0.62rem", padding: "1px 6px", borderRadius: "4px", background: isPaid ? "rgba(27,197,189,0.1)" : "rgba(246,78,96,0.1)", color: isPaid ? "var(--success)" : "var(--danger)", marginTop: "3px", fontWeight: "700" }}>
                                                 {(order.financial_status || "UNPAID").toUpperCase()}
                                             </span>
                                         </td>
-
-                                        {/* Status */}
                                         <td style={{ padding: "14px 18px" }}>
                                             <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: "6px", background: statusStyle.bg, color: statusStyle.text, fontSize: "0.72rem", fontWeight: "700" }}>
                                                 {order.status.toUpperCase()}
                                             </span>
                                         </td>
-
-                                        {/* Agent — Admin can assign inline */}
                                         <td style={{ padding: "14px 18px" }}>
                                             <select value={order.assigned_to || ""} onChange={e => handleAssignAgent(order.id, e.target.value)}
                                                 style={{ padding: "6px 10px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.78rem", outline: "none", cursor: "pointer" }}>
@@ -485,26 +467,8 @@ export default function AdminOrders() {
                                                 {(Array.isArray(activeAgents) ? activeAgents : []).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                                             </select>
                                         </td>
-
-                                        {/* Tracking */}
-                                        <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.78rem" }}>—</td>
-
-                                        {/* Date */}
-                                        <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
-                                            {new Date(order.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
-                                        </td>
-
-                                        {/* Actions */}
-                                        <td style={{ padding: "14px 18px" }}>
-                                            <div style={{ display: "flex", gap: "6px" }}>
-                                                <button onClick={() => setSelectedOrder(order)} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "600", background: "rgba(255,255,255,0.05)", color: "var(--text-main)", border: "1px solid var(--border-color)", cursor: "pointer" }}>View</button>
-                                                {order.status === "pending" && (
-                                                    <button onClick={() => handleUpdateStatus(order.id, "confirmed")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(80,205,137,0.1)", color: "#50cd89", border: "none", cursor: "pointer" }}>Confirm</button>
-                                                )}
-                                                {order.status === "confirmed" && (
-                                                    <button onClick={() => handleUpdateStatus(order.id, "delivered")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(0,163,255,0.1)", color: "#00a3ff", border: "none", cursor: "pointer" }}>Deliver</button>
-                                                )}
-                                            </div>
+                                        <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.78rem" }}>
+                                            {new Date(order.created_at).toLocaleDateString()}
                                         </td>
                                     </tr>
                                 );
@@ -514,107 +478,126 @@ export default function AdminOrders() {
                 </div>
             )}
 
-            {/* ── Create Order Modal ── */}
+            {/* ── CREATE ORDER MODAL (Matches Modern Sidebar Slide/Panel View System Layouts) ── */}
             {isCreateModalOpen && (
-                <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10000, padding: "20px" }}>
-                    <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", width: "100%", maxWidth: "480px", padding: "24px", boxShadow: "0 12px 40px rgba(0,0,0,0.5)", animation: "modalIn 0.2s ease-out" }}>
-                        <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }`}</style>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                            <h3 style={{ fontSize: "1.1rem", fontWeight: "700" }}>Créer une Nouvelle Commande</h3>
-                            <button onClick={() => setIsCreateModalOpen(false)} style={{ background: "transparent", color: "var(--text-muted)", fontSize: "1.2rem", border: "none", cursor: "pointer" }}>✕</button>
-                        </div>
-                        <form onSubmit={handleCreateOrder} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                            <div style={{ display: "flex", gap: "12px" }}>
-                                <div style={{ flex: 2 }}>
-                                    <label className="form-label">Produit commandé</label>
-                                    <select required className="form-input" value={newOrder.product_id} onChange={e => setNewOrder({ ...newOrder, product_id: e.target.value })}>
-                                        <option value="">Choisir un produit...</option>
-                                        {(Array.isArray(products) ? products : []).map(p => <option key={p.id} value={p.id}>{p.name} ({p.price} {currencySymbol})</option>)}
-                                    </select>
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <label className="form-label">Quantité</label>
-                                    <input type="number" min="1" required className="form-input" value={newOrder.quantity} onChange={e => setNewOrder({ ...newOrder, quantity: parseInt(e.target.value) })} />
-                                </div>
-                            </div>
+                <div style={{
+                    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+                    background: "rgba(0, 0, 0, 0.7)", display: "flex", justifyContent: "center",
+                    alignItems: "center", zIndex: 9999, padding: "20px", backdropFilter: "blur(4px)"
+                }} onClick={() => setIsCreateModalOpen(false)}>
+                    <div style={{
+                        background: "var(--bg-card)", border: "1px solid var(--border-color)",
+                        borderRadius: "12px", width: "100%", maxWidth: "460px",
+                        boxShadow: "0 24px 60px rgba(0,0,0,0.8)", overflow: "hidden",
+                        display: "flex", flexDirection: "column", animation: "modalAppear 0.25s ease"
+                    }} onClick={e => e.stopPropagation()}>
+                        <style>{`@keyframes modalAppear { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
+                        
+                        {/* Header */}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
                             <div>
-                                <label className="form-label">Notes</label>
-                                <textarea className="form-input" placeholder="Notes complémentaires..." value={newOrder.notes} onChange={e => setNewOrder({ ...newOrder, notes: e.target.value })} style={{ height: "80px", resize: "none" }} />
+                                <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-main)", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                                    Create New Order
+                                </h3>
+                                <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", margin: "2px 0 0 0" }}>Manually insert order particulars</p>
                             </div>
-                            <button type="submit" disabled={isCreating} className="btn btn-primary" style={{ background: "var(--purple)", marginTop: "6px" }}>
-                                {isCreating ? "Création..." : "Enregistrer la commande"}
+                            <button onClick={() => setIsCreateModalOpen(false)} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center" }}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                             </button>
+                        </div>
+
+                        {/* Body / Form */}
+                        <form onSubmit={handleCreateOrder} style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                            
+                            {/* Product Selection */}
+                            <div>
+                                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Product *</label>
+                                <select 
+                                    value={newOrder.product_id} 
+                                    onChange={e => setNewOrder(p => ({ ...p, product_id: e.target.value }))}
+                                    required
+                                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                                >
+                                    <option value="">Select a product...</option>
+                                    {products.map(p => (
+                                        <option key={p.id} value={p.id}>{p.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Quantity */}
+                            <div>
+                                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Quantity</label>
+                                <input 
+                                    type="number" 
+                                    min="1" 
+                                    value={newOrder.quantity} 
+                                    onChange={e => setNewOrder(p => ({ ...p, quantity: Math.max(1, parseInt(e.target.value) || 1) }))}
+                                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                                />
+                            </div>
+
+                            {/* Internal Notes */}
+                            <div>
+                                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Internal Notes</label>
+                                <textarea 
+                                    placeholder="Enter additional details or specifications..." 
+                                    value={newOrder.notes} 
+                                    onChange={e => setNewOrder(p => ({ ...p, notes: e.target.value }))}
+                                    rows="4"
+                                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none", resize: "none", fontFamily: "inherit" }}
+                                />
+                            </div>
+
+                            {/* Actions Footer Container */}
+                            <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px", borderTop: "1px solid var(--border-color)", paddingTop: "14px" }}>
+                                <button type="button" onClick={() => setIsCreateModalOpen(false)} style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", fontWeight: "600", cursor: "pointer" }}>
+                                    Cancel
+                                </button>
+                                <button type="submit" disabled={isCreating} style={{ padding: "8px 18px", borderRadius: "8px", background: "var(--purple)", border: "none", color: "white", fontSize: "0.82rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    {isCreating ? (
+                                        <>
+                                            <div style={{ width: "12px", height: "12px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+                                            Saving...
+                                        </>
+                                    ) : "Save Order"}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
             )}
 
-            {/* ── Order Detail Modal ── */}
+            {/* ── Details Panel ── */}
             {selectedOrder && (
-                <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10000, padding: "20px" }}>
-                    <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", width: "100%", maxWidth: "620px", padding: "28px", boxShadow: "0 12px 40px rgba(0,0,0,0.5)", maxHeight: "90vh", overflowY: "auto" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "22px" }}>
-                            <h3 style={{ fontSize: "1.15rem", fontWeight: "700" }}>Order Details — <span style={{ color: "var(--purple)" }}>{selectedOrder.order_number}</span></h3>
-                            <button onClick={() => setSelectedOrder(null)} style={{ background: "transparent", color: "var(--text-muted)", fontSize: "1.2rem", border: "none", cursor: "pointer" }}>✕</button>
+                <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "420px", background: "var(--bg-card)", borderLeft: "1px solid var(--border-color)", boxShadow: "-10px 0 40px rgba(0,0,0,0.5)", zIndex: 9500, display: "flex", flexDirection: "column", padding: "24px", gap: "24px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-main)" }}>Commande {selectedOrder.order_number}</h3>
+                            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Créée le {new Date(selectedOrder.created_at).toLocaleString()}</span>
                         </div>
-
-                        {/* Info grid */}
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px" }}>
-                            <div>
-                                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Client</strong>
-                                <p style={{ fontWeight: "700", marginTop: "4px" }}>{selectedOrder.client?.name || selectedOrder.customer_name}</p>
-                                <p style={{ color: "var(--text-muted)", marginTop: "2px", fontSize: "0.82rem" }}>{selectedOrder.client?.phone || selectedOrder.customer_phone || "Aucun téléphone"}</p>
-                            </div>
-                            <div>
-                                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Shop</strong>
-                                <p style={{ fontWeight: "600", marginTop: "4px" }}>{selectedOrder.shop?.name || "—"}</p>
-                                <p style={{ color: "var(--text-muted)", fontSize: "0.72rem", marginTop: "2px" }}>{selectedOrder.shop?.url || ""}</p>
+                        <button onClick={() => setSelectedOrder(null)} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}>✕</button>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px", flex: 1, overflowY: "auto" }}>
+                        <div>
+                            <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Client Info</strong>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                                <span style={{ fontSize: "0.85rem", fontWeight: "600" }}>{selectedOrder.client?.name || selectedOrder.customer_name || "—"}</span>
+                                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{selectedOrder.client?.phone || selectedOrder.customer_phone || "—"}</span>
                             </div>
                         </div>
-
-                        {/* Items */}
-                        <div style={{ marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px" }}>
-                            <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Articles</strong>
-                            {selectedOrder.items?.map((item, idx) => (
-                                <div key={idx} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.83rem", marginBottom: "8px", background: "rgba(255,255,255,0.02)", padding: "10px 14px", borderRadius: "8px" }}>
-                                    <div>
-                                        <strong>{item.product_name}</strong>
-                                        <div style={{ color: "var(--text-muted)", fontSize: "0.72rem", marginTop: "2px" }}>Unit: {item.unit_price} {selectedOrder.currency || currencySymbol}</div>
+                        <div>
+                            <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Order Details</strong>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                {selectedOrder.items?.map((item, i) => (
+                                    <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem" }}>
+                                        <span>{item.product_name} <span style={{ color: "var(--purple)", fontWeight: "700" }}>x{item.quantity}</span></span>
+                                        <span style={{ fontWeight: "700" }}>{selectedOrder.total_price} {selectedOrder.currency || currencySymbol}</span>
                                     </div>
-                                    <div style={{ textAlign: "right" }}>
-                                        <div style={{ fontWeight: "700" }}>×{item.quantity}</div>
-                                        <div style={{ color: "var(--purple)", fontWeight: "600", marginTop: "2px" }}>{item.total_price} {selectedOrder.currency || currencySymbol}</div>
-                                    </div>
-                                </div>
-                            ))}
-                            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px", fontSize: "0.88rem", fontWeight: "700" }}>
-                                <span>Total (incl. shipping):</span>
-                                <span style={{ color: "var(--success)" }}>{selectedOrder.total_price} {selectedOrder.currency || currencySymbol}</span>
+                                ))}
                             </div>
                         </div>
-
-                        {/* Admin controls */}
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px" }}>
-                            <div>
-                                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Assign Agent</strong>
-                                <select value={selectedOrder.assigned_to || ""} onChange={e => handleAssignAgent(selectedOrder.id, e.target.value)}
-                                    style={{ padding: "8px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none", width: "100%" }}>
-                                    <option value="">Non assigné</option>
-                                    {(Array.isArray(activeAgents) ? activeAgents : []).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Order Status</strong>
-                                <select value={selectedOrder.status} onChange={e => handleUpdateStatus(selectedOrder.id, e.target.value)}
-                                    style={{ padding: "8px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none", width: "100%" }}>
-                                    {["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "returned"].map(s => (
-                                        <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* History */}
                         <div>
                             <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Action History</strong>
                             <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "160px", overflowY: "auto" }}>
