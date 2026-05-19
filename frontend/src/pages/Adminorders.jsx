@@ -358,6 +358,60 @@ export default function AdminOrders() {
                 ))}
             </div>
 
+            {/* ── Company Status Section ── */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "24px" }}>
+                {/* Company Statuses */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "20px" }}>
+                    <h3 style={{ fontSize: "0.9rem", fontWeight: "700", marginBottom: "16px", color: "var(--text-main)" }}>COMPANY STATUSES</h3>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                        {[
+                            { label: "Label Created", icon: "🏷️" },
+                            { label: "Confirmed", icon: "✓" },
+                            { label: "Ready for Pickup", icon: "📦" },
+                            { label: "Out for Delivery", icon: "🚗" },
+                            { label: "Attempted Delivery", icon: "⚠️" },
+                            { label: "Picked Up", icon: "☑️" },
+                            { label: "Delivered", icon: "✅" },
+                            { label: "Delayed", icon: "⏱️" },
+                            { label: "Failure", icon: "❌" }
+                        ].map((item, idx) => (
+                            <div key={idx} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)", transition: "background 0.2s" }} className="status-row-hover">
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                    <span style={{ fontSize: "1.2rem" }}>{item.icon}</span>
+                                    <span style={{ fontSize: "0.85rem", fontWeight: "500", color: "var(--text-main)" }}>{item.label}</span>
+                                </div>
+                                <div style={{ position: "relative", width: "40px", height: "24px", borderRadius: "12px", background: "#4ade80", cursor: "pointer", transition: "background 0.2s" }}>
+                                    <div style={{ position: "absolute", top: "2px", right: "2px", width: "20px", height: "20px", borderRadius: "50%", background: "white", transition: "all 0.2s" }} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* More Orders - Date Range Picker */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "20px" }}>
+                    <h3 style={{ fontSize: "0.9rem", fontWeight: "700", marginBottom: "16px", color: "var(--text-main)" }}>MORE</h3>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        {[
+                            { label: "Last 7 days", icon: "📅" },
+                            { label: "Last 30 days", icon: "📊" },
+                            { label: "This month", icon: "📆" },
+                            { label: "Last month", icon: "🗓️" },
+                            { label: "Last 3 months", icon: "⏳" }
+                        ].map((item, idx) => (
+                            <button key={idx} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)", border: "none", color: "var(--text-main)", fontSize: "0.85rem", fontWeight: "500", cursor: "pointer", transition: "all 0.2s", textAlign: "left" }} className="more-option-hover">
+                                <span>{item.icon}</span>
+                                <span>{item.label}</span>
+                            </button>
+                        ))}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                            <button style={{ padding: "8px", borderRadius: "8px", background: "var(--purple)", color: "white", border: "none", fontSize: "0.8rem", fontWeight: "600", cursor: "pointer", transition: "opacity 0.2s" }} className="apply-btn-hover">Apply</button>
+                            <button style={{ padding: "8px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", color: "var(--text-muted)", border: "1px solid var(--border-color)", fontSize: "0.8rem", fontWeight: "600", cursor: "pointer", transition: "all 0.2s" }} className="clear-btn-hover">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* ── Filter Bar ── */}
             <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
                 <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
@@ -905,6 +959,13 @@ export default function AdminOrders() {
                 .custom-select-item-hover:hover { background: rgba(114,57,234,0.15) !important; }
                 .date-tab-hover:hover { background: rgba(255,255,255,0.05); }
                 .dropdown-item-hover:hover { background: rgba(255,255,255,0.08); }
+            `}</style>
+
+            <style>{`
+                .status-row-hover:hover { background: rgba(255,255,255,0.05) !important; }
+                .more-option-hover:hover { background: rgba(255,255,255,0.08) !important; }
+                .apply-btn-hover:hover { opacity: 0.9; }
+                .clear-btn-hover:hover { background: rgba(255,255,255,0.1); }
             `}</style>
         </div>
     );
