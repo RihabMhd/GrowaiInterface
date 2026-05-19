@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
-import AdminOrders from "./AdminOrders.jsx";
-import AgentOrders from "./AgentOrders.jsx";
+import AdminOrders from "./Adminorders.jsx";
+import AgentOrders from "./Agentorders.jsx";
 
 /**
  * Orders — role-based router.
