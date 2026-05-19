@@ -43,6 +43,95 @@ const getStatusStyle = (s) => {
     }
 };
 
+// ─── Date Range Picker Component ──────────────────────────────────────────────
+function DateRangePicker({ startDate, setStartDate, endDate, setEndDate, onApply, onClear }) {
+    const [displayMonth, setDisplayMonth] = useState(new Date());
+    const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    const firstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    
+    const getDates = (month) => {
+        const year = month.getFullYear();
+        const monthIndex = month.getMonth();
+        const days = daysInMonth(month);
+        const firstDay = firstDayOfMonth(month);
+        const dates = [];
+        for (let i = 0; i < firstDay; i++) dates.push(null);
+        for (let i = 1; i <= days; i++) dates.push(new Date(year, monthIndex, i));
+        return dates;
+    };
+
+    const isDateInRange = (d) => {
+        if (!d || !startDate || !endDate) return false;
+        return d >= startDate && d <= endDate;
+    };
+    const isDateStart = (d) => d && startDate && d.toDateString() === startDate.toDateString();
+    const isDateEnd = (d) => d && endDate && d.toDateString() === endDate.toDateString();
+
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+    const renderCalendar = (month, isEnd = false) => {
+        const dates = getDates(month);
+        return (
+            <div style={{ minWidth: "200px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <button onClick={() => setDisplayMonth(new Date(month.getFullYear(), month.getMonth() - 1))} style={{ background: "none", border: "none", color: "var(--text-main)", cursor: "pointer", fontSize: "14px" }}>◀</button>
+                    <span style={{ fontSize: "14px", fontWeight: "600" }}>{monthNames[month.getMonth()]} {month.getFullYear()}</span>
+                    <button onClick={() => setDisplayMonth(new Date(month.getFullYear(), month.getMonth() + 1))} style={{ background: "none", border: "none", color: "var(--text-main)", cursor: "pointer", fontSize: "14px" }}>▶</button>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px", marginBottom: "12px" }}>
+                    {dayNames.map(d => <div key={d} style={{ textAlign: "center", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", padding: "4px" }}>{d}</div>)}
+                    {dates.map((d, i) => (
+                        <button key={i} onClick={() => {
+                            if (d) {
+                                if (isEnd) setEndDate(d);
+                                else setStartDate(d);
+                            }
+                        }} disabled={!d} style={{
+                            padding: "6px", borderRadius: "6px", border: "1px solid transparent", fontSize: "12px",
+                            background: isDateStart(d) || isDateEnd(d) ? "#7239ea" : isDateInRange(d) ? "rgba(114, 57, 234, 0.3)" : "transparent",
+                            color: isDateStart(d) || isDateEnd(d) ? "white" : "var(--text-main)",
+                            cursor: d ? "pointer" : "default", opacity: d ? 1 : 0.3
+                        }}>{d?.getDate()}</button>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div style={{ background: "#18181b", border: "1px solid rgba(114,57,234,0.4)", borderRadius: "10px", padding: "20px", minWidth: "500px", boxShadow: "0 12px 40px rgba(0,0,0,0.6)" }}>
+            <div style={{ marginBottom: "16px" }}>
+                <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 7)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last 7 days</button>
+                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 30)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last 30 days</button>
+                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth(), 1)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>This month</button>
+                </div>
+                <div style={{ display: "flex", gap: "8px" }}>
+                    <button onClick={() => { const d = new Date(); const m = new Date(d.getFullYear(), d.getMonth() - 1, 1); setStartDate(m); setEndDate(new Date(d.getFullYear(), d.getMonth(), 0)); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last month</button>
+                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth() - 3, 1)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last 3 months</button>
+                </div>
+            </div>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "16px" }}>
+                <div>
+                    <div style={{ fontSize: "12px", fontWeight: "600", marginBottom: "8px", color: "var(--text-muted)" }}>FROM</div>
+                    {renderCalendar(displayMonth, false)}
+                </div>
+                <div>
+                    <div style={{ fontSize: "12px", fontWeight: "600", marginBottom: "8px", color: "var(--text-muted)" }}>TO</div>
+                    {renderCalendar(new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1), true)}
+                </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "12px" }}>
+                <button onClick={() => { onApply(startDate, endDate); }} style={{ flex: 1, padding: "10px", background: "#7239ea", border: "none", borderRadius: "6px", color: "white", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}>Apply</button>
+                <button onClick={() => { onClear(); }} style={{ flex: 1, padding: "10px", background: "transparent", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}>Clear</button>
+            </div>
+        </div>
+    );
+}
+
 // ─── Custom Dropdown ──────────────────────────────────────────────────────────
 function CustomSelect({ id, value, onChange, options, placeholder, openDropdown, setOpenDropdown }) {
     const isOpen = openDropdown === id;
@@ -119,11 +208,12 @@ export default function AdminOrders() {
     const [statusFilter, setStatusFilter] = useState("all");
     const [productFilter, setProductFilter] = useState("all");
     const [sourceFilter, setSourceFilter] = useState("all");
-    const [fulfillmentFilter, setFulfillmentFilter] = useState("all");
-    const [agentFilter, setAgentFilter] = useState("all");
     const [periodFilter, setPeriodFilter] = useState("all");
+    const [agentFilter, setAgentFilter] = useState("all");
     const [openDropdown, setOpenDropdown] = useState(null);
     const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
 
     // Modals
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -158,7 +248,6 @@ export default function AdminOrders() {
     const fetchProducts = async () => {
         try {
             const res = await api.get("/products");
-            console.log("Products API response:", res.data);
             let list = [];
             if (Array.isArray(res.data)) {
                 list = res.data;
@@ -254,6 +343,13 @@ export default function AdminOrders() {
             if (periodFilter === "yesterday") { const y = new Date(); y.setDate(today.getDate() - 1); return orderDate.toDateString() === y.toDateString(); }
             if (periodFilter === "this_week") { const w = new Date(); w.setDate(today.getDate() - 7); return orderDate >= w; }
         }
+        if (startDate && endDate) {
+            const orderDate = new Date(order.created_at);
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            if (orderDate < start || orderDate > end) return false;
+        }
         return true;
     });
 
@@ -303,21 +399,25 @@ export default function AdminOrders() {
                         <div className="more-dropdown-wrapper" style={{ position: "relative" }}>
                             <button onClick={() => setIsMoreDropdownOpen(!isMoreDropdownOpen)} style={{
                                 padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600",
-                                background: "transparent", color: "var(--text-muted)", border: "none", cursor: "pointer",
-                                display: "flex", alignItems: "center", gap: "4px"
+                                background: isMoreDropdownOpen ? "rgba(114,57,234,0.2)" : "transparent", 
+                                color: isMoreDropdownOpen ? "#c4a7ff" : "var(--text-muted)", 
+                                border: isMoreDropdownOpen ? "1px solid #7239ea" : "none", 
+                                cursor: "pointer",
+                                display: "flex", alignItems: "center", gap: "4px", transition: "all 0.2s"
                             }}>
-                                More <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                More
                             </button>
                             {isMoreDropdownOpen && (
-                                <div style={{
-                                    position: "absolute", top: "100%", right: 0, backgroundColor: "#18181b",
-                                    border: "1px solid var(--border-color)", borderRadius: "8px", padding: "4px",
-                                    minWidth: "160px", boxShadow: "0 10px 25px rgba(0,0,0,0.5)", zIndex: 1000
-                                }}>
-                                    <button onClick={() => { setPeriodFilter("all"); setIsMoreDropdownOpen(false); }} style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px", width: "100%" }} className="dropdown-item-hover">Clear Filter</button>
-                                    <button onClick={() => { navigate(isAbandonedPage ? "/commandes/toutes" : "/commandes/abandonnees"); setIsMoreDropdownOpen(false); }} style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px", width: "100%" }} className="dropdown-item-hover">
-                                        {isAbandonedPage ? "All Orders" : "Abandoned Orders"}
-                                    </button>
+                                <div style={{ position: "absolute", top: "100%", right: 0, zIndex: 10000, marginTop: "8px" }}>
+                                    <DateRangePicker 
+                                        startDate={startDate} 
+                                        setStartDate={setStartDate}
+                                        endDate={endDate}
+                                        setEndDate={setEndDate}
+                                        onApply={(start, end) => { setIsMoreDropdownOpen(false); }}
+                                        onClear={() => { setStartDate(null); setEndDate(null); setPeriodFilter("all"); setIsMoreDropdownOpen(false); }}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -338,11 +438,11 @@ export default function AdminOrders() {
             {/* ── Metrics Cards ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px", marginBottom: "24px" }}>
                 {[
-                    { label: "TOTAL ORDERS", value: metrics.total_orders, icon: Icons.total, color: "#7239ea", sub: `${metrics.total_orders > 0 ? metrics.total_orders : 0} today` },
-                    { label: "CONFIRMED", value: metrics.confirmed, icon: Icons.confirmed, color: "#50cd89", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed / metrics.total_orders) * 100) : 0}% rate` },
-                    { label: "CANCELLED", value: metrics.cancelled, icon: Icons.cancelled, color: "#f1416c", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled / metrics.total_orders) * 100) : 0}% rate` },
-                    { label: "PENDING", value: metrics.pending, icon: Icons.pending, color: "#ffc700", sub: "awaiting action" },
-                    { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, icon: Icons.rate, color: "#00a3ff", sub: "overall rate" },
+                    { label: "TOTAL ORDERS", value: metrics.total_orders, icon: Icons.total, color: "#7239ea", sub: "0 today" },
+                    { label: "CONFIRMED", value: metrics.confirmed, icon: Icons.confirmed, color: "#50cd89", sub: "0% rate" },
+                    { label: "CANCELLED", value: metrics.cancelled, icon: Icons.cancelled, color: "#f1416c", sub: "100%" },
+                    { label: "FAILED DELIVERY", value: "0", icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a11 11 0 0 0-11 11v3H2l3 3-3 3h3v3a11 11 0 0 0 11-11v-3h3l-3-3 3-3h-3v-3a11 11 0 0 0-11-11z" /></svg>, color: "#ff9500", sub: "0% rate" },
+                    { label: "DELIVERY RATE", value: metrics.confirmation_rate, icon: Icons.rate, color: "#00a3ff", sub: "0% rate" },
                 ].map((card, i) => (
                     <div key={i} style={{
                         background: "var(--bg-card)", border: "1px solid var(--border-color)",
@@ -412,7 +512,6 @@ export default function AdminOrders() {
             {loading ? (
                 <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
                     <div style={{ border: "3px solid var(--border-color)", borderTop: "3px solid var(--purple)", borderRadius: "50%", width: "32px", height: "32px", animation: "spin 1s linear infinite" }} />
-                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                 </div>
             ) : filteredOrders.length === 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", textAlign: "center" }}>
@@ -424,52 +523,50 @@ export default function AdminOrders() {
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
                         <thead>
                             <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
-                                {["ORDER", "CLIENT", "ARTICLES", "TOTAL", "STATUS", "AGENT", "DATE"].map(h => (
-                                    <th key={h} style={{ padding: "14px 18px", fontWeight: "600", color: "var(--text-muted)", fontSize: "0.72rem", letterSpacing: "0.5px" }}>{h}</th>
+                                {["ORDER", "AGENT", "TRACKING", "Client", "City", "Status", "Fulfillment", "Total", "Date"].map(h => (
+                                    <th key={h} style={{ padding: "14px 16px", fontWeight: "600", color: "var(--text-muted)", fontSize: "0.72rem", letterSpacing: "0.5px", textAlign: h === "Date" ? "right" : "left" }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
                             {filteredOrders.map(order => {
                                 const statusStyle = getStatusStyle(order.status);
-                                const isPaid = order.financial_status === "paid";
+                                const fulfillmentStatus = order.fulfillment_status || "unfulfilled";
                                 return (
                                     <tr key={order.id} onClick={() => setSelectedOrder(order)} style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s", cursor: "pointer" }} className="table-row-hover">
-                                        <style>{`.table-row-hover:hover { background: rgba(255,255,255,0.01); } .custom-select-item-hover:hover { background: rgba(114,57,234,0.15) !important; }`}</style>
-                                        <td style={{ padding: "14px 18px", fontWeight: "700" }}>
-                                            <span style={{ color: "var(--purple)", cursor: "pointer", textDecoration: "underline" }}>{order.order_number}</span>
+                                        <td style={{ padding: "14px 16px", fontWeight: "700" }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                                <input type="checkbox" style={{ cursor: "pointer" }} />
+                                                <span style={{ color: "var(--purple)", cursor: "pointer" }}>{order.order_number}</span>
+                                            </div>
                                         </td>
-                                        <td style={{ padding: "14px 18px" }}>
+                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                                            {order.assignedAgent?.name || "—"}
+                                        </td>
+                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                                            —
+                                        </td>
+                                        <td style={{ padding: "14px 16px" }}>
                                             <div style={{ fontWeight: "600" }}>{order.client?.name || order.customer_name || "—"}</div>
-                                            <div style={{ color: "var(--text-muted)", fontSize: "0.72rem", marginTop: "2px" }}>{order.client?.phone || order.customer_phone || "—"}</div>
                                         </td>
-                                        <td style={{ padding: "14px 18px" }}>
-                                            {order.items?.length > 0 ? order.items.map((item, idx) => (
-                                                <div key={idx} style={{ fontSize: "0.78rem", marginBottom: "3px" }}>
-                                                    {item.product_name} <span style={{ color: "var(--purple)", fontWeight: "700" }}>x{item.quantity}</span>
-                                                </div>
-                                            )) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                                            {order.client?.city || "—"}
                                         </td>
-                                        <td style={{ padding: "14px 18px" }}>
-                                            <div style={{ fontWeight: "700" }}>{order.total_price} {order.currency || currencySymbol}</div>
-                                            <span style={{ display: "inline-block", fontSize: "0.62rem", padding: "1px 6px", borderRadius: "4px", background: isPaid ? "rgba(27,197,189,0.1)" : "rgba(246,78,96,0.1)", color: isPaid ? "var(--success)" : "var(--danger)", marginTop: "3px", fontWeight: "700" }}>
-                                                {(order.financial_status || "UNPAID").toUpperCase()}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "14px 18px" }}>
+                                        <td style={{ padding: "14px 16px" }}>
                                             <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: "6px", background: statusStyle.bg, color: statusStyle.text, fontSize: "0.72rem", fontWeight: "700" }}>
-                                                {order.status.toUpperCase()}
+                                                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                             </span>
                                         </td>
-                                        <td style={{ padding: "14px 18px" }}>
-                                            <select value={order.assigned_to || ""} onChange={e => handleAssignAgent(order.id, e.target.value)}
-                                                style={{ padding: "6px 10px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.78rem", outline: "none", cursor: "pointer" }}>
-                                                <option value="">Non assigné</option>
-                                                {(Array.isArray(activeAgents) ? activeAgents : []).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                                            </select>
+                                        <td style={{ padding: "14px 16px" }}>
+                                            <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: "6px", background: "rgba(255,193,7,0.1)", color: "#ffc107", fontSize: "0.72rem", fontWeight: "700" }}>
+                                                {fulfillmentStatus.toUpperCase()}
+                                            </span>
                                         </td>
-                                        <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.78rem" }}>
-                                            {new Date(order.created_at).toLocaleDateString()}
+                                        <td style={{ padding: "14px 16px", fontWeight: "700" }}>
+                                            {order.total_price} {order.currency || currencySymbol}
+                                        </td>
+                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "right" }}>
+                                            {new Date(order.created_at).toLocaleString()}
                                         </td>
                                     </tr>
                                 );
@@ -479,7 +576,7 @@ export default function AdminOrders() {
                 </div>
             )}
 
-            {/* ── CREATE ORDER MODAL (Matches Modern Sidebar Slide/Panel View System Layouts) ── */}
+            {/* ── CREATE ORDER MODAL ── */}
             {isCreateModalOpen && (
                 <div style={{
                     position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
@@ -492,7 +589,6 @@ export default function AdminOrders() {
                         boxShadow: "0 24px 60px rgba(0,0,0,0.8)", overflow: "hidden",
                         display: "flex", flexDirection: "column", animation: "modalAppear 0.25s ease"
                     }} onClick={e => e.stopPropagation()}>
-                        <style>{`@keyframes modalAppear { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
                         
                         {/* Header */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
@@ -510,7 +606,6 @@ export default function AdminOrders() {
 
                         {/* Body / Form */}
                         <form onSubmit={handleCreateOrder} style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                            
                             {/* Product Selection */}
                             <div>
                                 <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Product *</label>
@@ -566,53 +661,6 @@ export default function AdminOrders() {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
-
-            {/* ── Details Panel ── */}
-            {selectedOrder && (
-                <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "420px", background: "var(--bg-card)", borderLeft: "1px solid var(--border-color)", boxShadow: "-10px 0 40px rgba(0,0,0,0.5)", zIndex: 9500, display: "flex", flexDirection: "column", padding: "24px", gap: "24px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-main)" }}>Commande {selectedOrder.order_number}</h3>
-                            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Créée le {new Date(selectedOrder.created_at).toLocaleString()}</span>
-                        </div>
-                        <button onClick={() => setSelectedOrder(null)} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}>✕</button>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "20px", flex: 1, overflowY: "auto" }}>
-                        <div>
-                            <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Client Info</strong>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                                <span style={{ fontSize: "0.85rem", fontWeight: "600" }}>{selectedOrder.client?.name || selectedOrder.customer_name || "—"}</span>
-                                <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{selectedOrder.client?.phone || selectedOrder.customer_phone || "—"}</span>
-                            </div>
-                        </div>
-                        <div>
-                            <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Order Details</strong>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                {selectedOrder.items?.map((item, i) => (
-                                    <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem" }}>
-                                        <span>{item.product_name} <span style={{ color: "var(--purple)", fontWeight: "700" }}>x{item.quantity}</span></span>
-                                        <span style={{ fontWeight: "700" }}>{selectedOrder.total_price} {selectedOrder.currency || currencySymbol}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Action History</strong>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "160px", overflowY: "auto" }}>
-                                {selectedOrder.histories?.length > 0 ? selectedOrder.histories.map((h, i) => (
-                                    <div key={i} style={{ fontSize: "0.73rem", borderLeft: "2px solid var(--purple)", paddingLeft: "10px" }}>
-                                        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-muted)", marginBottom: "2px" }}>
-                                            <span>{h.user?.name || "System"}</span>
-                                            <span>{new Date(h.created_at).toLocaleString()}</span>
-                                        </div>
-                                        <p style={{ color: "var(--text-main)", fontWeight: "500" }}>{h.description}</p>
-                                    </div>
-                                )) : <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "0.78rem" }}>Aucun historique.</span>}
-                            </div>
-                        </div>
                     </div>
                 </div>
             )}
@@ -845,8 +893,16 @@ export default function AdminOrders() {
                                     )}
                                 </>
                             ) : (
-                                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                                    <p>Order history not yet available</p>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                    {selectedOrder.histories?.length > 0 ? selectedOrder.histories.map((h, i) => (
+                                        <div key={i} style={{ fontSize: "0.8rem", borderLeft: "2px solid var(--purple)", paddingLeft: "12px" }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-muted)", marginBottom: "4px" }}>
+                                                <span>{h.user?.name || "System"}</span>
+                                                <span>{new Date(h.created_at).toLocaleString()}</span>
+                                            </div>
+                                            <p style={{ color: "var(--text-main)", fontWeight: "500", margin: 0 }}>{h.description}</p>
+                                        </div>
+                                    )) : <span style={{ color: "var(--text-muted)", fontStyle: "italic" }}>No history available</span>}
                                 </div>
                             )}
                         </div>
@@ -890,24 +946,21 @@ export default function AdminOrders() {
                             </button>
                         </div>
                     </div>
-
-                    <style>{`
-                        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-                        .action-btn-hover:hover { opacity: 0.9; }
-                        .secondary-btn-hover:hover { background: rgba(255,255,255,0.08); }
-                    `}</style>
                 </>
             )}
 
+            {/* Consolidate inline styles from the bottom of the component here */}
             <style>{`
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+                @keyframes modalAppear { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .action-btn-hover:hover { opacity: 0.9; }
+                .secondary-btn-hover:hover { background: rgba(255,255,255,0.08); }
                 .table-row-hover:hover { background: rgba(255,255,255,0.01); cursor: pointer; }
                 .custom-select-item-hover:hover { background: rgba(114,57,234,0.15) !important; }
                 .date-tab-hover:hover { background: rgba(255,255,255,0.05); }
                 .dropdown-item-hover:hover { background: rgba(255,255,255,0.08); }
-            `}</style>
-
-            <style>{`
                 .status-row-hover:hover { background: rgba(255,255,255,0.05) !important; }
                 .more-option-hover:hover { background: rgba(255,255,255,0.08) !important; }
                 .apply-btn-hover:hover { opacity: 0.9; }
