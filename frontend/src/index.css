@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
   /* Colors - Light Theme Default */
@@ -94,6 +94,7 @@ body {
   font-size: 13px; /* Reduced base font size */
   transition: background-color 0.3s, color 0.3s;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -150,7 +151,7 @@ input {
 }
 
 .sidebar-menu-title {
-  font-size: 0.65rem; /* Smaller */
+  font-size: 0.55rem; /* Smaller */
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -161,11 +162,12 @@ input {
 .sidebar-link {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 7px;
   padding: 8px 15px;
+  margin: -1px;
   color: var(--text-muted);
-  font-weight: 500;
-  font-size: 0.85rem; /* Smaller */
+  font-weight:bolder;
+  font-size: 0.75rem; /* Smaller */
   transition: all 0.2s;
 }
 
@@ -190,13 +192,13 @@ body.dark-theme .sidebar-sublink.active {
 }
 
 .sidebar-submenu {
-  margin-left: 20px;
-  padding-left: 10px;
+  margin-left: 27px;
+  padding-left: 7px;
   border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin: 5px 0 10px;
+  gap: 5px;
+  border-left: 1px solid #dedee6;
 }
 
 .sidebar-sublink {

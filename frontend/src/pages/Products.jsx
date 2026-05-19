@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Plus, Search, LayoutGrid, SlidersHorizontal,
+import { Package, Plus, Search, LayoutGrid, ArrowDownNarrowWide,
          CheckCircle, FileText, Boxes } from 'lucide-react';
 import api from '../api/axios';
 import ProductForm from '../components/ProductForm';
@@ -178,7 +178,7 @@ const Products = () => {
             <LayoutGrid size={15} />
           </button>
           <button className={`filter-button ${viewMode === 'table' ? 'active' : ''}`} onClick={() => setViewMode('table')}>
-            <SlidersHorizontal size={15} />
+            <ArrowDownNarrowWide size={15} />
           </button>
         </div>
       )}
