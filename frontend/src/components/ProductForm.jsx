@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import api from '../api/axios';
 
-const ProductForm = ({ product, onSave, onCancel, shopId = 1 }) => {
+const ProductForm = ({ product, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     vendor: '',
@@ -130,29 +131,29 @@ const ProductForm = ({ product, onSave, onCancel, shopId = 1 }) => {
     }
 
     setUploading(true);
-    
+
+    // Show instant local preview while uploading
+    const localPreview = URL.createObjectURL(file);
+    setFormData(prev => ({ ...prev, image: localPreview }));
+
     try {
-      // If you have an image upload endpoint on your backend
       const uploadFormData = new FormData();
-      uploadFormData.append('image', file);
-      
-      // Uncomment this if you have a backend upload endpoint
-      // const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, uploadFormData, {
-      //   headers: { 'Content-Type': 'multipart/form-data' }
-      // });
-      // setFormData({ ...formData, image: response.data.url });
-      
-      // For demo, convert to base64
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
-        setImageUrl(reader.result);
-        setUploading(false);
-      };
-      reader.readAsDataURL(file);
+      uploadFormData.append('file', file);
+
+      const { data } = await api.post('/upload', uploadFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      // Replace local blob URL with real server URL
+      setFormData(prev => ({ ...prev, image: data.url }));
+      setImageUrl(data.url);
     } catch (error) {
       console.error('Upload failed:', error);
-      alert('Failed to upload image');
+      // Revert preview on failure
+      setFormData(prev => ({ ...prev, image: '' }));
+      setImageUrl('');
+      alert(error.response?.data?.message || 'Failed to upload image. Please try again.');
+    } finally {
       setUploading(false);
     }
   };
@@ -217,7 +218,7 @@ const ProductForm = ({ product, onSave, onCancel, shopId = 1 }) => {
     
     const submitData = {
       ...formData,
-      shop_id: shopId,
+      // shop_id resolved server-side from auth token
       tags_string: formData.tags_string,
       variants: formData.variants.map(v => ({
         ...v,
