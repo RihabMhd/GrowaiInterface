@@ -60,9 +60,9 @@ const Products = () => {
       } else {
         await api.post('/products', productData);
       }
-      setShowProductModal(false);
       setEditingProduct(null);
-      fetchProducts();
+      await fetchProducts();
+      setShowProductModal(false);
     } catch (err) {
       const errors = err.response?.data?.errors;
       const message = errors
