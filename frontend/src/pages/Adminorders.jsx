@@ -1,971 +1,659 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
 
-// ─── Icons ───────────────────────────────────────────────────────────────────
 const Icons = {
-    total: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" />
-        </svg>
-    ),
-    confirmed: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-        </svg>
-    ),
-    cancelled: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
-        </svg>
-    ),
-    pending: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-        </svg>
-    ),
-    rate: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-        </svg>
-    )
+  total: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>),
+  confirmed: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>),
+  cancelled: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>),
+  pending: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>),
+  rate: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>),
 };
 
 const getStatusStyle = (s) => {
-    switch (s) {
-        case "confirmed": case "delivered": return { bg: "rgba(80,205,137,0.1)", text: "#50cd89" };
-        case "cancelled": case "returned": return { bg: "rgba(241,65,108,0.1)", text: "#f1416c" };
-        case "processing": case "shipped": return { bg: "rgba(0,163,255,0.1)", text: "#00a3ff" };
-        default: return { bg: "rgba(255,199,0,0.1)", text: "#ffc700" };
-    }
+  switch (s) {
+    case "confirmed": case "delivered": return { bg: "rgba(80,205,137,0.1)",  text: "#50cd89" };
+    case "cancelled":  case "returned":  return { bg: "rgba(241,65,108,0.1)",  text: "#f1416c" };
+    case "processing": case "shipped":   return { bg: "rgba(0,163,255,0.1)",   text: "#00a3ff" };
+    default:                             return { bg: "rgba(255,199,0,0.1)",    text: "#ffc700" };
+  }
 };
 
-// ─── Date Range Picker Component ──────────────────────────────────────────────
-function DateRangePicker({ startDate, setStartDate, endDate, setEndDate, onApply, onClear }) {
-    const [displayMonth, setDisplayMonth] = useState(new Date());
-    const daysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-    const firstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-    
-    const getDates = (month) => {
-        const year = month.getFullYear();
-        const monthIndex = month.getMonth();
-        const days = daysInMonth(month);
-        const firstDay = firstDayOfMonth(month);
-        const dates = [];
-        for (let i = 0; i < firstDay; i++) dates.push(null);
-        for (let i = 1; i <= days; i++) dates.push(new Date(year, monthIndex, i));
-        return dates;
-    };
+const inputStyle = {
+  width: "100%", padding: "11px 14px", borderRadius: "8px",
+  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+  color: "var(--text-main)", fontSize: "0.85rem", outline: "none",
+  transition: "border-color 0.2s", boxSizing: "border-box",
+};
 
-    const isDateInRange = (d) => {
-        if (!d || !startDate || !endDate) return false;
-        return d >= startDate && d <= endDate;
-    };
-    const isDateStart = (d) => d && startDate && d.toDateString() === startDate.toDateString();
-    const isDateEnd = (d) => d && endDate && d.toDateString() === endDate.toDateString();
-
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-
-    const renderCalendar = (month, isEnd = false) => {
-        const dates = getDates(month);
-        return (
-            <div style={{ minWidth: "200px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                    <button onClick={() => setDisplayMonth(new Date(month.getFullYear(), month.getMonth() - 1))} style={{ background: "none", border: "none", color: "var(--text-main)", cursor: "pointer", fontSize: "14px" }}>◀</button>
-                    <span style={{ fontSize: "14px", fontWeight: "600" }}>{monthNames[month.getMonth()]} {month.getFullYear()}</span>
-                    <button onClick={() => setDisplayMonth(new Date(month.getFullYear(), month.getMonth() + 1))} style={{ background: "none", border: "none", color: "var(--text-main)", cursor: "pointer", fontSize: "14px" }}>▶</button>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px", marginBottom: "12px" }}>
-                    {dayNames.map(d => <div key={d} style={{ textAlign: "center", fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", padding: "4px" }}>{d}</div>)}
-                    {dates.map((d, i) => (
-                        <button key={i} onClick={() => {
-                            if (d) {
-                                if (isEnd) setEndDate(d);
-                                else setStartDate(d);
-                            }
-                        }} disabled={!d} style={{
-                            padding: "6px", borderRadius: "6px", border: "1px solid transparent", fontSize: "12px",
-                            background: isDateStart(d) || isDateEnd(d) ? "#7239ea" : isDateInRange(d) ? "rgba(114, 57, 234, 0.3)" : "transparent",
-                            color: isDateStart(d) || isDateEnd(d) ? "white" : "var(--text-main)",
-                            cursor: d ? "pointer" : "default", opacity: d ? 1 : 0.3
-                        }}>{d?.getDate()}</button>
-                    ))}
-                </div>
-            </div>
-        );
-    };
-
-    return (
-        <div style={{ background: "#18181b", border: "1px solid rgba(114,57,234,0.4)", borderRadius: "10px", padding: "20px", minWidth: "500px", boxShadow: "0 12px 40px rgba(0,0,0,0.6)" }}>
-            <div style={{ marginBottom: "16px" }}>
-                <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
-                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 7)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last 7 days</button>
-                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 30)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last 30 days</button>
-                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth(), 1)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>This month</button>
-                </div>
-                <div style={{ display: "flex", gap: "8px" }}>
-                    <button onClick={() => { const d = new Date(); const m = new Date(d.getFullYear(), d.getMonth() - 1, 1); setStartDate(m); setEndDate(new Date(d.getFullYear(), d.getMonth(), 0)); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last month</button>
-                    <button onClick={() => { const d = new Date(); setStartDate(new Date(d.getFullYear(), d.getMonth() - 3, 1)); setEndDate(d); }} style={{ flex: 1, padding: "8px", background: "rgba(114,57,234,0.2)", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", cursor: "pointer" }}>Last 3 months</button>
-                </div>
-            </div>
-            
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "16px" }}>
-                <div>
-                    <div style={{ fontSize: "12px", fontWeight: "600", marginBottom: "8px", color: "var(--text-muted)" }}>FROM</div>
-                    {renderCalendar(displayMonth, false)}
-                </div>
-                <div>
-                    <div style={{ fontSize: "12px", fontWeight: "600", marginBottom: "8px", color: "var(--text-muted)" }}>TO</div>
-                    {renderCalendar(new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1), true)}
-                </div>
-            </div>
-
-            <div style={{ display: "flex", gap: "12px" }}>
-                <button onClick={() => { onApply(startDate, endDate); }} style={{ flex: 1, padding: "10px", background: "#7239ea", border: "none", borderRadius: "6px", color: "white", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}>Apply</button>
-                <button onClick={() => { onClear(); }} style={{ flex: 1, padding: "10px", background: "transparent", border: "1px solid #7239ea", borderRadius: "6px", color: "#c4a7ff", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}>Clear</button>
-            </div>
-        </div>
-    );
-}
-
-// ─── Custom Dropdown ──────────────────────────────────────────────────────────
+// ── Custom Dropdown ───────────────────────────────────────────────────────────
 function CustomSelect({ id, value, onChange, options, placeholder, openDropdown, setOpenDropdown }) {
-    const isOpen = openDropdown === id;
-    const selected = options.find(o => o.value === value);
-    return (
-        <div className="custom-select-wrapper" style={{ position: "relative" }}>
-            <div
-                onClick={() => setOpenDropdown(isOpen ? null : id)}
-                style={{
-                    display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px",
-                    borderRadius: "8px", background: "var(--bg-app)",
-                    border: isOpen ? "1px solid #7239ea" : "1px solid var(--border-color)",
-                    color: "var(--text-main)", fontSize: "0.8rem", cursor: "pointer",
-                    userSelect: "none", transition: "border-color 0.2s", minWidth: "130px"
-                }}
-            >
-                {selected?.icon && <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>{selected.icon}</span>}
-                {selected?.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: selected.dot, flexShrink: 0 }} />}
-                <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected?.label || placeholder}</span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                    style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", flexShrink: 0 }}>
-                    <path d="M6 9l6 6 6-6" />
-                </svg>
+  const isOpen = openDropdown === id;
+  const selected = options.find(o => o.value === value);
+  return (
+    <div className="custom-select-wrapper" style={{ position: "relative" }}>
+      <div onClick={() => setOpenDropdown(isOpen ? null : id)} style={{
+        display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "8px",
+        background: "var(--bg-app)", border: isOpen ? "1px solid #7239ea" : "1px solid var(--border-color)",
+        color: "var(--text-main)", fontSize: "0.8rem", cursor: "pointer", userSelect: "none",
+        transition: "border-color 0.2s", minWidth: "130px"
+      }}>
+        {selected?.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: selected.dot, flexShrink: 0 }}/>}
+        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected?.label || placeholder}</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", flexShrink: 0 }}>
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </div>
+      {isOpen && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "200px",
+          background: "#18181b", border: "1px solid rgba(114,57,234,0.4)", borderRadius: "10px",
+          padding: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.6)", zIndex: 9000, maxHeight: "280px", overflowY: "auto"
+        }}>
+          {options.map(opt => (
+            <div key={opt.value} onClick={() => { onChange(opt.value); setOpenDropdown(null); }}
+              style={{
+                display: "flex", alignItems: "center", gap: "10px", padding: "9px 12px", borderRadius: "7px",
+                cursor: "pointer", fontSize: "0.82rem", fontWeight: opt.value === value ? "700" : "500",
+                background: opt.value === value ? "rgba(114,57,234,0.25)" : "transparent",
+                color: opt.value === value ? "#c4a7ff" : "var(--text-main)", transition: "background 0.15s"
+              }} className="cs-item-hover">
+              {opt.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: opt.dot, flexShrink: 0 }}/>}
+              <span>{opt.label}</span>
             </div>
-            {isOpen && (
-                <div style={{
-                    position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "200px",
-                    background: "#18181b", border: "1px solid rgba(114,57,234,0.4)", borderRadius: "10px",
-                    padding: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.6)", zIndex: 9000,
-                    maxHeight: "280px", overflowY: "auto"
-                }}>
-                    {options.map(opt => (
-                        <div key={opt.value} onClick={() => { onChange(opt.value); setOpenDropdown(null); }}
-                            style={{
-                                display: "flex", alignItems: "center", gap: "10px", padding: "9px 12px",
-                                borderRadius: "7px", cursor: "pointer", fontSize: "0.82rem",
-                                fontWeight: opt.value === value ? "700" : "500",
-                                background: opt.value === value ? "rgba(114,57,234,0.25)" : "transparent",
-                                color: opt.value === value ? "#c4a7ff" : "var(--text-main)", transition: "background 0.15s"
-                            }}
-                            className="custom-select-item-hover"
-                        >
-                            {opt.icon && <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>{opt.icon}</span>}
-                            {opt.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: opt.dot, flexShrink: 0 }} />}
-                            <span>{opt.label}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
+          ))}
         </div>
-    );
+      )}
+    </div>
+  );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-export default function AdminOrders() {
-    const { user } = useContext(AuthContext);
-    const { t } = useLanguage();
-    const location = useLocation();
-    const navigate = useNavigate();
+// ── Product Picker Popover ────────────────────────────────────────────────────
+function ProductPicker({ products, onSelect, onClose }) {
+  const [q, setQ] = useState("");
+  const ref = useRef(null);
+  const filtered = (Array.isArray(products) ? products : []).filter(p =>
+    p.name.toLowerCase().includes(q.toLowerCase())
+  );
+  useEffect(() => {
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [onClose]);
 
-    const isAbandonedPage = location.pathname.includes("abandonnees");
-    const currencySymbol = "DA";
+  return (
+    <div ref={ref} style={{
+      position: "absolute", top: "calc(100% + 6px)", right: 0, width: "280px",
+      background: "#1c1c1f", border: "1px solid rgba(114,57,234,0.35)", borderRadius: "10px",
+      padding: "10px", boxShadow: "0 16px 40px rgba(0,0,0,0.7)", zIndex: 9999
+    }}>
+      <input autoFocus placeholder="Search products..." value={q} onChange={e => setQ(e.target.value)}
+        style={{ ...inputStyle, marginBottom: "8px", padding: "8px 12px", background: "rgba(255,255,255,0.06)" }}/>
+      <div style={{ maxHeight: "200px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "2px" }}>
+        {filtered.length === 0 ? (
+          <p style={{ color: "var(--text-muted)", fontSize: "0.8rem", textAlign: "center", padding: "12px" }}>No products found</p>
+        ) : filtered.map(p => (
+          <div key={p.id} onClick={() => onSelect(p)} style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            padding: "9px 12px", borderRadius: "7px", cursor: "pointer", transition: "background 0.15s"
+          }} className="cs-item-hover">
+            <div>
+              <div style={{ fontSize: "0.83rem", fontWeight: "600", color: "var(--text-main)" }}>{p.name}</div>
+              <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "2px" }}>{p.price} MAD</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-    // ── State ──────────────────────────────────────────────────────────────────
-    const [orders, setOrders] = useState([]);
-    const [metrics, setMetrics] = useState({ total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, confirmation_rate: "0%" });
-    const [activeAgents, setActiveAgents] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState(null);
+// ── New Manual Order Modal ────────────────────────────────────────────────────
+function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuccess }) {
+  const CURRENCY = "MAD";
+  const empty = { customer_name: "", customer_phone: "", customer_email: "", source: "", province: "", city: "", street: "", notes: "", shipping_price: 0, items: [] };
+  const [form, setForm] = useState(empty);
+  const [showPicker, setShowPicker] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
-    // Filters
-    const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState("all");
-    const [productFilter, setProductFilter] = useState("all");
-    const [sourceFilter, setSourceFilter] = useState("all");
-    const [periodFilter, setPeriodFilter] = useState("all");
-    const [agentFilter, setAgentFilter] = useState("all");
-    const [openDropdown, setOpenDropdown] = useState(null);
-    const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-
-    // Modals
-    const [selectedOrder, setSelectedOrder] = useState(null);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
-    const [newOrder, setNewOrder] = useState({ notes: "", product_id: "", quantity: 1 });
-    const [sidebarTab, setSidebarTab] = useState("details");
-
-    // ── Data fetching ──────────────────────────────────────────────────────────
-    const fetchOrders = async () => {
-        try {
-            setLoading(true);
-            const params = {
-                type: isAbandonedPage ? "abandoned" : "all",
-                search: search || undefined,
-                status: statusFilter !== "all" ? statusFilter : undefined
-            };
-            const res = await api.get("/orders", { params });
-            const ordersData = res.data?.orders;
-            const metricsData = res.data?.metrics;
-            const agentsData = res.data?.active_agents;
-            setOrders(Array.isArray(ordersData) ? ordersData : []);
-            setMetrics(metricsData && typeof metricsData === "object" ? metricsData : { total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, confirmation_rate: "0%" });
-            setActiveAgents(Array.isArray(agentsData) ? agentsData : []);
-        } catch (err) {
-            console.error("Error fetching orders:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchProducts = async () => {
-        try {
-            const res = await api.get("/products");
-            let list = [];
-            if (Array.isArray(res.data)) {
-                list = res.data;
-            } else if (Array.isArray(res.data.products)) {
-                list = res.data.products;
-            } else if (Array.isArray(res.data.data)) {
-                list = res.data.data;
-            }
-            setProducts(list);
-        } catch (err) {
-            console.error("Error fetching products:", err);
-            setProducts([]);
-        }
-    };
-
-    useEffect(() => { fetchOrders(); }, [location.pathname, search, statusFilter]);
-    useEffect(() => { fetchProducts(); }, []);
-
-    useEffect(() => {
-        const handler = (e) => {
-            if (!e.target.closest(".custom-select-wrapper")) setOpenDropdown(null);
-            if (!e.target.closest(".more-dropdown-wrapper")) setIsMoreDropdownOpen(false);
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, []);
-
-    // ── Actions ────────────────────────────────────────────────────────────────
-    const handleCreateOrder = async (e) => {
-        e.preventDefault();
-        if (!newOrder.product_id) { alert("Veuillez choisir un produit."); return; }
-        try {
-            setIsCreating(true);
-            const res = await api.post("/orders", {
-                notes: newOrder.notes || null,
-                is_abandoned: isAbandonedPage,
-                items: [{ product_id: parseInt(newOrder.product_id), quantity: parseInt(newOrder.quantity) }]
-            });
-            showToast(res.data.message, "success");
-            setIsCreateModalOpen(false);
-            setNewOrder({ notes: "", product_id: "", quantity: 1 });
-            fetchOrders();
-        } catch (err) {
-            console.error(err);
-            alert("Erreur lors de la création de la commande.");
-        } finally {
-            setIsCreating(false);
-        }
-    };
-
-    const handleAssignAgent = async (orderId, agentId) => {
-        try {
-            const value = agentId === "" ? null : parseInt(agentId);
-            const res = await api.post(`/orders/${orderId}/assign`, { assigned_to: value });
-            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, assigned_to: value, assignedAgent: res.data.order.assignedAgent } : o));
-            if (selectedOrder?.id === orderId) setSelectedOrder(res.data.order);
-            fetchOrders();
-        } catch (err) {
-            console.error(err);
-            alert("Erreur d'attribution.");
-        }
-    };
-
-    const handleUpdateStatus = async (orderId, newStatus) => {
-        try {
-            const res = await api.put(`/orders/${orderId}`, { status: newStatus });
-            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-            if (selectedOrder?.id === orderId) setSelectedOrder(res.data.order);
-            fetchOrders();
-        } catch (err) {
-            console.error(err);
-            alert("Erreur de mise à jour du statut.");
-        }
-    };
-
-    const showToast = (text, type = "success") => {
-        setMessage({ text, type });
-        setTimeout(() => setMessage(null), 5000);
-    };
-
-    // ── Frontend filtering ─────────────────────────────────────────────────────
-    const filteredOrders = orders.filter(order => {
-        if (productFilter !== "all" && !order.items?.some(i => i.product_id === parseInt(productFilter))) return false;
-        if (agentFilter !== "all" && String(order.assigned_to) !== agentFilter) return false;
-        if (sourceFilter !== "all") {
-            const shopName = (order.shop?.name || "").toLowerCase();
-            if (!shopName.includes(sourceFilter.toLowerCase())) return false;
-        }
-        if (periodFilter !== "all") {
-            const orderDate = new Date(order.created_at);
-            const today = new Date();
-            if (periodFilter === "today") return orderDate.toDateString() === today.toDateString();
-            if (periodFilter === "yesterday") { const y = new Date(); y.setDate(today.getDate() - 1); return orderDate.toDateString() === y.toDateString(); }
-            if (periodFilter === "this_week") { const w = new Date(); w.setDate(today.getDate() - 7); return orderDate >= w; }
-        }
-        if (startDate && endDate) {
-            const orderDate = new Date(order.created_at);
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999);
-            if (orderDate < start || orderDate > end) return false;
-        }
-        return true;
+  const addProduct = (product) => {
+    setForm(p => {
+      const ex = p.items.find(i => i.product_id === product.id);
+      if (ex) return { ...p, items: p.items.map(i => i.product_id === product.id ? { ...i, quantity: i.quantity + 1 } : i) };
+      return { ...p, items: [...p.items, { product_id: product.id, product_name: product.name, price: parseFloat(product.price) || 0, quantity: 1 }] };
     });
+    setShowPicker(false);
+  };
+  const removeItem = (pid) => setForm(p => ({ ...p, items: p.items.filter(i => i.product_id !== pid) }));
+  const updateQty  = (pid, qty) => { const q = Math.max(1, parseInt(qty) || 1); setForm(p => ({ ...p, items: p.items.map(i => i.product_id === pid ? { ...i, quantity: q } : i) })); };
+  const subtotal = form.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const total    = subtotal + parseFloat(form.shipping_price || 0);
 
-    return (
-        <div style={{ color: "var(--text-main)", minHeight: "100%", paddingBottom: "40px" }}>
+  const handleSubmit = async () => {
+    if (!form.customer_name.trim())  { alert("Le nom du client est requis."); return; }
+    if (!form.customer_phone.trim()) { alert("Le téléphone est requis.");     return; }
+    if (form.items.length === 0)     { alert("Ajoutez au moins un produit."); return; }
+    try {
+      setSaving(true);
+      const res = await api.post("/orders", {
+        customer_name: form.customer_name, customer_phone: form.customer_phone,
+        customer_email: form.customer_email || null, source: form.source || null,
+        province: form.province || null, city: form.city || null, street: form.street || null,
+        notes: form.notes || null, shipping_price: parseFloat(form.shipping_price) || 0,
+        is_abandoned: isAbandonedPage,
+        items: form.items.map(i => ({ product_id: i.product_id, quantity: i.quantity }))
+      });
+      onSuccess(res.data.message || "Commande créée avec succès !");
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la création de la commande.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-            {/* Toast */}
-            {message && (
-                <div style={{
-                    position: "fixed", top: "20px", right: "20px", zIndex: 10000,
-                    background: message.type === "success" ? "var(--success)" : "var(--danger)",
-                    color: "white", padding: "12px 24px", borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)", fontWeight: "600"
-                }}>{message.text}</div>
-            )}
+  const lbl = { fontSize: "0.67rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.6px", textTransform: "uppercase", display: "block", marginBottom: "8px" };
 
-            {/* ── Page Header ── */}
-            <div className="page-header" style={{ marginBottom: "20px" }}>
-                <div>
-                    <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <svg style={{ width: "24px", height: "24px", color: "var(--purple)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                            <line x1="3" y1="6" x2="21" y2="6" />
-                            <path d="M16 10a4 4 0 0 1-8 0" />
-                        </svg>
-                        {isAbandonedPage ? "Abandoned Orders" : "Orders"}
-                        <span style={{ fontSize: "0.65rem", padding: "2px 8px", background: "rgba(137,80,252,0.1)", color: "var(--purple)", borderRadius: "4px", fontWeight: "700" }}>• just now</span>
-                    </h2>
-                    <p className="page-subtitle">Manage, assign, and track all orders</p>
-                </div>
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10000, padding: "20px" }}>
+      <div style={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", width: "100%", maxWidth: "900px", maxHeight: "92vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 60px rgba(0,0,0,0.7)", animation: "modalIn 0.2s ease-out", overflow: "hidden" }}>
+        <style>{`
+          @keyframes modalIn { from { opacity:0; transform:scale(0.97) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+          .cs-item-hover:hover { background: rgba(114,57,234,0.15) !important; }
+          .modal-input:focus { border-color: rgba(114,57,234,0.6) !important; }
+          .rm-btn:hover { background: rgba(241,65,108,0.12) !important; color: #f1416c !important; }
+          .qty-btn:hover { background: rgba(255,255,255,0.1) !important; }
+        `}</style>
 
-                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                    {/* Period Tabs */}
-                    <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "8px", gap: "2px" }}>
-                        {["all", "today", "yesterday", "this_week"].map(period => {
-                            const labels = { all: "All", today: "Today", yesterday: "Yesterday", this_week: "This week" };
-                            const isActive = periodFilter === period;
-                            return (
-                                <button key={period} onClick={() => setPeriodFilter(period)} style={{
-                                    padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600",
-                                    background: isActive ? "var(--bg-card)" : "transparent",
-                                    color: isActive ? "var(--text-main)" : "var(--text-muted)",
-                                    border: "none", cursor: "pointer", transition: "all 0.2s"
-                                }} className={isActive ? "" : "date-tab-hover"}>{labels[period]}</button>
-                            );
-                        })}
-                        <div className="more-dropdown-wrapper" style={{ position: "relative" }}>
-                            <button onClick={() => setIsMoreDropdownOpen(!isMoreDropdownOpen)} style={{
-                                padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600",
-                                background: isMoreDropdownOpen ? "rgba(114,57,234,0.2)" : "transparent", 
-                                color: isMoreDropdownOpen ? "#c4a7ff" : "var(--text-muted)", 
-                                border: isMoreDropdownOpen ? "1px solid #7239ea" : "none", 
-                                cursor: "pointer",
-                                display: "flex", alignItems: "center", gap: "4px", transition: "all 0.2s"
-                            }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                More
-                            </button>
-                            {isMoreDropdownOpen && (
-                                <div style={{ position: "absolute", top: "100%", right: 0, zIndex: 10000, marginTop: "8px" }}>
-                                    <DateRangePicker 
-                                        startDate={startDate} 
-                                        setStartDate={setStartDate}
-                                        endDate={endDate}
-                                        setEndDate={setEndDate}
-                                        onApply={(start, end) => { setIsMoreDropdownOpen(false); }}
-                                        onClear={() => { setStartDate(null); setEndDate(null); setPeriodFilter("all"); setIsMoreDropdownOpen(false); }}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* New Order Button */}
-                    <button onClick={() => setIsCreateModalOpen(true)} style={{
-                        display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px",
-                        background: "var(--purple)", color: "white", borderRadius: "8px",
-                        fontSize: "0.85rem", fontWeight: "700", border: "none", cursor: "pointer"
-                    }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                        New Order
-                    </button>
-                </div>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ width: "32px", height: "32px", background: "rgba(114,57,234,0.15)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
             </div>
-
-            {/* ── Metrics Cards ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px", marginBottom: "24px" }}>
-                {[
-                    { label: "TOTAL ORDERS", value: metrics.total_orders, icon: Icons.total, color: "#7239ea", sub: "0 today" },
-                    { label: "CONFIRMED", value: metrics.confirmed, icon: Icons.confirmed, color: "#50cd89", sub: "0% rate" },
-                    { label: "CANCELLED", value: metrics.cancelled, icon: Icons.cancelled, color: "#f1416c", sub: "100%" },
-                    { label: "FAILED DELIVERY", value: "0", icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a11 11 0 0 0-11 11v3H2l3 3-3 3h3v3a11 11 0 0 0 11-11v-3h3l-3-3 3-3h-3v-3a11 11 0 0 0-11-11z" /></svg>, color: "#ff9500", sub: "0% rate" },
-                    { label: "DELIVERY RATE", value: metrics.confirmation_rate, icon: Icons.rate, color: "#00a3ff", sub: "0% rate" },
-                ].map((card, i) => (
-                    <div key={i} style={{
-                        background: "var(--bg-card)", border: "1px solid var(--border-color)",
-                        borderRadius: "12px", padding: "20px", display: "flex", flexDirection: "column", gap: "8px"
-                    }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <span style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.5px" }}>{card.label}</span>
-                            <span style={{ color: card.color }}>{card.icon}</span>
-                        </div>
-                        <div style={{ fontSize: "1.8rem", fontWeight: "800", color: "var(--text-main)" }}>{card.value}</div>
-                        <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{card.sub}</div>
-                    </div>
-                ))}
-            </div>
-
-            {/* ── Filter Bar ── */}
-            <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
-                <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}>
-                        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..."
-                        style={{ width: "100%", padding: "8px 12px 8px 36px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none" }} />
-                </div>
-
-                {/* Source */}
-                <CustomSelect id="source" value={sourceFilter} onChange={setSourceFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Sources"
-                    options={[
-                        { value: "all", label: "All Sources", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="#7239ea"><circle cx="12" cy="12" r="10" /></svg> },
-                        { value: "shopify", label: "Shopify", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="#95bf47"><path d="M15.7 4.5s-.1-.5-.5-.5h-1.1c0-.1-.5-1.4-2-1.4-.1 0-.2 0-.3.1-.4-.5-.9-.8-1.4-.8-3.5 0-5.2 4.4-5.7 6.6L3 9.3l3.5 1.1 1.1-3.5c.3-.1.5-.2.8-.2.6 0 1 .4 1.3 1v.1L8.5 12l1.8.6 1.8-5.5L14 9l1.7-4.5z" /></svg> },
-                        { value: "sheets", label: "Google Sheets", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="#0f9d58"><rect x="3" y="3" width="18" height="18" rx="2" /></svg> },
-                    ]}
-                />
-
-                {/* Status */}
-                <CustomSelect id="status" value={statusFilter} onChange={setStatusFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Status"
-                    options={[
-                        { value: "all", label: "All Status", dot: "#7239ea" },
-                        { value: "pending", label: "Pending", dot: "#ffc700" },
-                        { value: "confirmed", label: "Confirmed", dot: "#50cd89" },
-                        { value: "processing", label: "Processing", dot: "#00a3ff" },
-                        { value: "shipped", label: "Shipped", dot: "#00a3ff" },
-                        { value: "delivered", label: "Delivered", dot: "#50cd89" },
-                        { value: "cancelled", label: "Cancelled", dot: "#f1416c" },
-                        { value: "returned", label: "Returned", dot: "#f1416c" },
-                    ]}
-                />
-
-                {/* Agent Filter */}
-                <CustomSelect id="agent" value={agentFilter} onChange={setAgentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les agents"
-                    options={[
-                        { value: "all", label: "Tous les agents", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg> },
-                        ...(Array.isArray(activeAgents) ? activeAgents : []).map(a => ({ value: String(a.id), label: a.name, icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg> }))
-                    ]}
-                />
-
-                {/* Products */}
-                <CustomSelect id="product" value={productFilter} onChange={setProductFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les produits"
-                    options={[
-                        { value: "all", label: "Tous les produits", icon: "📦" },
-                        ...(Array.isArray(products) ? products : []).map(p => ({ value: String(p.id), label: p.name, icon: "🛍️" }))
-                    ]}
-                />
-            </div>
-
-            {/* ── Orders Table ── */}
-            {loading ? (
-                <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
-                    <div style={{ border: "3px solid var(--border-color)", borderTop: "3px solid var(--purple)", borderRadius: "50%", width: "32px", height: "32px", animation: "spin 1s linear infinite" }} />
-                </div>
-            ) : filteredOrders.length === 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", textAlign: "center" }}>
-                    <svg style={{ width: "64px", height: "64px", marginBottom: "20px", opacity: 0.15 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>
-                    <p style={{ color: "var(--text-muted)", fontSize: "1rem", fontWeight: "500" }}>No orders found — create a new order to start</p>
-                </div>
-            ) : (
-                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", overflow: "hidden" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
-                        <thead>
-                            <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
-                                {["ORDER", "AGENT", "TRACKING", "Client", "City", "Status", "Fulfillment", "Total", "Date"].map(h => (
-                                    <th key={h} style={{ padding: "14px 16px", fontWeight: "600", color: "var(--text-muted)", fontSize: "0.72rem", letterSpacing: "0.5px", textAlign: h === "Date" ? "right" : "left" }}>{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredOrders.map(order => {
-                                const statusStyle = getStatusStyle(order.status);
-                                const fulfillmentStatus = order.fulfillment_status || "unfulfilled";
-                                return (
-                                    <tr key={order.id} onClick={() => setSelectedOrder(order)} style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.2s", cursor: "pointer" }} className="table-row-hover">
-                                        <td style={{ padding: "14px 16px", fontWeight: "700" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                <input type="checkbox" style={{ cursor: "pointer" }} />
-                                                <span style={{ color: "var(--purple)", cursor: "pointer" }}>{order.order_number}</span>
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                                            {order.assignedAgent?.name || "—"}
-                                        </td>
-                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                                            —
-                                        </td>
-                                        <td style={{ padding: "14px 16px" }}>
-                                            <div style={{ fontWeight: "600" }}>{order.client?.name || order.customer_name || "—"}</div>
-                                        </td>
-                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                                            {order.client?.city || "—"}
-                                        </td>
-                                        <td style={{ padding: "14px 16px" }}>
-                                            <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: "6px", background: statusStyle.bg, color: statusStyle.text, fontSize: "0.72rem", fontWeight: "700" }}>
-                                                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "14px 16px" }}>
-                                            <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: "6px", background: "rgba(255,193,7,0.1)", color: "#ffc107", fontSize: "0.72rem", fontWeight: "700" }}>
-                                                {fulfillmentStatus.toUpperCase()}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "14px 16px", fontWeight: "700" }}>
-                                            {order.total_price} {order.currency || currencySymbol}
-                                        </td>
-                                        <td style={{ padding: "14px 16px", fontSize: "0.78rem", color: "var(--text-muted)", textAlign: "right" }}>
-                                            {new Date(order.created_at).toLocaleString()}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* ── CREATE ORDER MODAL ── */}
-            {isCreateModalOpen && (
-                <div style={{
-                    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-                    background: "rgba(0, 0, 0, 0.7)", display: "flex", justifyContent: "center",
-                    alignItems: "center", zIndex: 9999, padding: "20px", backdropFilter: "blur(4px)"
-                }} onClick={() => setIsCreateModalOpen(false)}>
-                    <div style={{
-                        background: "var(--bg-card)", border: "1px solid var(--border-color)",
-                        borderRadius: "12px", width: "100%", maxWidth: "460px",
-                        boxShadow: "0 24px 60px rgba(0,0,0,0.8)", overflow: "hidden",
-                        display: "flex", flexDirection: "column", animation: "modalAppear 0.25s ease"
-                    }} onClick={e => e.stopPropagation()}>
-                        
-                        {/* Header */}
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
-                            <div>
-                                <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-main)", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                                    Create New Order
-                                </h3>
-                                <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", margin: "2px 0 0 0" }}>Manually insert order particulars</p>
-                            </div>
-                            <button onClick={() => setIsCreateModalOpen(false)} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center" }}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                            </button>
-                        </div>
-
-                        {/* Body / Form */}
-                        <form onSubmit={handleCreateOrder} style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                            {/* Product Selection */}
-                            <div>
-                                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Product *</label>
-                                <select 
-                                    value={newOrder.product_id} 
-                                    onChange={e => setNewOrder(p => ({ ...p, product_id: e.target.value }))}
-                                    required
-                                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
-                                >
-                                    <option value="">Select a product...</option>
-                                    {products.map(p => (
-                                        <option key={p.id} value={p.id}>{p.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Quantity */}
-                            <div>
-                                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Quantity</label>
-                                <input 
-                                    type="number" 
-                                    min="1" 
-                                    value={newOrder.quantity} 
-                                    onChange={e => setNewOrder(p => ({ ...p, quantity: Math.max(1, parseInt(e.target.value) || 1) }))}
-                                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
-                                />
-                            </div>
-
-                            {/* Internal Notes */}
-                            <div>
-                                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Internal Notes</label>
-                                <textarea 
-                                    placeholder="Enter additional details or specifications..." 
-                                    value={newOrder.notes} 
-                                    onChange={e => setNewOrder(p => ({ ...p, notes: e.target.value }))}
-                                    rows="4"
-                                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none", resize: "none", fontFamily: "inherit" }}
-                                />
-                            </div>
-
-                            {/* Actions Footer Container */}
-                            <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px", borderTop: "1px solid var(--border-color)", paddingTop: "14px" }}>
-                                <button type="button" onClick={() => setIsCreateModalOpen(false)} style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", fontWeight: "600", cursor: "pointer" }}>
-                                    Cancel
-                                </button>
-                                <button type="submit" disabled={isCreating} style={{ padding: "8px 18px", borderRadius: "8px", background: "var(--purple)", border: "none", color: "white", fontSize: "0.82rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
-                                    {isCreating ? (
-                                        <>
-                                            <div style={{ width: "12px", height: "12px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
-                                            Saving...
-                                        </>
-                                    ) : "Save Order"}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* ── ORDER DETAIL SIDEBAR ── */}
-            {selectedOrder && (
-                <>
-                    {/* Overlay */}
-                    <div
-                        onClick={() => setSelectedOrder(null)}
-                        style={{
-                            position: "fixed",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            background: "rgba(0, 0, 0, 0.5)",
-                            zIndex: 8000,
-                            animation: "fadeIn 0.2s ease"
-                        }}
-                    />
-
-                    {/* Sidebar */}
-                    <div
-                        style={{
-                            position: "fixed",
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            width: "100%",
-                            maxWidth: "500px",
-                            background: "var(--bg-card)",
-                            borderLeft: "1px solid var(--border-color)",
-                            zIndex: 8001,
-                            display: "flex",
-                            flexDirection: "column",
-                            animation: "slideIn 0.3s ease",
-                            overflow: "hidden"
-                        }}
-                    >
-                        {/* Header */}
-                        <div style={{ padding: "20px", borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                                <div>
-                                    <h3 style={{ fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main)", margin: 0 }}>
-                                        {selectedOrder.order_number}
-                                    </h3>
-                                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
-                                        {new Date(selectedOrder.created_at).toLocaleDateString()} {new Date(selectedOrder.created_at).toLocaleTimeString()}
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={() => setSelectedOrder(null)}
-                                    style={{
-                                        background: "none",
-                                        border: "none",
-                                        color: "var(--text-muted)",
-                                        cursor: "pointer",
-                                        padding: "4px",
-                                        display: "flex",
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                        <line x1="18" y1="6" x2="6" y2="18" />
-                                        <line x1="6" y1="6" x2="18" y2="18" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            {/* Status Badge */}
-                            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                                <span
-                                    style={{
-                                        display: "inline-block",
-                                        padding: "6px 12px",
-                                        borderRadius: "6px",
-                                        background: getStatusStyle(selectedOrder.status).bg,
-                                        color: getStatusStyle(selectedOrder.status).text,
-                                        fontSize: "0.75rem",
-                                        fontWeight: "700"
-                                    }}
-                                >
-                                    ● {selectedOrder.status.toUpperCase()}
-                                </span>
-                                {selectedOrder.items?.some(i => !i.fulfillment_status || i.fulfillment_status === "unfulfilled") && (
-                                    <span style={{ display: "inline-block", padding: "6px 12px", borderRadius: "6px", background: "rgba(255,152,0,0.1)", color: "#ff9800", fontSize: "0.75rem", fontWeight: "700" }}>
-                                        ⬤ UNFULFILLED
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Tabs */}
-                        <div style={{ display: "flex", borderBottom: "1px solid var(--border-color)", paddingX: "20px" }}>
-                            {["details", "history"].map(tab => (
-                                <button
-                                    key={tab}
-                                    onClick={() => setSidebarTab(tab)}
-                                    style={{
-                                        flex: 1,
-                                        padding: "12px",
-                                        background: "none",
-                                        border: "none",
-                                        borderBottom: sidebarTab === tab ? "2px solid var(--purple)" : "none",
-                                        color: sidebarTab === tab ? "var(--text-main)" : "var(--text-muted)",
-                                        fontSize: "0.85rem",
-                                        fontWeight: "600",
-                                        cursor: "pointer",
-                                        transition: "all 0.2s"
-                                    }}
-                                >
-                                    {tab === "details" ? "Details" : "History"}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Content */}
-                        <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
-                            {sidebarTab === "details" ? (
-                                <>
-                                    {/* Customer Info */}
-                                    <div style={{ marginBottom: "24px" }}>
-                                        <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "12px", textTransform: "uppercase" }}>Customer</h4>
-                                        <div style={{ display: "flex", gap: "12px", padding: "12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)" }}>
-                                            <div
-                                                style={{
-                                                    width: "40px",
-                                                    height: "40px",
-                                                    borderRadius: "50%",
-                                                    background: "var(--purple)",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    color: "white",
-                                                    fontWeight: "700",
-                                                    flexShrink: 0
-                                                }}
-                                            >
-                                                {(selectedOrder.client?.name || selectedOrder.customer_name || "C")[0]?.toUpperCase()}
-                                            </div>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: "600", color: "var(--text-main)", marginBottom: "2px" }}>
-                                                    {selectedOrder.client?.name || selectedOrder.customer_name || "Unknown"}
-                                                </div>
-                                                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                                                    {selectedOrder.client?.phone || selectedOrder.customer_phone || "—"}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Items */}
-                                    <div style={{ marginBottom: "24px" }}>
-                                        <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "12px", textTransform: "uppercase" }}>Items ({selectedOrder.items?.length || 0})</h4>
-                                        {selectedOrder.items && selectedOrder.items.length > 0 ? (
-                                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                                                {selectedOrder.items.map((item, idx) => (
-                                                    <div key={idx} style={{ display: "flex", gap: "12px", padding: "12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)" }}>
-                                                        <div
-                                                            style={{
-                                                                width: "48px",
-                                                                height: "48px",
-                                                                borderRadius: "6px",
-                                                                background: "rgba(114,57,234,0.1)",
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                justifyContent: "center",
-                                                                color: "var(--purple)",
-                                                                fontSize: "1.2rem",
-                                                                flexShrink: 0
-                                                            }}
-                                                        >
-                                                            📦
-                                                        </div>
-                                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                                            <div style={{ fontWeight: "600", color: "var(--text-main)", marginBottom: "4px" }}>
-                                                                {item.product_name || "Unknown Product"}
-                                                            </div>
-                                                            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "4px" }}>
-                                                                SKU: {item.sku || "N/A"}
-                                                            </div>
-                                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                                <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-main)" }}>
-                                                                    {item.price || 0} {selectedOrder.currency || currencySymbol}
-                                                                </span>
-                                                                <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>x{item.quantity || 1}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>No items in this order</div>
-                                        )}
-                                    </div>
-
-                                    {/* Pricing */}
-                                    <div style={{ marginBottom: "24px", padding: "16px", borderRadius: "8px", background: "rgba(255,255,255,0.02)" }}>
-                                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                                            <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Subtotal</span>
-                                            <span style={{ color: "var(--text-main)", fontWeight: "600" }}>{selectedOrder.subtotal || 0} {selectedOrder.currency || currencySymbol}</span>
-                                        </div>
-                                        {selectedOrder.shipping_cost && (
-                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                                                <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Shipping</span>
-                                                <span style={{ color: "var(--text-main)", fontWeight: "600" }}>{selectedOrder.shipping_cost} {selectedOrder.currency || currencySymbol}</span>
-                                            </div>
-                                        )}
-                                        {selectedOrder.tax && (
-                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                                                <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Tax</span>
-                                                <span style={{ color: "var(--text-main)", fontWeight: "600" }}>{selectedOrder.tax} {selectedOrder.currency || currencySymbol}</span>
-                                            </div>
-                                        )}
-                                        <div style={{ borderTop: "1px solid var(--border-color)", marginTop: "8px", paddingTop: "8px", display: "flex", justifyContent: "space-between" }}>
-                                            <span style={{ fontWeight: "700", color: "var(--text-main)" }}>Total</span>
-                                            <span style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "1.1rem" }}>{selectedOrder.total_price} {selectedOrder.currency || currencySymbol}</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Notes */}
-                                    {selectedOrder.notes && (
-                                        <div>
-                                            <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "8px", textTransform: "uppercase" }}>Notes</h4>
-                                            <div style={{ padding: "12px", borderRadius: "8px", background: "rgba(255,152,0,0.08)", borderLeft: "3px solid #ff9800" }}>
-                                                <p style={{ fontSize: "0.85rem", color: "var(--text-main)", margin: 0 }}>{selectedOrder.notes}</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                                    {selectedOrder.histories?.length > 0 ? selectedOrder.histories.map((h, i) => (
-                                        <div key={i} style={{ fontSize: "0.8rem", borderLeft: "2px solid var(--purple)", paddingLeft: "12px" }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-muted)", marginBottom: "4px" }}>
-                                                <span>{h.user?.name || "System"}</span>
-                                                <span>{new Date(h.created_at).toLocaleString()}</span>
-                                            </div>
-                                            <p style={{ color: "var(--text-main)", fontWeight: "500", margin: 0 }}>{h.description}</p>
-                                        </div>
-                                    )) : <span style={{ color: "var(--text-muted)", fontStyle: "italic" }}>No history available</span>}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Footer Actions */}
-                        <div style={{ padding: "16px 20px", borderTop: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)", display: "flex", gap: "12px" }}>
-                            <button
-                                onClick={() => handleUpdateStatus(selectedOrder.id, "processing")}
-                                style={{
-                                    flex: 1,
-                                    padding: "10px",
-                                    borderRadius: "6px",
-                                    background: "var(--purple)",
-                                    color: "white",
-                                    border: "none",
-                                    fontWeight: "600",
-                                    fontSize: "0.8rem",
-                                    cursor: "pointer",
-                                    transition: "opacity 0.2s"
-                                }}
-                                className="action-btn-hover"
-                            >
-                                Change Status
-                            </button>
-                            <button
-                                style={{
-                                    flex: 1,
-                                    padding: "10px",
-                                    borderRadius: "6px",
-                                    background: "rgba(255,255,255,0.05)",
-                                    color: "var(--text-main)",
-                                    border: "1px solid var(--border-color)",
-                                    fontWeight: "600",
-                                    fontSize: "0.8rem",
-                                    cursor: "pointer",
-                                    transition: "all 0.2s"
-                                }}
-                                className="secondary-btn-hover"
-                            >
-                                Create Parcel
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* Consolidate inline styles from the bottom of the component here */}
-            <style>{`
-                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-                @keyframes modalAppear { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-                @keyframes spin { to { transform: rotate(360deg); } }
-                .action-btn-hover:hover { opacity: 0.9; }
-                .secondary-btn-hover:hover { background: rgba(255,255,255,0.08); }
-                .table-row-hover:hover { background: rgba(255,255,255,0.01); cursor: pointer; }
-                .custom-select-item-hover:hover { background: rgba(114,57,234,0.15) !important; }
-                .date-tab-hover:hover { background: rgba(255,255,255,0.05); }
-                .dropdown-item-hover:hover { background: rgba(255,255,255,0.08); }
-                .status-row-hover:hover { background: rgba(255,255,255,0.05) !important; }
-                .more-option-hover:hover { background: rgba(255,255,255,0.08) !important; }
-                .apply-btn-hover:hover { opacity: 0.9; }
-                .clear-btn-hover:hover { background: rgba(255,255,255,0.1); }
-            `}</style>
+            <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-main)" }}>New Manual Order</h3>
+          </div>
+          <button onClick={onClose} style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>×</button>
         </div>
-    );
+
+        {/* Body */}
+        <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+
+          {/* LEFT: Customer / Address */}
+          <div style={{ flex: 1, padding: "24px", overflowY: "auto", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+
+            {/* Delivery Company */}
+            <div style={{ marginBottom: "22px" }}>
+              <label style={lbl}>Delivery Company <span style={{ color: "#f1416c" }}>*</span></label>
+              <div style={{ padding: "12px 14px", borderRadius: "8px", border: "1.5px dashed rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.02)", display: "flex", alignItems: "center", gap: "10px" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8l4 1 3 3v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>No delivery companies connected</span>
+              </div>
+            </div>
+
+            {/* Customer */}
+            <div style={{ marginBottom: "22px" }}>
+              <label style={lbl}>Customer</label>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <input className="modal-input" placeholder="Full Name *" value={form.customer_name} onChange={e => set("customer_name", e.target.value)} style={inputStyle}/>
+                <input className="modal-input" placeholder="Phone *" value={form.customer_phone} onChange={e => set("customer_phone", e.target.value)} style={inputStyle}/>
+                <input className="modal-input" placeholder="Email (optional)" value={form.customer_email} onChange={e => set("customer_email", e.target.value)} style={inputStyle}/>
+              </div>
+            </div>
+
+            {/* Order Source */}
+            <div style={{ marginBottom: "22px" }}>
+              <label style={lbl}>Order Source <span style={{ color: "#f1416c" }}>*</span></label>
+              <div style={{ position: "relative" }}>
+                <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", display: "flex", pointerEvents: "none" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                </span>
+                <select className="modal-input" value={form.source} onChange={e => set("source", e.target.value)}
+                  style={{ ...inputStyle, paddingLeft: "38px", paddingRight: "32px", appearance: "none", cursor: "pointer" }}>
+                  <option value="">Select source...</option>
+                  <option value="shopify">Shopify</option>
+                  <option value="google_sheets">Google Sheets</option>
+                  <option value="manual">Manual</option>
+                  <option value="whatsapp">WhatsApp</option>
+                </select>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+
+            {/* Delivery Address */}
+            <div style={{ marginBottom: "22px" }}>
+              <label style={lbl}>Delivery Address</label>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <input className="modal-input" placeholder="Province..." value={form.province} onChange={e => set("province", e.target.value)} style={inputStyle}/>
+                <input className="modal-input" placeholder="City..." value={form.city} onChange={e => set("city", e.target.value)} style={inputStyle}/>
+                <input className="modal-input" placeholder="Street address (optional)" value={form.street} onChange={e => set("street", e.target.value)} style={inputStyle}/>
+              </div>
+            </div>
+
+            {/* Note */}
+            <div>
+              <label style={lbl}>Note (optional)</label>
+              <textarea className="modal-input" placeholder="Any notes about this order..." value={form.notes} onChange={e => set("notes", e.target.value)}
+                style={{ ...inputStyle, height: "90px", resize: "none", lineHeight: "1.5" }}/>
+            </div>
+          </div>
+
+          {/* RIGHT: Products + Totals */}
+          <div style={{ width: "340px", padding: "24px", display: "flex", flexDirection: "column", flexShrink: 0 }}>
+
+            {/* Products header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+              <label style={{ ...lbl, marginBottom: 0 }}>Products <span style={{ color: "#f1416c" }}>*</span></label>
+              <div style={{ position: "relative" }}>
+                <button onClick={() => setShowPicker(v => !v)} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "5px 10px", borderRadius: "6px", background: "rgba(114,57,234,0.12)", border: "1px solid rgba(114,57,234,0.25)", color: "#9b6dff", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add product
+                </button>
+                {showPicker && <ProductPicker products={products} onSelect={addProduct} onClose={() => setShowPicker(false)}/>}
+              </div>
+            </div>
+
+            {/* Product list or empty state */}
+            <div style={{ flex: 1, border: "1.5px dashed rgba(255,255,255,0.1)", borderRadius: "10px", background: "rgba(255,255,255,0.02)", overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "200px" }}>
+              {form.items.length === 0 ? (
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", padding: "20px" }}>
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                  <button onClick={() => setShowPicker(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 18px", borderRadius: "8px", background: "#7239ea", color: "white", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add product
+                  </button>
+                </div>
+              ) : (
+                <div style={{ overflowY: "auto", flex: 1 }}>
+                  {form.items.map(item => (
+                    <div key={item.product_id} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      {/* Icon */}
+                      <div style={{ width: "30px", height: "30px", borderRadius: "7px", background: "rgba(114,57,234,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                      </div>
+                      {/* Name + price */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.product_name}</div>
+                        <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "1px" }}>{item.price} MAD</div>
+                      </div>
+                      {/* Qty stepper */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "3px", flexShrink: 0 }}>
+                        <button className="qty-btn" onClick={() => updateQty(item.product_id, item.quantity - 1)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem" }}>−</button>
+                        <span style={{ width: "22px", textAlign: "center", fontSize: "0.8rem", fontWeight: "700" }}>{item.quantity}</span>
+                        <button className="qty-btn" onClick={() => updateQty(item.product_id, item.quantity + 1)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem" }}>+</button>
+                      </div>
+                      {/* Line total */}
+                      <div style={{ fontSize: "0.78rem", fontWeight: "700", minWidth: "46px", textAlign: "right", flexShrink: 0 }}>
+                        {(item.price * item.quantity).toFixed(2)}
+                      </div>
+                      {/* Remove */}
+                      <button className="rm-btn" onClick={() => removeItem(item.product_id)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Shipping + Total */}
+            <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "var(--text-muted)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8l4 1 3 3v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  Shipping
+                </div>
+                <div style={{ display: "flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "7px", overflow: "hidden" }}>
+                  <input type="number" min="0" step="0.01" value={form.shipping_price} onChange={e => set("shipping_price", e.target.value)}
+                    style={{ width: "70px", padding: "6px 10px", background: "rgba(255,255,255,0.04)", border: "none", color: "var(--text-main)", fontSize: "0.82rem", outline: "none", textAlign: "right" }}/>
+                  <span style={{ padding: "6px 10px", background: "rgba(255,255,255,0.06)", fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", borderLeft: "1px solid rgba(255,255,255,0.08)" }}>{CURRENCY}</span>
+                </div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+                <span style={{ fontSize: "0.85rem", fontWeight: "600", color: "var(--text-muted)" }}>Total</span>
+                <span style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-main)" }}>{total.toFixed(2)} {CURRENCY}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ display: "flex", gap: "10px", padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+          <button onClick={onClose} style={{ flex: 1, padding: "11px", borderRadius: "8px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-main)", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>
+            Cancel
+          </button>
+          <button onClick={handleSubmit} disabled={saving} style={{ flex: 2, padding: "11px", borderRadius: "8px", background: "#7239ea", border: "none", color: "white", fontSize: "0.85rem", fontWeight: "700", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            {saving ? "Creating..." : "Create Order"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
+export default function AdminOrders() {
+  const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isAbandonedPage = location.pathname.includes("abandonnees");
+  const currencySymbol = "DA";
+
+  const [orders, setOrders]             = useState([]);
+  const [metrics, setMetrics]           = useState({ total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, confirmation_rate: "0%" });
+  const [activeAgents, setActiveAgents] = useState([]);
+  const [products, setProducts]         = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [message, setMessage]           = useState(null);
+  const [search, setSearch]             = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [productFilter, setProductFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [agentFilter, setAgentFilter]   = useState("all");
+  const [periodFilter, setPeriodFilter] = useState("all");
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [isMoreOpen, setIsMoreOpen]     = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const params = { type: isAbandonedPage ? "abandoned" : "all", search: search || undefined, status: statusFilter !== "all" ? statusFilter : undefined };
+      const res = await api.get("/orders", { params });
+      setOrders(Array.isArray(res.data?.orders) ? res.data.orders : []);
+      setMetrics(res.data?.metrics || { total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, confirmation_rate: "0%" });
+      setActiveAgents(Array.isArray(res.data?.active_agents) ? res.data.active_agents : []);
+    } catch (err) { console.error(err); } finally { setLoading(false); }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const res = await api.get("/products");
+      const raw = res.data;
+      setProducts(Array.isArray(raw) ? raw : Array.isArray(raw?.products) ? raw.products : Array.isArray(raw?.data) ? raw.data : []);
+    } catch (err) { console.error(err); setProducts([]); }
+  };
+
+  useEffect(() => { fetchOrders(); }, [location.pathname, search, statusFilter]);
+  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => {
+    const h = (e) => {
+      if (!e.target.closest(".custom-select-wrapper")) setOpenDropdown(null);
+      if (!e.target.closest(".more-dd")) setIsMoreOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, []);
+
+  const handleAssignAgent = async (orderId, agentId) => {
+    try {
+      const value = agentId === "" ? null : parseInt(agentId);
+      const res = await api.post(`/orders/${orderId}/assign`, { assigned_to: value });
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, assigned_to: value, assignedAgent: res.data.order.assignedAgent } : o));
+      if (selectedOrder?.id === orderId) setSelectedOrder(res.data.order);
+    } catch (err) { console.error(err); alert("Erreur d'attribution."); }
+  };
+
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    try {
+      const res = await api.put(`/orders/${orderId}`, { status: newStatus });
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      if (selectedOrder?.id === orderId) setSelectedOrder(res.data.order);
+    } catch (err) { console.error(err); alert("Erreur de mise à jour."); }
+  };
+
+  const showToast = (text, type = "success") => { setMessage({ text, type }); setTimeout(() => setMessage(null), 5000); };
+
+  const filteredOrders = orders.filter(order => {
+    if (productFilter !== "all" && !order.items?.some(i => i.product_id === parseInt(productFilter))) return false;
+    if (agentFilter !== "all" && String(order.assigned_to) !== agentFilter) return false;
+    if (sourceFilter !== "all" && !(order.shop?.name || "").toLowerCase().includes(sourceFilter.toLowerCase())) return false;
+    if (periodFilter !== "all") {
+      const d = new Date(order.created_at), today = new Date();
+      if (periodFilter === "today")     return d.toDateString() === today.toDateString();
+      if (periodFilter === "yesterday") { const y = new Date(); y.setDate(today.getDate()-1); return d.toDateString() === y.toDateString(); }
+      if (periodFilter === "this_week") { const w = new Date(); w.setDate(today.getDate()-7); return d >= w; }
+    }
+    return true;
+  });
+
+  return (
+    <div style={{ color: "var(--text-main)", minHeight: "100%", paddingBottom: "40px" }}>
+      <style>{`.cs-item-hover:hover{background:rgba(114,57,234,0.15)!important} .trow:hover{background:rgba(255,255,255,0.01)} .ddi:hover{background:rgba(255,255,255,0.05)!important}`}</style>
+
+      {/* Toast */}
+      {message && (
+        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 10001, background: message.type === "success" ? "#50cd89" : "#f1416c", color: "white", padding: "12px 24px", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.2)", fontWeight: "600" }}>{message.text}</div>
+      )}
+
+      {/* Page Header */}
+      <div className="page-header" style={{ marginBottom: "20px" }}>
+        <div>
+          <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <svg style={{ width: "24px", height: "24px", color: "var(--purple)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            {isAbandonedPage ? "Abandoned Orders" : "Orders"}
+            <span style={{ fontSize: "0.65rem", padding: "2px 8px", background: "rgba(137,80,252,0.1)", color: "var(--purple)", borderRadius: "4px", fontWeight: "700" }}>• just now</span>
+          </h2>
+          <p className="page-subtitle">Manage, assign, and track all orders</p>
+        </div>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          {/* Period tabs */}
+          <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "8px", gap: "2px" }}>
+            {[["all","All"],["today","Today"],["yesterday","Yesterday"],["this_week","This week"]].map(([v,l]) => (
+              <button key={v} onClick={() => setPeriodFilter(v)} style={{ padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600", background: periodFilter===v ? "var(--bg-card)" : "transparent", color: periodFilter===v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
+            ))}
+            <div className="more-dd" style={{ position: "relative" }}>
+              <button onClick={() => setIsMoreOpen(v => !v)} style={{ padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600", background: "transparent", color: "var(--text-muted)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}>
+                More <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              {isMoreOpen && (
+                <div style={{ position: "absolute", top: "100%", right: 0, background: "#18181b", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "4px", minWidth: "160px", boxShadow: "0 10px 25px rgba(0,0,0,0.5)", zIndex: 1000 }}>
+                  <button className="ddi" onClick={() => { setPeriodFilter("all"); setIsMoreOpen(false); }} style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px", width: "100%" }}>Clear Filter</button>
+                  <button className="ddi" onClick={() => { navigate(isAbandonedPage ? "/commandes/toutes" : "/commandes/abandonnees"); setIsMoreOpen(false); }} style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px", width: "100%" }}>{isAbandonedPage ? "All Orders" : "Abandoned Orders"}</button>
+                </div>
+              )}
+            </div>
+          </div>
+          <button onClick={() => setIsCreateModalOpen(true)} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--purple)", color: "white", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Order
+          </button>
+        </div>
+      </div>
+
+      {/* Metrics */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "16px", marginBottom: "24px" }}>
+        {[
+          { label: "TOTAL ORDERS",      value: metrics.total_orders,      icon: Icons.total,     color: "#7239ea", sub: `${metrics.total_orders} today` },
+          { label: "CONFIRMED",         value: metrics.confirmed,         icon: Icons.confirmed, color: "#50cd89", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
+          { label: "CANCELLED",         value: metrics.cancelled,         icon: Icons.cancelled, color: "#f1416c", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
+          { label: "PENDING",           value: metrics.pending,           icon: Icons.pending,   color: "#ffc700", sub: "awaiting action" },
+          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, icon: Icons.rate,      color: "#00a3ff", sub: "overall rate" },
+        ].map((c, i) => (
+          <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+              <span style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.5px" }}>{c.label}</span>
+              <span style={{ color: c.color }}>{c.icon}</span>
+            </div>
+            <div style={{ fontSize: "1.8rem", fontWeight: "800" }}>{c.value}</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "4px" }}>{c.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "8px 12px 8px 36px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none" }}/>
+        </div>
+        <CustomSelect id="source" value={sourceFilter} onChange={setSourceFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Sources"
+          options={[{value:"all",label:"All Sources"},{value:"shopify",label:"Shopify"},{value:"sheets",label:"Google Sheets"}]}/>
+        <CustomSelect id="status" value={statusFilter} onChange={setStatusFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Status"
+          options={[{value:"all",label:"All Status",dot:"#7239ea"},{value:"pending",label:"Pending",dot:"#ffc700"},{value:"confirmed",label:"Confirmed",dot:"#50cd89"},{value:"processing",label:"Processing",dot:"#00a3ff"},{value:"shipped",label:"Shipped",dot:"#00a3ff"},{value:"delivered",label:"Delivered",dot:"#50cd89"},{value:"cancelled",label:"Cancelled",dot:"#f1416c"},{value:"returned",label:"Returned",dot:"#f1416c"}]}/>
+        <CustomSelect id="agent" value={agentFilter} onChange={setAgentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les agents"
+          options={[{value:"all",label:"Tous les agents"},...activeAgents.map(a=>({value:String(a.id),label:a.name}))]}/>
+        <CustomSelect id="product" value={productFilter} onChange={setProductFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les produits"
+          options={[{value:"all",label:"Tous les produits"},...products.map(p=>({value:String(p.id),label:p.name}))]}/>
+      </div>
+
+      {/* Table */}
+      {loading ? (
+        <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
+          <div style={{ border: "3px solid var(--border-color)", borderTop: "3px solid var(--purple)", borderRadius: "50%", width: "32px", height: "32px", animation: "spin 1s linear infinite" }}/>
+          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+        </div>
+      ) : filteredOrders.length === 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px" }}>
+          <svg style={{ width: "56px", height: "56px", marginBottom: "16px", opacity: 0.12 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+          <p style={{ color: "var(--text-muted)", fontWeight: "500" }}>No orders found — create a new order to start</p>
+        </div>
+      ) : (
+        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
+                {["ORDER","CLIENT","ARTICLES","TOTAL","STATUS","AGENT","TRACKING","DATE","ACTION"].map(h => (
+                  <th key={h} style={{ padding: "14px 18px", fontWeight: "600", color: "var(--text-muted)", fontSize: "0.72rem", letterSpacing: "0.5px" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredOrders.map(order => {
+                const ss = getStatusStyle(order.status);
+                const isPaid = order.financial_status === "paid";
+                return (
+                  <tr key={order.id} className="trow" style={{ borderBottom: "1px solid var(--border-color)" }}>
+                    <td style={{ padding: "14px 18px", fontWeight: "700" }}>
+                      <span onClick={() => setSelectedOrder(order)} style={{ color: "var(--purple)", cursor: "pointer", textDecoration: "underline" }}>{order.order_number}</span>
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      <div style={{ fontWeight: "600" }}>{order.client?.name || order.customer_name || "—"}</div>
+                      <div style={{ color: "var(--text-muted)", fontSize: "0.72rem" }}>{order.client?.phone || order.customer_phone || "—"}</div>
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      {order.items?.map((item, idx) => (
+                        <div key={idx} style={{ fontSize: "0.78rem", marginBottom: "2px" }}>{item.product_name} <span style={{ color: "var(--purple)", fontWeight: "700" }}>×{item.quantity}</span></div>
+                      )) || <span style={{ color: "var(--text-muted)" }}>—</span>}
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      <div style={{ fontWeight: "700" }}>{order.total_price} {order.currency || currencySymbol}</div>
+                      <span style={{ display: "inline-block", fontSize: "0.62rem", padding: "1px 6px", borderRadius: "4px", background: isPaid ? "rgba(27,197,189,0.1)" : "rgba(246,78,96,0.1)", color: isPaid ? "#50cd89" : "#f1416c", marginTop: "3px", fontWeight: "700" }}>{(order.financial_status||"UNPAID").toUpperCase()}</span>
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: "6px", background: ss.bg, color: ss.text, fontSize: "0.72rem", fontWeight: "700" }}>{order.status.toUpperCase()}</span>
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      <select value={order.assigned_to||""} onChange={e => handleAssignAgent(order.id, e.target.value)}
+                        style={{ padding: "6px 10px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.78rem", outline: "none", cursor: "pointer" }}>
+                        <option value="">Non assigné</option>
+                        {activeAgents.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                      </select>
+                    </td>
+                    <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.78rem" }}>—</td>
+                    <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
+                      {new Date(order.created_at).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"})}
+                    </td>
+                    <td style={{ padding: "14px 18px" }}>
+                      <div style={{ display: "flex", gap: "6px" }}>
+                        <button onClick={() => setSelectedOrder(order)} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "600", background: "rgba(255,255,255,0.05)", color: "var(--text-main)", border: "1px solid var(--border-color)", cursor: "pointer" }}>View</button>
+                        {order.status === "pending" && <button onClick={() => handleUpdateStatus(order.id,"confirmed")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(80,205,137,0.1)", color: "#50cd89", border: "none", cursor: "pointer" }}>Confirm</button>}
+                        {order.status === "confirmed" && <button onClick={() => handleUpdateStatus(order.id,"delivered")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(0,163,255,0.1)", color: "#00a3ff", border: "none", cursor: "pointer" }}>Deliver</button>}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* New Manual Order Modal */}
+      {isCreateModalOpen && (
+        <NewOrderModal
+          products={products}
+          activeAgents={activeAgents}
+          isAbandonedPage={isAbandonedPage}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={(msg) => { showToast(msg); setIsCreateModalOpen(false); fetchOrders(); }}
+        />
+      )}
+
+      {/* Order Detail Modal */}
+      {selectedOrder && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10000, padding: "20px" }}>
+          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", width: "100%", maxWidth: "620px", padding: "28px", boxShadow: "0 12px 40px rgba(0,0,0,0.5)", maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "22px" }}>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: "700" }}>Order — <span style={{ color: "var(--purple)" }}>{selectedOrder.order_number}</span></h3>
+              <button onClick={() => setSelectedOrder(null)} style={{ background: "transparent", color: "var(--text-muted)", fontSize: "1.2rem", border: "none", cursor: "pointer" }}>✕</button>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px" }}>
+              <div>
+                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Client</strong>
+                <p style={{ fontWeight: "700", marginTop: "4px" }}>{selectedOrder.client?.name || selectedOrder.customer_name || "—"}</p>
+                <p style={{ color: "var(--text-muted)", fontSize: "0.82rem", marginTop: "2px" }}>{selectedOrder.client?.phone || selectedOrder.customer_phone || "—"}</p>
+              </div>
+              <div>
+                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase" }}>Shop</strong>
+                <p style={{ fontWeight: "600", marginTop: "4px" }}>{selectedOrder.shop?.name || "—"}</p>
+              </div>
+            </div>
+            <div style={{ marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px" }}>
+              <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Articles</strong>
+              {selectedOrder.items?.map((item, idx) => (
+                <div key={idx} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.83rem", marginBottom: "8px", background: "rgba(255,255,255,0.02)", padding: "10px 14px", borderRadius: "8px" }}>
+                  <div><strong>{item.product_name}</strong><div style={{ color: "var(--text-muted)", fontSize: "0.72rem", marginTop: "2px" }}>Unit: {item.unit_price} {selectedOrder.currency || currencySymbol}</div></div>
+                  <div style={{ textAlign: "right" }}><div style={{ fontWeight: "700" }}>×{item.quantity}</div><div style={{ color: "var(--purple)", fontWeight: "600", marginTop: "2px" }}>{item.total_price} {selectedOrder.currency || currencySymbol}</div></div>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px", fontSize: "0.88rem", fontWeight: "700" }}>
+                <span>Total:</span><span style={{ color: "#50cd89" }}>{selectedOrder.total_price} {selectedOrder.currency || currencySymbol}</span>
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px" }}>
+              <div>
+                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Assign Agent</strong>
+                <select value={selectedOrder.assigned_to||""} onChange={e => handleAssignAgent(selectedOrder.id, e.target.value)}
+                  style={{ padding: "8px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none", width: "100%" }}>
+                  <option value="">Non assigné</option>
+                  {activeAgents.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Order Status</strong>
+                <select value={selectedOrder.status} onChange={e => handleUpdateStatus(selectedOrder.id, e.target.value)}
+                  style={{ padding: "8px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none", width: "100%" }}>
+                  {["pending","confirmed","processing","shipped","delivered","cancelled","returned"].map(s => (
+                    <option key={s} value={s}>{s.charAt(0).toUpperCase()+s.slice(1)}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div>
+              <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "10px" }}>Action History</strong>
+              <div style={{ maxHeight: "160px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+                {selectedOrder.histories?.length > 0 ? selectedOrder.histories.map((h, i) => (
+                  <div key={i} style={{ fontSize: "0.73rem", borderLeft: "2px solid var(--purple)", paddingLeft: "10px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-muted)", marginBottom: "2px" }}>
+                      <span>{h.user?.name||"System"}</span><span>{new Date(h.created_at).toLocaleString()}</span>
+                    </div>
+                    <p style={{ color: "var(--text-main)", fontWeight: "500" }}>{h.description}</p>
+                  </div>
+                )) : <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontSize: "0.78rem" }}>Aucun historique.</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
