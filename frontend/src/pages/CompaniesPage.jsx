@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Building2, 
   Search, 
-  Check, 
   Plus, 
   Layers 
 } from 'lucide-react';
+import ConnectCompanyModal from '../components/ConnectCompanyModal';
 
 const DELIVERY_COMPANIES = [
   { id: 'ameex', name: 'AMEEX', logoColor: '#e11d48', textColor: '#ffffff', initial: 'A' },
@@ -16,6 +16,29 @@ const DELIVERY_COMPANIES = [
 ];
 
 export default function CompaniesPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [showConnectModal, setShowConnectModal] = useState(false);
+
+  const filteredCompanies = DELIVERY_COMPANIES.filter(company =>
+    company.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleConnectClick = (company) => {
+    setSelectedCompany(company);
+    setShowConnectModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowConnectModal(false);
+    setSelectedCompany(null);
+  };
+
+  const handleConnectSuccess = () => {
+    // TODO: Refresh companies list or show toast
+    console.log('Company connected successfully');
+  };
+
   return (
     <div className="main-content" style={{ padding: '28px 32px', background: 'var(--bg-app)' }}>
       
@@ -59,7 +82,7 @@ export default function CompaniesPage() {
             backgroundColor: 'var(--bg-app)',
             padding: '1px 6px',
             borderRadius: '4px'
-          }}>5 companies</span>
+          }}>{filteredCompanies.length} companies</span>
         </div>
 
         {/* Floating Right Search field */}
@@ -69,6 +92,8 @@ export default function CompaniesPage() {
             type="text"
             className="search-input"
             placeholder="Search companies..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             style={{ paddingLeft: '34px', height: '34px', borderRadius: '8px' }}
           />
         </div>
@@ -80,7 +105,7 @@ export default function CompaniesPage() {
         gridTemplateColumns: 'repeat(4, 1fr)', 
         gap: '20px' 
       }}>
-        {DELIVERY_COMPANIES.map((company) => (
+        {filteredCompanies.map((company) => (
           <div 
             key={company.id} 
             className="product-card" 
@@ -126,6 +151,7 @@ export default function CompaniesPage() {
 
             {/* Solid Action Execution Bar Button */}
             <button
+              onClick={() => handleConnectClick(company)}
               style={{
                 width: '100%',
                 display: 'flex',
@@ -152,6 +178,14 @@ export default function CompaniesPage() {
         ))}
       </div>
 
+      {/* Connect Modal */}
+      {showConnectModal && selectedCompany && (
+        <ConnectCompanyModal
+          company={selectedCompany}
+          onClose={handleCloseModal}
+          onSuccess={handleConnectSuccess}
+        />
+      )}
     </div>
   );
 }

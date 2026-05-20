@@ -1,7 +1,7 @@
 import api from "../api/axios";
 
 export const getTeamData = async () => {
-  const response = await api.get("/auth/team");
+  const response = await api.get("/team");
   return response.data;
 };
 
