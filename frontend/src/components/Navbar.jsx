@@ -19,6 +19,7 @@ export default function Navbar() {
   ];
 
   const currentLang = languages.find(l => l.code === language) || languages[1];
+  const isAgent = user?.role === "staff";
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -150,7 +151,7 @@ export default function Navbar() {
         </button>
 
         {/* Profile Dropdown for Agents/Everyone */}
-        {user && (
+        {isAgent && (
           <div className="nav-item-profile-container" style={{ position: 'relative' }}>
             <div 
               onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
