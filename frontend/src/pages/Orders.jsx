@@ -4,14 +4,6 @@ import { AuthContext } from "../auth/AuthContext";
 import AdminOrders from "./AdminOrders.jsx";
 import AgentOrders from "./AgentOrders.jsx";
 import AbandonedOrders from "./AbandonedOrders.jsx";
-
-/**
- * Orders — role + route based router.
- *
- * /commandes/abandonnees  → AbandonedOrders (dedicated recovery dashboard, both roles)
- * /commandes/toutes       → AdminOrders  (role: admin)
- *                         → AgentOrders  (role: staff)
- */
 export default function Orders() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
