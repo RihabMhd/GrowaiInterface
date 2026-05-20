@@ -22,13 +22,13 @@ GrowAI is a centralized system that helps production agencies manage:
 
 ## 🧱 Tech Stack
 
-- ⚛️ Frontend: :contentReference[oaicite:0]{index=0}
-- 🎨 Styling: CSS / Tailwind (if used)
+- ⚛️ Frontend: :React
+- 🎨 Styling: CSS / Tailwind 
 - 🌐 API Communication: Axios / Fetch API
 - 🔐 Authentication: JWT + OAuth2 (Google / Facebook)
 - 🔌 Real-time: WebSockets (Socket.io compatible backend)
-- 🧩 State Management: Context API / Redux (if applicable)
-- 🧠 Backend: :contentReference[oaicite:1]{index=1} (REST API)
+- 🧩 State Management: Context API / Redux 
+- 🧠 Backend: :Laravel (REST API)
 
 ---
 
