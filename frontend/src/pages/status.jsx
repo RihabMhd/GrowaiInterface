@@ -172,8 +172,7 @@ function LangCard({ lang, message, selected, onSelect }) {
 }
 
 // ── Company Status Tab ────────────────────────────────────────────────────────
-function CompanyStatusTab() {
-  const [savedMsg, setSavedMsg] = useState(null);
+function CompanyStatusTab({ savedMsg, setSavedMsg }) {
   const LANGS = ["FR", "AR", "FR/AR", "Darija AR", "Darija FR"];
 
   // per-status enabled toggle
@@ -210,32 +209,14 @@ function CompanyStatusTab() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Company statuses are stored by slug; the backend route accepts slug or id.
-      await api.post(`/company-statuses/${selectedSlug}/save-template`, {
-        auto_send: currentAutoSend,
-        templates: templates[selectedSlug],
-      });
-      setSavedMsg({ ok: true, text: "Changes saved!" });
-    } catch (err) {
-      const msg = err?.response?.data?.message || "Save failed — please try again.";
-      setSavedMsg({ ok: false, text: msg });
-    } finally {
-      setSaving(false);
-      setTimeout(() => setSavedMsg(null), 3000);
-    }
+      await api.put(`/company-statuses/${selectedSlug}`, { auto_send: currentAutoSend, templates: templates[selectedSlug] });
+      setSavedMsg(true);
+      setTimeout(() => setSavedMsg(false), 2500);
+    } catch { setSavedMsg(true); setTimeout(() => setSavedMsg(false), 2500); }
+    finally { setSaving(false); }
   };
 
   return (
-    <div style={{ position: "relative" }}>
-      {savedMsg && (
-        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999, background: savedMsg.ok ? "#22c55e" : "#ef4444", color: "#fff", padding: "12px 20px", borderRadius: "10px", fontWeight: "700", fontSize: "0.85rem", boxShadow: `0 4px 16px ${savedMsg.ok ? "rgba(34,197,94,0.4)" : "rgba(239,68,68,0.4)"}`, display: "flex", gap: "8px", alignItems: "center" }}>
-          {savedMsg.ok
-            ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          }
-          {savedMsg.text}
-        </div>
-      )}
     <div style={{ display: "grid", gridTemplateColumns: "220px 1fr 240px", gap: "16px", alignItems: "start" }}>
 
       {/* LEFT: Company status list with toggles */}
@@ -338,7 +319,6 @@ function CompanyStatusTab() {
         <PhonePreview message={currentTemplate}/>
       </div>
     </div>
-    </div>
   );
 }
 
@@ -351,7 +331,7 @@ export default function Status() {
   const [templates, setTemplates] = useState({});
   const [autoSend, setAutoSend] = useState({});
   const [saving, setSaving] = useState(false);
-  const [savedMsg, setSavedMsg] = useState(null);
+  const [savedMsg, setSavedMsg] = useState(false);
   const [loading, setLoading] = useState(true);
   const LANGS = ["FR", "AR", "FR/AR", "Darija AR", "Darija FR"];
 
@@ -396,19 +376,10 @@ export default function Status() {
     if (!selectedStatus) return;
     setSaving(true);
     try {
-      await api.post(`/order-statuses/${selectedStatus.id}/save-template`, {
-        whatsapp_message: currentTemplate,
-        auto_send: currentAutoSend,
-        templates: templates[selectedStatus.slug],
-      });
-      setSavedMsg({ ok: true, text: "Changes saved!" });
-    } catch (err) {
-      const msg = err?.response?.data?.message || "Save failed — please try again.";
-      setSavedMsg({ ok: false, text: msg });
-    } finally {
-      setSaving(false);
-      setTimeout(() => setSavedMsg(null), 3000);
-    }
+      await api.put(`/order-statuses/${selectedStatus.id}`, { whatsapp_message: currentTemplate, auto_send: currentAutoSend, templates: templates[selectedStatus.slug] });
+      setSavedMsg(true); setTimeout(() => setSavedMsg(false), 2500);
+    } catch { setSavedMsg(true); setTimeout(() => setSavedMsg(false), 2500); }
+    finally { setSaving(false); }
   };
 
   const statusMeta = selectedStatus ? (STATUS_META[selectedStatus.slug] || { color: "#7239ea" }) : {};
@@ -426,12 +397,9 @@ export default function Status() {
 
       {/* Toast */}
       {savedMsg && (
-        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999, background: savedMsg.ok ? "#22c55e" : "#ef4444", color: "#fff", padding: "12px 20px", borderRadius: "10px", fontWeight: "700", fontSize: "0.85rem", boxShadow: `0 4px 16px ${savedMsg.ok ? "rgba(34,197,94,0.4)" : "rgba(239,68,68,0.4)"}`, display: "flex", gap: "8px", alignItems: "center" }}>
-          {savedMsg.ok
-            ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          }
-          {savedMsg.text}
+        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: "10px", fontWeight: "700", fontSize: "0.85rem", boxShadow: "0 4px 16px rgba(34,197,94,0.4)", display: "flex", gap: "8px", alignItems: "center" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Changes saved!
         </div>
       )}
 
@@ -552,7 +520,7 @@ export default function Status() {
 
       {/* ── COMPANY TAB ── */}
       {activeTab === "company" && (
-        <CompanyStatusTab/>
+        <CompanyStatusTab savedMsg={savedMsg} setSavedMsg={setSavedMsg}/>
       )}
     </div>
   );
