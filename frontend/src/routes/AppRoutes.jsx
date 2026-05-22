@@ -40,7 +40,7 @@ export default function AppRoutes() {
           <Route path="/team" element={<Team />} />
           <Route path="/affilies" element={<AffiliatesPage />} />
           
-          <Route path="/sources/shopify" element={<ShopifyIntegrationPage />} />
+          <Route path="/integrations/shopify" element={<ShopifyIntegrationPage />} />
           <Route path="/sources/google-sheets" element={<GoogleIntegrationPage />} />
           
           <Route path="/apps/whatsapp" element={<PlaceholderPage title="WhatsApp PRO" />} />

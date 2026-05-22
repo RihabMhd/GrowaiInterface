@@ -160,7 +160,7 @@ export default function Sidebar({ user, onLogout }) {
   ];
 
   const sourceLinks = [
-    { name: "Shopify", path: "/sources/shopify", icon: Icons.shopify },
+    { name: "Shopify", path: "/integrations/shopify", icon: Icons.shopify },
     { name: "Google Sheets", path: "/sources/google-sheets", icon: Icons.sheets },
   ];
 
