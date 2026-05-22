@@ -424,11 +424,11 @@ export default function ShopifyIntegrationPage() {
   const loadStatus = useCallback(async () => {
     setStatusLoading(true);
     try {
-      const data = await apiFetch('/status');
+      const data = await apiFetch('/shopify/status');
       setStatus(data);
     } catch (err) {
       setStatus({ connected: false });
-      showToast('Could not reach Shopify API.', 'error');
+      // Remove the toast here — a failed status check just means not connected
     } finally {
       setStatusLoading(false);
     }
