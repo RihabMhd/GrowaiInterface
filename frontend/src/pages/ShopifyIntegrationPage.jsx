@@ -178,7 +178,7 @@ function ProductsTab({ shopId }) {
     try {
       const params = new URLSearchParams({ per_page: 12, page, ...(search && { search }) });
       if (shopId) params.set('shop_id', shopId);
-      const res = await apiFetch(`/products?${params}`);
+      const res = await apiFetch(`/shopify/products?${params}`);
       setData(res);
     } catch { setData(null); }
     finally { setLoading(false); }
@@ -302,7 +302,7 @@ function OrdersTab({ shopId }) {
     try {
       const params = new URLSearchParams({ per_page: 15, page, ...(status && { status }), ...(search && { search }) });
       if (shopId) params.set('shop_id', shopId);
-      const res = await apiFetch(`/orders?${params}`);
+      const res = await apiFetch(`/shopify/orders?${params}`);
       setData(res);
     } catch { setData(null); }
     finally { setLoading(false); }
@@ -447,9 +447,8 @@ export default function ShopifyIntegrationPage() {
     if (syncing) return;
     setSyncing(true);
     try {
-      const res = await apiFetch('/sync-products', { method: 'POST' });
+      const res = await apiFetch('/shopify/sync-products', { method: 'POST' });
       showToast(res.message || 'Product sync queued!', 'success');
-      // Refresh status after a short delay to reflect updated last_synced_at
       setTimeout(loadStatus, 1500);
     } catch (err) {
       showToast(err.message || 'Sync failed.', 'error');
