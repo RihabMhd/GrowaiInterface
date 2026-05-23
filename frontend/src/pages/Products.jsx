@@ -15,15 +15,15 @@ const StatCard = ({ icon: Icon, iconColor, label, value }) => (
 );
 
 const Products = () => {
-  const [products, setProducts]         = useState([]);
-  const [loading, setLoading]           = useState(false);
-  const [showProductModal, setShowProductModal] = useState(false);
-  const [editingProduct, setEditingProduct]     = useState(null);
-  const [pagination, setPagination]     = useState({ current_page: 1, last_page: 1, total: 0 });
-  const [searchTerm, setSearchTerm]     = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
-  const [viewMode, setViewMode]         = useState('grid');
-  const [error, setError]               = useState(null);
+  const [products, setProducts]                   = useState([]);
+  const [loading, setLoading]                     = useState(false);
+  const [showProductModal, setShowProductModal]   = useState(false);
+  const [editingProduct, setEditingProduct]       = useState(null);
+  const [pagination, setPagination]               = useState({ current_page: 1, last_page: 1, total: 0 });
+  const [searchTerm, setSearchTerm]               = useState('');
+  const [filterStatus, setFilterStatus]           = useState('');
+  const [viewMode, setViewMode]                   = useState('grid');
+  const [error, setError]                         = useState(null);
 
   // ─── Fetch ────────────────────────────────────────────────────────────────
   const fetchProducts = async (page = 1) => {
@@ -33,8 +33,8 @@ const Products = () => {
       const params = {
         page,
         per_page: 15,
-        ...(searchTerm    && { search: searchTerm }),
-        ...(filterStatus  && { status: filterStatus }),
+        ...(searchTerm   && { search: searchTerm }),
+        ...(filterStatus && { status: filterStatus }),
       };
       const { data } = await api.get('/products', { params });
       setProducts(data.data);
@@ -61,7 +61,7 @@ const Products = () => {
         await api.post('/products', productData);
       }
       setEditingProduct(null);
-      await fetchProducts();
+      await fetchProducts(pagination.current_page);
       setShowProductModal(false);
     } catch (err) {
       const errors = err.response?.data?.errors;
@@ -77,7 +77,7 @@ const Products = () => {
     if (!window.confirm('Delete this product?')) return;
     try {
       await api.delete(`/products/${id}`);
-      fetchProducts();
+      fetchProducts(pagination.current_page);
     } catch {
       alert('Failed to delete product');
     }
@@ -95,15 +95,15 @@ const Products = () => {
   const draftCount     = products.filter(p => p.status === 'draft').length;
   const totalInventory = products.reduce((acc, p) => acc + (p.total_stock || 0), 0);
 
-  const now = new Date();
+  const now      = new Date();
   const syncTime = [
-    String(now.getDate()).padStart(2,'0'),
-    String(now.getMonth()+1).padStart(2,'0'),
-    now.getFullYear()
+    String(now.getDate()).padStart(2, '0'),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    now.getFullYear(),
   ].join('/') + ' ' + [
-    String(now.getHours()).padStart(2,'0'),
-    String(now.getMinutes()).padStart(2,'0'),
-    String(now.getSeconds()).padStart(2,'0'),
+    String(now.getHours()).padStart(2, '0'),
+    String(now.getMinutes()).padStart(2, '0'),
+    String(now.getSeconds()).padStart(2, '0'),
   ].join(':');
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -148,10 +148,10 @@ const Products = () => {
       {/* Stats */}
       {products.length > 0 && (
         <div className="stats-grid">
-          <StatCard icon={Package}     iconColor="#60a5fa" label="Total Products"   value={pagination.total} />
-          <StatCard icon={CheckCircle} iconColor="#4ade80" label="Active"           value={activeCount} />
-          <StatCard icon={FileText}    iconColor="#fb923c" label="Draft"            value={draftCount} />
-          <StatCard icon={Boxes}       iconColor="#a78bfa" label="Total Inventory"  value={totalInventory} />
+          <StatCard icon={Package}     iconColor="#60a5fa" label="Total Products"  value={pagination.total} />
+          <StatCard icon={CheckCircle} iconColor="#4ade80" label="Active"          value={activeCount} />
+          <StatCard icon={FileText}    iconColor="#fb923c" label="Draft"           value={draftCount} />
+          <StatCard icon={Boxes}       iconColor="#a78bfa" label="Total Inventory" value={totalInventory} />
         </div>
       )}
 
@@ -210,7 +210,30 @@ const Products = () => {
         <TableView products={products} onEdit={openEdit} onDelete={deleteProduct} pagination={pagination} />
       )}
 
-      {/* Modal — no shopId prop needed anymore */}
+      {/* Pagination */}
+      {!loading && pagination.last_page > 1 && (
+        <div className="pagination-bar">
+          <button
+            className="pagination-btn"
+            disabled={pagination.current_page === 1}
+            onClick={() => fetchProducts(pagination.current_page - 1)}
+          >
+            Previous
+          </button>
+          <span className="pagination-info">
+            Page {pagination.current_page} of {pagination.last_page}
+          </span>
+          <button
+            className="pagination-btn"
+            disabled={pagination.current_page === pagination.last_page}
+            onClick={() => fetchProducts(pagination.current_page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Modal — no shopId prop needed, backend resolves from auth token */}
       {showProductModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -248,18 +271,18 @@ const GridView = ({ products, onEdit, onDelete }) => (
                 {(product.status || 'draft').toUpperCase()}
               </span>
             </div>
-            <div className="product-card-meta">{product.type || 'General'}</div>
+            <div className="product-card-meta">{product.product_type || 'General'}</div>
             <div className="product-card-price">${Number(price).toFixed(2)}</div>
             {stock > 0 && <div className="product-card-stock">{stock} in stock</div>}
             <div className="product-card-cost">
               <span className="product-card-cost-label">Cost: </span>
               <span className="product-card-cost-value">${Number(cost).toFixed(2)}</span>
-              <span style={{ marginLeft:'auto', color: margin >= 30 ? 'var(--success)' : 'var(--warning)', fontWeight:'600' }}>
+              <span style={{ marginLeft: 'auto', color: margin >= 30 ? 'var(--success)' : 'var(--warning)', fontWeight: '600' }}>
                 {margin}%
               </span>
             </div>
             <div className="product-card-actions">
-              <button onClick={() => onEdit(product)}   className="btn-edit">Edit</button>
+              <button onClick={() => onEdit(product)}      className="btn-edit">Edit</button>
               <button onClick={() => onDelete(product.id)} className="btn-delete">Delete</button>
             </div>
           </div>
@@ -276,7 +299,7 @@ const TableView = ({ products, onEdit, onDelete, pagination }) => (
       <table className="products-table">
         <thead>
           <tr>
-            {['PRODUCT','SOURCE','STATUS','TYPE','VENDOR','PRICE','COST','MARGIN','ACTIONS']
+            {['PRODUCT', 'SOURCE', 'STATUS', 'TYPE', 'VENDOR', 'PRICE', 'COST', 'MARGIN', 'ACTIONS']
               .map(col => <th key={col}>{col}</th>)}
           </tr>
         </thead>
