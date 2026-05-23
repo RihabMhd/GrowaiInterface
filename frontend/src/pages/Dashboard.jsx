@@ -64,25 +64,31 @@ function StatsBlock({ stats, loading }) {
           iconClass="icon-primary"
           title="Total commandes"
           value={stats.total}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
+          icon={null}
         />
         <KpiCard loading={loading}
           iconClass="icon-success"
           title="Confirmées"
           value={stats.confirmed}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>}
+          icon={null}
         />
         <KpiCard loading={loading}
           iconClass="icon-warning"
           title="En attente"
           value={stats.pending}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>}
+          icon={null}
         />
         <KpiCard loading={loading}
           iconClass="icon-danger"
           title="Annulées"
           value={stats.cancelled}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+          icon={null}
+        />
+        <KpiCard loading={loading}
+          iconClass="icon-primary"
+          title="Taux de confirmation moyen"
+          value={loading ? "…" : `${stats.confirmation_rate}%`}
+          icon={null}
         />
         <KpiCard loading={loading}
           iconClass=""

@@ -65,10 +65,10 @@ export default function ClientsPage() {
       <div className="page-header" style={{ marginBottom: '12px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-            <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={16} style={{ color: 'var(--text-main)' }} />
+            <div style={{ width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={16} style={{ color: '#2d2d2d' }} />
             </div>
-            <h1 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700' }}>Clients</h1>
+            <h1 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '700' }}>Clients</h1>
           </div>
           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Manage and view your registered consumer base</p>
         </div>
@@ -77,12 +77,12 @@ export default function ClientsPage() {
           className="btn-primary-action" 
           style={{ 
             backgroundColor: 'var(--purple)', 
-            borderRadius: '8px',
-            padding: '7px 14px',
+            borderRadius: '6px',
+            padding: '6px 12px',
             fontSize: '12px'
           }}
         >
-          <RefreshCw size={12} />
+          <RefreshCw size={11} />
           Sync from Orders
         </button>
       </div>
@@ -90,33 +90,25 @@ export default function ClientsPage() {
       {/* Grid of Independent Metric Cards */}
       <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-            <Users size={12} style={{ color: 'var(--primary)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span className="card-title">TOTAL CLIENTS</span>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0 }}/>
           </div>
           <div className="card-value">3</div>
         </div>
         
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <Users size={14} style={{ color: 'var(--success)' }} />
-            <span className="card-title" style={{ textTransform: 'none', fontSize: '11px', fontWeight: '600' }}>TOTAL ORDERS</span>
-          </div>
-          <div className="card-value" style={{ fontSize: '28px', fontWeight: '700' }}>3</div>
-        </div>
-
-        <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-            <Users size={12} style={{ color: 'var(--success)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span className="card-title">TOTAL ORDERS</span>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)', flexShrink: 0 }}/>
           </div>
           <div className="card-value">3</div>
         </div>
 
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-            <DollarSign size={12} style={{ color: 'var(--warning)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span className="card-title">TOTAL REVENUE</span>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--warning)', flexShrink: 0 }}/>
           </div>
           <div className="card-value">18.00 MAD</div>
         </div>

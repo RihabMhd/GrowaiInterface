@@ -437,8 +437,8 @@ export default function AdminOrders() {
       {/* Page Header */}
       <div className="page-header" style={{ marginBottom: "12px" }}>
         <div>
-          <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.1rem" }}>
-            <svg style={{ width: "20px", height: "20px", color: "var(--purple)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.05rem" }}>
+            <svg style={{ width: "18px", height: "18px", color: "#2d2d2d" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             {isAbandonedPage ? "Abandoned Orders" : "Orders"}
           </h2>
           <p className="page-subtitle">Manage, assign, and track all orders</p>
@@ -471,18 +471,16 @@ export default function AdminOrders() {
       {/* Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px", marginBottom: "12px" }}>
         {[
-          { label: "TOTAL ORDERS",      value: metrics.total_orders,      icon: Icons.total,     color: "#7239ea", sub: `${metrics.total_orders} today` },
-          { label: "CONFIRMED",         value: metrics.confirmed,         icon: Icons.confirmed, color: "#50cd89", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
-          { label: "CANCELLED",         value: metrics.cancelled,         icon: Icons.cancelled, color: "#f1416c", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
-          { label: "PENDING",           value: metrics.pending,           icon: Icons.pending,   color: "#ffc700", sub: "awaiting action" },
-          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, icon: Icons.rate,      color: "#00a3ff", sub: "overall rate" },
+          { label: "TOTAL ORDERS",      value: metrics.total_orders,      color: "#7239ea", sub: `${metrics.total_orders} today` },
+          { label: "CONFIRMED",         value: metrics.confirmed,         color: "#50cd89", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
+          { label: "CANCELLED",         value: metrics.cancelled,         color: "#f1416c", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
+          { label: "PENDING",           value: metrics.pending,           color: "#ffc700", sub: "awaiting action" },
+          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, color: "#00a3ff", sub: "overall rate" },
         ].map((c, i) => (
           <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", alignItems: "center" }}>
               <span style={{ fontSize: "0.6rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.3px" }}>{c.label}</span>
-              <span style={{ color: c.color, width: "16px", height: "16px", display: "flex", alignItems: "center" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{width: "100%", height: "100%"}}>{c.icon}</svg>
-              </span>
+              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: c.color, flexShrink: 0 }}/>
             </div>
             <div style={{ fontSize: "1.6rem", fontWeight: "800" }}>{c.value}</div>
             <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", marginTop: "3px" }}>{c.sub}</div>
