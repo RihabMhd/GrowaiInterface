@@ -478,9 +478,9 @@ export default function AdminOrders() {
           { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, color: "#00a3ff", sub: "overall rate" },
         ].map((c, i) => (
           <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+              <span style={{ width: "28px", height: "28px", borderRadius: "50%", background: c.color, flexShrink: 0 }}/>
               <span style={{ fontSize: "0.6rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.3px" }}>{c.label}</span>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: c.color, flexShrink: 0 }}/>
             </div>
             <div style={{ fontSize: "1.6rem", fontWeight: "800" }}>{c.value}</div>
             <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", marginTop: "3px" }}>{c.sub}</div>

@@ -90,25 +90,25 @@ export default function ClientsPage() {
       {/* Grid of Independent Metric Cards */}
       <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#7239ea', flexShrink: 0 }}/>
             <span className="card-title">TOTAL CLIENTS</span>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0 }}/>
           </div>
           <div className="card-value">3</div>
         </div>
         
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#50cd89', flexShrink: 0 }}/>
             <span className="card-title">TOTAL ORDERS</span>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--success)', flexShrink: 0 }}/>
           </div>
           <div className="card-value">3</div>
         </div>
 
         <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#ffc700', flexShrink: 0 }}/>
             <span className="card-title">TOTAL REVENUE</span>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--warning)', flexShrink: 0 }}/>
           </div>
           <div className="card-value">18.00 MAD</div>
         </div>
