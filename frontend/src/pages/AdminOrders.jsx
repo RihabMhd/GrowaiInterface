@@ -5,19 +5,19 @@ import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
 
 const Icons = {
-  total: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>),
-  confirmed: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>),
-  cancelled: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>),
-  pending: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>),
-  rate: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>),
+  total: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>),
+  confirmed: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>),
+  cancelled: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>),
+  pending: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>),
+  rate: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>),
 };
 
 const getStatusStyle = (s) => {
   switch (s) {
-    case "confirmed": case "delivered": return { bg: "rgba(80,205,137,0.1)",  text: "#50cd89" };
-    case "cancelled":  case "returned":  return { bg: "rgba(241,65,108,0.1)",  text: "#f1416c" };
-    case "processing": case "shipped":   return { bg: "rgba(0,163,255,0.1)",   text: "#00a3ff" };
-    default:                             return { bg: "rgba(255,199,0,0.1)",    text: "#ffc700" };
+    case "confirmed": case "delivered": return { bg: "rgba(80,205,137,0.1)", text: "#50cd89" };
+    case "cancelled": case "returned": return { bg: "rgba(241,65,108,0.1)", text: "#f1416c" };
+    case "processing": case "shipped": return { bg: "rgba(0,163,255,0.1)", text: "#00a3ff" };
+    default: return { bg: "rgba(255,199,0,0.1)", text: "#ffc700" };
   }
 };
 
@@ -40,11 +40,11 @@ function CustomSelect({ id, value, onChange, options, placeholder, openDropdown,
         color: "var(--text-main)", fontSize: "0.8rem", cursor: "pointer", userSelect: "none",
         transition: "border-color 0.2s", minWidth: "130px"
       }}>
-        {selected?.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: selected.dot, flexShrink: 0 }}/>}
+        {selected?.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: selected.dot, flexShrink: 0 }} />}
         <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected?.label || placeholder}</span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
           style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", flexShrink: 0 }}>
-          <path d="M6 9l6 6 6-6"/>
+          <path d="M6 9l6 6 6-6" />
         </svg>
       </div>
       {isOpen && (
@@ -61,7 +61,7 @@ function CustomSelect({ id, value, onChange, options, placeholder, openDropdown,
                 background: opt.value === value ? "rgba(114,57,234,0.25)" : "transparent",
                 color: opt.value === value ? "#c4a7ff" : "var(--text-main)", transition: "background 0.15s"
               }} className="cs-item-hover">
-              {opt.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: opt.dot, flexShrink: 0 }}/>}
+              {opt.dot && <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: opt.dot, flexShrink: 0 }} />}
               <span>{opt.label}</span>
             </div>
           ))}
@@ -91,7 +91,7 @@ function ProductPicker({ products, onSelect, onClose }) {
       padding: "10px", boxShadow: "0 16px 40px rgba(0,0,0,0.7)", zIndex: 9999
     }}>
       <input autoFocus placeholder="Search products..." value={q} onChange={e => setQ(e.target.value)}
-        style={{ ...inputStyle, marginBottom: "8px", padding: "8px 12px", background: "rgba(255,255,255,0.06)" }}/>
+        style={{ ...inputStyle, marginBottom: "8px", padding: "8px 12px", background: "rgba(255,255,255,0.06)" }} />
       <div style={{ maxHeight: "200px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "2px" }}>
         {filtered.length === 0 ? (
           <p style={{ color: "var(--text-muted)", fontSize: "0.8rem", textAlign: "center", padding: "12px" }}>No products found</p>
@@ -104,7 +104,7 @@ function ProductPicker({ products, onSelect, onClose }) {
               <div style={{ fontSize: "0.83rem", fontWeight: "600", color: "var(--text-main)" }}>{p.name}</div>
               <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "2px" }}>{p.price} MAD</div>
             </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
           </div>
         ))}
       </div>
@@ -130,14 +130,14 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
     setShowPicker(false);
   };
   const removeItem = (pid) => setForm(p => ({ ...p, items: p.items.filter(i => i.product_id !== pid) }));
-  const updateQty  = (pid, qty) => { const q = Math.max(1, parseInt(qty) || 1); setForm(p => ({ ...p, items: p.items.map(i => i.product_id === pid ? { ...i, quantity: q } : i) })); };
+  const updateQty = (pid, qty) => { const q = Math.max(1, parseInt(qty) || 1); setForm(p => ({ ...p, items: p.items.map(i => i.product_id === pid ? { ...i, quantity: q } : i) })); };
   const subtotal = form.items.reduce((s, i) => s + i.price * i.quantity, 0);
-  const total    = subtotal + parseFloat(form.shipping_price || 0);
+  const total = subtotal + parseFloat(form.shipping_price || 0);
 
   const handleSubmit = async () => {
-    if (!form.customer_name.trim())  { alert("Le nom du client est requis."); return; }
-    if (!form.customer_phone.trim()) { alert("Le téléphone est requis.");     return; }
-    if (form.items.length === 0)     { alert("Ajoutez au moins un produit."); return; }
+    if (!form.customer_name.trim()) { alert("Le nom du client est requis."); return; }
+    if (!form.customer_phone.trim()) { alert("Le téléphone est requis."); return; }
+    if (form.items.length === 0) { alert("Ajoutez au moins un produit."); return; }
     try {
       setSaving(true);
       const res = await api.post("/orders", {
@@ -174,7 +174,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{ width: "32px", height: "32px", background: "rgba(114,57,234,0.15)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
             </div>
             <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-main)" }}>New Manual Order</h3>
           </div>
@@ -191,7 +191,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
             <div style={{ marginBottom: "22px" }}>
               <label style={lbl}>Delivery Company <span style={{ color: "#f1416c" }}>*</span></label>
               <div style={{ padding: "12px 14px", borderRadius: "8px", border: "1.5px dashed rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.02)", display: "flex", alignItems: "center", gap: "10px" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8l4 1 3 3v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8l4 1 3 3v4h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
                 <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>No delivery companies connected</span>
               </div>
             </div>
@@ -200,9 +200,9 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
             <div style={{ marginBottom: "22px" }}>
               <label style={lbl}>Customer</label>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <input className="modal-input" placeholder="Full Name *" value={form.customer_name} onChange={e => set("customer_name", e.target.value)} style={inputStyle}/>
-                <input className="modal-input" placeholder="Phone *" value={form.customer_phone} onChange={e => set("customer_phone", e.target.value)} style={inputStyle}/>
-                <input className="modal-input" placeholder="Email (optional)" value={form.customer_email} onChange={e => set("customer_email", e.target.value)} style={inputStyle}/>
+                <input className="modal-input" placeholder="Full Name *" value={form.customer_name} onChange={e => set("customer_name", e.target.value)} style={inputStyle} />
+                <input className="modal-input" placeholder="Phone *" value={form.customer_phone} onChange={e => set("customer_phone", e.target.value)} style={inputStyle} />
+                <input className="modal-input" placeholder="Email (optional)" value={form.customer_email} onChange={e => set("customer_email", e.target.value)} style={inputStyle} />
               </div>
             </div>
 
@@ -211,7 +211,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
               <label style={lbl}>Order Source <span style={{ color: "#f1416c" }}>*</span></label>
               <div style={{ position: "relative" }}>
                 <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", display: "flex", pointerEvents: "none" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>
                 </span>
                 <select className="modal-input" value={form.source} onChange={e => set("source", e.target.value)}
                   style={{ ...inputStyle, paddingLeft: "38px", paddingRight: "32px", appearance: "none", cursor: "pointer" }}>
@@ -221,7 +221,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
                   <option value="manual">Manual</option>
                   <option value="whatsapp">WhatsApp</option>
                 </select>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><path d="M6 9l6 6 6-6"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><path d="M6 9l6 6 6-6" /></svg>
               </div>
             </div>
 
@@ -229,9 +229,9 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
             <div style={{ marginBottom: "22px" }}>
               <label style={lbl}>Delivery Address</label>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <input className="modal-input" placeholder="Province..." value={form.province} onChange={e => set("province", e.target.value)} style={inputStyle}/>
-                <input className="modal-input" placeholder="City..." value={form.city} onChange={e => set("city", e.target.value)} style={inputStyle}/>
-                <input className="modal-input" placeholder="Street address (optional)" value={form.street} onChange={e => set("street", e.target.value)} style={inputStyle}/>
+                <input className="modal-input" placeholder="Province..." value={form.province} onChange={e => set("province", e.target.value)} style={inputStyle} />
+                <input className="modal-input" placeholder="City..." value={form.city} onChange={e => set("city", e.target.value)} style={inputStyle} />
+                <input className="modal-input" placeholder="Street address (optional)" value={form.street} onChange={e => set("street", e.target.value)} style={inputStyle} />
               </div>
             </div>
 
@@ -239,7 +239,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
             <div>
               <label style={lbl}>Note (optional)</label>
               <textarea className="modal-input" placeholder="Any notes about this order..." value={form.notes} onChange={e => set("notes", e.target.value)}
-                style={{ ...inputStyle, height: "90px", resize: "none", lineHeight: "1.5" }}/>
+                style={{ ...inputStyle, height: "90px", resize: "none", lineHeight: "1.5" }} />
             </div>
           </div>
 
@@ -251,10 +251,10 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
               <label style={{ ...lbl, marginBottom: 0 }}>Products <span style={{ color: "#f1416c" }}>*</span></label>
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowPicker(v => !v)} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "5px 10px", borderRadius: "6px", background: "rgba(114,57,234,0.12)", border: "1px solid rgba(114,57,234,0.25)", color: "#9b6dff", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                   Add product
                 </button>
-                {showPicker && <ProductPicker products={products} onSelect={addProduct} onClose={() => setShowPicker(false)}/>}
+                {showPicker && <ProductPicker products={products} onSelect={addProduct} onClose={() => setShowPicker(false)} />}
               </div>
             </div>
 
@@ -262,9 +262,9 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
             <div style={{ flex: 1, border: "1.5px dashed rgba(255,255,255,0.1)", borderRadius: "10px", background: "rgba(255,255,255,0.02)", overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "200px" }}>
               {form.items.length === 0 ? (
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", padding: "20px" }}>
-                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>
                   <button onClick={() => setShowPicker(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 18px", borderRadius: "8px", background: "#7239ea", color: "white", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     Add product
                   </button>
                 </div>
@@ -274,7 +274,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
                     <div key={item.product_id} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                       {/* Icon */}
                       <div style={{ width: "30px", height: "30px", borderRadius: "7px", background: "rgba(114,57,234,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
                       </div>
                       {/* Name + price */}
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -293,7 +293,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
                       </div>
                       {/* Remove */}
                       <button className="rm-btn" onClick={() => removeItem(item.product_id)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                       </button>
                     </div>
                   ))}
@@ -305,12 +305,12 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
             <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "var(--text-muted)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8l4 1 3 3v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8l4 1 3 3v4h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
                   Shipping
                 </div>
                 <div style={{ display: "flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "7px", overflow: "hidden" }}>
                   <input type="number" min="0" step="0.01" value={form.shipping_price} onChange={e => set("shipping_price", e.target.value)}
-                    style={{ width: "70px", padding: "6px 10px", background: "rgba(255,255,255,0.04)", border: "none", color: "var(--text-main)", fontSize: "0.82rem", outline: "none", textAlign: "right" }}/>
+                    style={{ width: "70px", padding: "6px 10px", background: "rgba(255,255,255,0.04)", border: "none", color: "var(--text-main)", fontSize: "0.82rem", outline: "none", textAlign: "right" }} />
                   <span style={{ padding: "6px 10px", background: "rgba(255,255,255,0.06)", fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", borderLeft: "1px solid rgba(255,255,255,0.08)" }}>{CURRENCY}</span>
                 </div>
               </div>
@@ -328,7 +328,7 @@ function NewOrderModal({ products, activeAgents, isAbandonedPage, onClose, onSuc
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={saving} style={{ flex: 2, padding: "11px", borderRadius: "8px", background: "#7239ea", border: "none", color: "white", fontSize: "0.85rem", fontWeight: "700", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
             {saving ? "Creating..." : "Create Order"}
           </button>
         </div>
@@ -346,20 +346,20 @@ export default function AdminOrders() {
   const isAbandonedPage = location.pathname.includes("abandonnees");
   const currencySymbol = "DA";
 
-  const [orders, setOrders]             = useState([]);
-  const [metrics, setMetrics]           = useState({ total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, confirmation_rate: "0%" });
+  const [orders, setOrders] = useState([]);
+  const [metrics, setMetrics] = useState({ total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, confirmation_rate: "0%" });
   const [activeAgents, setActiveAgents] = useState([]);
-  const [products, setProducts]         = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [message, setMessage]           = useState(null);
-  const [search, setSearch]             = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(null);
+  const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [productFilter, setProductFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
-  const [agentFilter, setAgentFilter]   = useState("all");
+  const [agentFilter, setAgentFilter] = useState("all");
   const [periodFilter, setPeriodFilter] = useState("all");
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [isMoreOpen, setIsMoreOpen]     = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -369,7 +369,16 @@ export default function AdminOrders() {
       const params = { type: isAbandonedPage ? "abandoned" : "all", search: search || undefined, status: statusFilter !== "all" ? statusFilter : undefined };
       const res = await api.get("/orders", { params });
       setOrders(Array.isArray(res.data?.orders) ? res.data.orders : []);
-      setMetrics(res.data?.metrics || { total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, confirmation_rate: "0%" });
+      setMetrics(res.data?.metrics || {
+        total_orders: 0,
+        confirmed: 0,
+        cancelled: 0,
+        pending: 0,
+        confirmation_rate: "0%",
+        today_orders: 0,
+        failed_delivery: 0,
+        delivery_rate: "0%"
+      });
       setActiveAgents(Array.isArray(res.data?.active_agents) ? res.data.active_agents : []);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -418,9 +427,9 @@ export default function AdminOrders() {
     if (sourceFilter !== "all" && !(order.shop?.name || "").toLowerCase().includes(sourceFilter.toLowerCase())) return false;
     if (periodFilter !== "all") {
       const d = new Date(order.created_at), today = new Date();
-      if (periodFilter === "today")     return d.toDateString() === today.toDateString();
-      if (periodFilter === "yesterday") { const y = new Date(); y.setDate(today.getDate()-1); return d.toDateString() === y.toDateString(); }
-      if (periodFilter === "this_week") { const w = new Date(); w.setDate(today.getDate()-7); return d >= w; }
+      if (periodFilter === "today") return d.toDateString() === today.toDateString();
+      if (periodFilter === "yesterday") { const y = new Date(); y.setDate(today.getDate() - 1); return d.toDateString() === y.toDateString(); }
+      if (periodFilter === "this_week") { const w = new Date(); w.setDate(today.getDate() - 7); return d >= w; }
     }
     return true;
   });
@@ -438,7 +447,7 @@ export default function AdminOrders() {
       <div className="page-header" style={{ marginBottom: "12px" }}>
         <div>
           <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.05rem" }}>
-            <svg style={{ width: "18px", height: "18px", color: "#2d2d2d" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <svg style={{ width: "18px", height: "18px", color: "#2d2d2d" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
             {isAbandonedPage ? "Abandoned Orders" : "Orders"}
           </h2>
           <p className="page-subtitle">Manage, assign, and track all orders</p>
@@ -446,12 +455,12 @@ export default function AdminOrders() {
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {/* Period tabs */}
           <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "6px", gap: "1px" }}>
-            {[["all","All"],["today","Today"],["yesterday","Yesterday"],["this_week","This week"]].map(([v,l]) => (
-              <button key={v} onClick={() => setPeriodFilter(v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: periodFilter===v ? "var(--bg-card)" : "transparent", color: periodFilter===v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
+            {[["all", "All"], ["today", "Today"], ["yesterday", "Yesterday"], ["this_week", "This week"]].map(([v, l]) => (
+              <button key={v} onClick={() => setPeriodFilter(v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: periodFilter === v ? "var(--bg-card)" : "transparent", color: periodFilter === v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
             ))}
             <div className="more-dd" style={{ position: "relative" }}>
               <button onClick={() => setIsMoreOpen(v => !v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: "transparent", color: "var(--text-muted)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "3px" }}>
-                More <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                More <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
               </button>
               {isMoreOpen && (
                 <div style={{ position: "absolute", top: "100%", right: 0, background: "#18181b", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "4px", minWidth: "160px", boxShadow: "0 10px 25px rgba(0,0,0,0.5)", zIndex: 1000 }}>
@@ -462,24 +471,71 @@ export default function AdminOrders() {
             </div>
           </div>
           <button onClick={() => setIsCreateModalOpen(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 14px", background: "var(--purple)", color: "white", borderRadius: "6px", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
             New Order
           </button>
         </div>
       </div>
 
       {/* Metrics */}
+      {/* Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px", marginBottom: "12px" }}>
         {[
-          { label: "TOTAL ORDERS",      value: metrics.total_orders,      bgColor: "#e1e9ff", borderColor: "#6993ff", sub: `${metrics.total_orders} today` },
-          { label: "CONFIRMED",         value: metrics.confirmed,         bgColor: "#c9f7f5", borderColor: "#1bc5bd", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
-          { label: "CANCELLED",         value: metrics.cancelled,         bgColor: "#ffe2e5", borderColor: "#f64e60", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
-          { label: "PENDING",           value: metrics.pending,           bgColor: "#fff4de", borderColor: "#ffa800", sub: "awaiting action" },
-          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, bgColor: "#e1e9ff", borderColor: "#6993ff", sub: "overall rate" },
+          {
+            label: "TOTAL ORDERS",
+            value: metrics.total_orders,
+            icon: Icons.total,
+            bgColor: "#e1e9ff",
+            iconColor: "#6993ff",
+            sub: `${metrics.today_orders || 0} today`
+          },
+          {
+            label: "CONFIRMED",
+            value: metrics.confirmed,
+            icon: Icons.confirmed,
+            bgColor: "#c9f7f5",
+            iconColor: "#1bc5bd",
+            sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed / metrics.total_orders) * 100) : 0}% rate`
+          },
+          {
+            label: "CANCELLED",
+            value: metrics.cancelled,
+            icon: Icons.cancelled,
+            bgColor: "#ffe2e5",
+            iconColor: "#f64e60",
+            sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled / metrics.total_orders) * 100) : 0}% rate`
+          },
+          {
+            label: "FAILED DELIVERY",
+            value: metrics.failed_delivery || 0,
+            icon: Icons.cancelled,  // or create a dedicated failed delivery icon
+            bgColor: "#ffe2e5",
+            iconColor: "#f64e60",
+            sub: `${metrics.total_orders > 0 ? Math.round(((metrics.failed_delivery || 0) / metrics.total_orders) * 100) : 0}% rate`
+          },
+          {
+            label: "DELIVERY RATE",
+            value: metrics.delivery_rate || "0%",
+            icon: Icons.rate,
+            bgColor: "#e1e9ff",
+            iconColor: "#6993ff",
+            sub: "rate"
+          },
         ].map((c, i) => (
           <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-              <span style={{ width: "28px", height: "28px", borderRadius: "50%", background: c.bgColor, border: `2px solid ${c.borderColor}`, flexShrink: 0 }}/>
+              <div style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                background: c.bgColor,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: c.iconColor
+              }}>
+                {c.icon}
+              </div>
               <span style={{ fontSize: "0.6rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.3px" }}>{c.label}</span>
             </div>
             <div style={{ fontSize: "1.6rem", fontWeight: "800" }}>{c.value}</div>
@@ -491,28 +547,28 @@ export default function AdminOrders() {
       {/* Filters */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "7px 10px 7px 32px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.75rem", outline: "none" }}/>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "7px 10px 7px 32px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.75rem", outline: "none" }} />
         </div>
         <CustomSelect id="source" value={sourceFilter} onChange={setSourceFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Sources"
-          options={[{value:"all",label:"All Sources"},{value:"shopify",label:"Shopify"},{value:"sheets",label:"Google Sheets"}]}/>
+          options={[{ value: "all", label: "All Sources" }, { value: "shopify", label: "Shopify" }, { value: "sheets", label: "Google Sheets" }]} />
         <CustomSelect id="status" value={statusFilter} onChange={setStatusFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Status"
-          options={[{value:"all",label:"All Status",dot:"#7239ea"},{value:"pending",label:"Pending",dot:"#ffc700"},{value:"confirmed",label:"Confirmed",dot:"#50cd89"},{value:"processing",label:"Processing",dot:"#00a3ff"},{value:"shipped",label:"Shipped",dot:"#00a3ff"},{value:"delivered",label:"Delivered",dot:"#50cd89"},{value:"cancelled",label:"Cancelled",dot:"#f1416c"},{value:"returned",label:"Returned",dot:"#f1416c"}]}/>
+          options={[{ value: "all", label: "All Status", dot: "#7239ea" }, { value: "pending", label: "Pending", dot: "#ffc700" }, { value: "confirmed", label: "Confirmed", dot: "#50cd89" }, { value: "processing", label: "Processing", dot: "#00a3ff" }, { value: "shipped", label: "Shipped", dot: "#00a3ff" }, { value: "delivered", label: "Delivered", dot: "#50cd89" }, { value: "cancelled", label: "Cancelled", dot: "#f1416c" }, { value: "returned", label: "Returned", dot: "#f1416c" }]} />
         <CustomSelect id="agent" value={agentFilter} onChange={setAgentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les agents"
-          options={[{value:"all",label:"Tous les agents"},...activeAgents.map(a=>({value:String(a.id),label:a.name}))]}/>
+          options={[{ value: "all", label: "Tous les agents" }, ...activeAgents.map(a => ({ value: String(a.id), label: a.name }))]} />
         <CustomSelect id="product" value={productFilter} onChange={setProductFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les produits"
-          options={[{value:"all",label:"Tous les produits"},...products.map(p=>({value:String(p.id),label:p.name}))]}/>
+          options={[{ value: "all", label: "Tous les produits" }, ...products.map(p => ({ value: String(p.id), label: p.name }))]} />
       </div>
 
       {/* Table */}
       {loading ? (
         <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
-          <div style={{ border: "3px solid var(--border-color)", borderTop: "3px solid var(--purple)", borderRadius: "50%", width: "32px", height: "32px", animation: "spin 1s linear infinite" }}/>
+          <div style={{ border: "3px solid var(--border-color)", borderTop: "3px solid var(--purple)", borderRadius: "50%", width: "32px", height: "32px", animation: "spin 1s linear infinite" }} />
           <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         </div>
       ) : filteredOrders.length === 0 ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px" }}>
-          <svg style={{ width: "56px", height: "56px", marginBottom: "16px", opacity: 0.12 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+          <svg style={{ width: "56px", height: "56px", marginBottom: "16px", opacity: 0.12 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /></svg>
           <p style={{ color: "var(--text-muted)", fontWeight: "500" }}>No orders found — create a new order to start</p>
         </div>
       ) : (
@@ -520,7 +576,7 @@ export default function AdminOrders() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
-                {["ORDER","CLIENT","ARTICLES","TOTAL","STATUS","AGENT","TRACKING","DATE","ACTION"].map(h => (
+                {["ORDER", "CLIENT", "ARTICLES", "TOTAL", "STATUS", "AGENT", "TRACKING", "DATE", "ACTION"].map(h => (
                   <th key={h} style={{ padding: "10px 12px", fontWeight: "700", color: "var(--text-muted)", fontSize: "0.65rem", letterSpacing: "0.3px" }}>{h}</th>
                 ))}
               </tr>
@@ -545,13 +601,13 @@ export default function AdminOrders() {
                     </td>
                     <td style={{ padding: "10px 12px" }}>
                       <div style={{ fontWeight: "700" }}>{order.total_price} {order.currency || currencySymbol}</div>
-                      <span style={{ display: "inline-block", fontSize: "0.62rem", padding: "1px 6px", borderRadius: "4px", background: isPaid ? "rgba(27,197,189,0.1)" : "rgba(246,78,96,0.1)", color: isPaid ? "#50cd89" : "#f1416c", marginTop: "3px", fontWeight: "700" }}>{(order.financial_status||"UNPAID").toUpperCase()}</span>
+                      <span style={{ display: "inline-block", fontSize: "0.62rem", padding: "1px 6px", borderRadius: "4px", background: isPaid ? "rgba(27,197,189,0.1)" : "rgba(246,78,96,0.1)", color: isPaid ? "#50cd89" : "#f1416c", marginTop: "3px", fontWeight: "700" }}>{(order.financial_status || "UNPAID").toUpperCase()}</span>
                     </td>
                     <td style={{ padding: "14px 18px" }}>
                       <span style={{ display: "inline-block", padding: "5px 10px", borderRadius: "6px", background: ss.bg, color: ss.text, fontSize: "0.72rem", fontWeight: "700" }}>{order.status.toUpperCase()}</span>
                     </td>
                     <td style={{ padding: "14px 18px" }}>
-                      <select value={order.assigned_to||""} onChange={e => handleAssignAgent(order.id, e.target.value)}
+                      <select value={order.assigned_to || ""} onChange={e => handleAssignAgent(order.id, e.target.value)}
                         style={{ padding: "6px 10px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.78rem", outline: "none", cursor: "pointer" }}>
                         <option value="">Non assigné</option>
                         {activeAgents.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -559,13 +615,13 @@ export default function AdminOrders() {
                     </td>
                     <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.78rem" }}>—</td>
                     <td style={{ padding: "14px 18px", color: "var(--text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
-                      {new Date(order.created_at).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"})}
+                      {new Date(order.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
                     </td>
                     <td style={{ padding: "14px 18px" }}>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button onClick={() => setSelectedOrder(order)} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "600", background: "rgba(255,255,255,0.05)", color: "var(--text-main)", border: "1px solid var(--border-color)", cursor: "pointer" }}>View</button>
-                        {order.status === "pending" && <button onClick={() => handleUpdateStatus(order.id,"confirmed")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(80,205,137,0.1)", color: "#50cd89", border: "none", cursor: "pointer" }}>Confirm</button>}
-                        {order.status === "confirmed" && <button onClick={() => handleUpdateStatus(order.id,"delivered")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(0,163,255,0.1)", color: "#00a3ff", border: "none", cursor: "pointer" }}>Deliver</button>}
+                        {order.status === "pending" && <button onClick={() => handleUpdateStatus(order.id, "confirmed")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(80,205,137,0.1)", color: "#50cd89", border: "none", cursor: "pointer" }}>Confirm</button>}
+                        {order.status === "confirmed" && <button onClick={() => handleUpdateStatus(order.id, "delivered")} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "0.72rem", fontWeight: "700", background: "rgba(0,163,255,0.1)", color: "#00a3ff", border: "none", cursor: "pointer" }}>Deliver</button>}
                       </div>
                     </td>
                   </tr>
@@ -621,7 +677,7 @@ export default function AdminOrders() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px" }}>
               <div>
                 <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Assign Agent</strong>
-                <select value={selectedOrder.assigned_to||""} onChange={e => handleAssignAgent(selectedOrder.id, e.target.value)}
+                <select value={selectedOrder.assigned_to || ""} onChange={e => handleAssignAgent(selectedOrder.id, e.target.value)}
                   style={{ padding: "8px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none", width: "100%" }}>
                   <option value="">Non assigné</option>
                   {activeAgents.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -631,8 +687,8 @@ export default function AdminOrders() {
                 <strong style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Order Status</strong>
                 <select value={selectedOrder.status} onChange={e => handleUpdateStatus(selectedOrder.id, e.target.value)}
                   style={{ padding: "8px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none", width: "100%" }}>
-                  {["pending","confirmed","processing","shipped","delivered","cancelled","returned"].map(s => (
-                    <option key={s} value={s}>{s.charAt(0).toUpperCase()+s.slice(1)}</option>
+                  {["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "returned"].map(s => (
+                    <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                   ))}
                 </select>
               </div>
@@ -643,7 +699,7 @@ export default function AdminOrders() {
                 {selectedOrder.histories?.length > 0 ? selectedOrder.histories.map((h, i) => (
                   <div key={i} style={{ fontSize: "0.73rem", borderLeft: "2px solid var(--purple)", paddingLeft: "10px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-muted)", marginBottom: "2px" }}>
-                      <span>{h.user?.name||"System"}</span><span>{new Date(h.created_at).toLocaleString()}</span>
+                      <span>{h.user?.name || "System"}</span><span>{new Date(h.created_at).toLocaleString()}</span>
                     </div>
                     <p style={{ color: "var(--text-main)", fontWeight: "500" }}>{h.description}</p>
                   </div>
