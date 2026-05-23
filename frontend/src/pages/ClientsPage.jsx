@@ -91,7 +91,7 @@ export default function ClientsPage() {
       <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#7239ea', flexShrink: 0 }}/>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e1e9ff', border: '2px solid #6993ff', flexShrink: 0 }}/>
             <span className="card-title">TOTAL CLIENTS</span>
           </div>
           <div className="card-value">3</div>
@@ -99,7 +99,7 @@ export default function ClientsPage() {
         
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#50cd89', flexShrink: 0 }}/>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#c9f7f5', border: '2px solid #1bc5bd', flexShrink: 0 }}/>
             <span className="card-title">TOTAL ORDERS</span>
           </div>
           <div className="card-value">3</div>
@@ -107,7 +107,7 @@ export default function ClientsPage() {
 
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#ffc700', flexShrink: 0 }}/>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#fff4de', border: '2px solid #ffa800', flexShrink: 0 }}/>
             <span className="card-title">TOTAL REVENUE</span>
           </div>
           <div className="card-value">18.00 MAD</div>

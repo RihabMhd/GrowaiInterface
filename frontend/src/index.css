@@ -728,28 +728,28 @@ body.dark-theme .popup-icon-wrapper {
 }
 
 .icon-primary {
-  background-color: #7239ea;
-  color: #7239ea;
+  background-color: var(--primary-light);
+  color: var(--primary);
 }
 
 .icon-success {
-  background-color: #50cd89;
-  color: #50cd89;
+  background-color: var(--success-light);
+  color: var(--success);
 }
 
 .icon-warning {
-  background-color: #ffc700;
-  color: #ffc700;
+  background-color: var(--warning-light);
+  color: var(--warning);
 }
 
 .icon-danger {
-  background-color: #f1416c;
-  color: #f1416c;
+  background-color: var(--danger-light);
+  color: var(--danger);
 }
 
 .icon-purple {
-  background-color: #8950fc;
-  color: #8950fc;
+  background-color: var(--purple-light);
+  color: var(--purple);
 }
 
 .card-value {

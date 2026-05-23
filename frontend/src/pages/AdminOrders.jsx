@@ -471,15 +471,15 @@ export default function AdminOrders() {
       {/* Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px", marginBottom: "12px" }}>
         {[
-          { label: "TOTAL ORDERS",      value: metrics.total_orders,      color: "#7239ea", sub: `${metrics.total_orders} today` },
-          { label: "CONFIRMED",         value: metrics.confirmed,         color: "#50cd89", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
-          { label: "CANCELLED",         value: metrics.cancelled,         color: "#f1416c", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
-          { label: "PENDING",           value: metrics.pending,           color: "#ffc700", sub: "awaiting action" },
-          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, color: "#00a3ff", sub: "overall rate" },
+          { label: "TOTAL ORDERS",      value: metrics.total_orders,      bgColor: "#e1e9ff", borderColor: "#6993ff", sub: `${metrics.total_orders} today` },
+          { label: "CONFIRMED",         value: metrics.confirmed,         bgColor: "#c9f7f5", borderColor: "#1bc5bd", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
+          { label: "CANCELLED",         value: metrics.cancelled,         bgColor: "#ffe2e5", borderColor: "#f64e60", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
+          { label: "PENDING",           value: metrics.pending,           bgColor: "#fff4de", borderColor: "#ffa800", sub: "awaiting action" },
+          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, bgColor: "#e1e9ff", borderColor: "#6993ff", sub: "overall rate" },
         ].map((c, i) => (
           <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-              <span style={{ width: "28px", height: "28px", borderRadius: "50%", background: c.color, flexShrink: 0 }}/>
+              <span style={{ width: "28px", height: "28px", borderRadius: "50%", background: c.bgColor, border: `2px solid ${c.borderColor}`, flexShrink: 0 }}/>
               <span style={{ fontSize: "0.6rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.3px" }}>{c.label}</span>
             </div>
             <div style={{ fontSize: "1.6rem", fontWeight: "800" }}>{c.value}</div>
