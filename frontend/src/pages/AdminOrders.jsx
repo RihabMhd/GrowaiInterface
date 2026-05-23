@@ -435,24 +435,23 @@ export default function AdminOrders() {
       )}
 
       {/* Page Header */}
-      <div className="page-header" style={{ marginBottom: "20px" }}>
+      <div className="page-header" style={{ marginBottom: "12px" }}>
         <div>
-          <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <svg style={{ width: "24px", height: "24px", color: "var(--purple)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.05rem" }}>
+            <svg style={{ width: "18px", height: "18px", color: "#2d2d2d" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             {isAbandonedPage ? "Abandoned Orders" : "Orders"}
-            <span style={{ fontSize: "0.65rem", padding: "2px 8px", background: "rgba(137,80,252,0.1)", color: "var(--purple)", borderRadius: "4px", fontWeight: "700" }}>• just now</span>
           </h2>
           <p className="page-subtitle">Manage, assign, and track all orders</p>
         </div>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {/* Period tabs */}
-          <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "8px", gap: "2px" }}>
+          <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "6px", gap: "1px" }}>
             {[["all","All"],["today","Today"],["yesterday","Yesterday"],["this_week","This week"]].map(([v,l]) => (
-              <button key={v} onClick={() => setPeriodFilter(v)} style={{ padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600", background: periodFilter===v ? "var(--bg-card)" : "transparent", color: periodFilter===v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
+              <button key={v} onClick={() => setPeriodFilter(v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: periodFilter===v ? "var(--bg-card)" : "transparent", color: periodFilter===v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
             ))}
             <div className="more-dd" style={{ position: "relative" }}>
-              <button onClick={() => setIsMoreOpen(v => !v)} style={{ padding: "6px 12px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600", background: "transparent", color: "var(--text-muted)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}>
-                More <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              <button onClick={() => setIsMoreOpen(v => !v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: "transparent", color: "var(--text-muted)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "3px" }}>
+                More <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
               </button>
               {isMoreOpen && (
                 <div style={{ position: "absolute", top: "100%", right: 0, background: "#18181b", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "4px", minWidth: "160px", boxShadow: "0 10px 25px rgba(0,0,0,0.5)", zIndex: 1000 }}>
@@ -462,38 +461,38 @@ export default function AdminOrders() {
               )}
             </div>
           </div>
-          <button onClick={() => setIsCreateModalOpen(true)} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", background: "var(--purple)", color: "white", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <button onClick={() => setIsCreateModalOpen(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 14px", background: "var(--purple)", color: "white", borderRadius: "6px", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New Order
           </button>
         </div>
       </div>
 
       {/* Metrics */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "16px", marginBottom: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px", marginBottom: "12px" }}>
         {[
-          { label: "TOTAL ORDERS",      value: metrics.total_orders,      icon: Icons.total,     color: "#7239ea", sub: `${metrics.total_orders} today` },
-          { label: "CONFIRMED",         value: metrics.confirmed,         icon: Icons.confirmed, color: "#50cd89", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
-          { label: "CANCELLED",         value: metrics.cancelled,         icon: Icons.cancelled, color: "#f1416c", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
-          { label: "PENDING",           value: metrics.pending,           icon: Icons.pending,   color: "#ffc700", sub: "awaiting action" },
-          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, icon: Icons.rate,      color: "#00a3ff", sub: "overall rate" },
+          { label: "TOTAL ORDERS",      value: metrics.total_orders,      bgColor: "#e1e9ff", borderColor: "#6993ff", sub: `${metrics.total_orders} today` },
+          { label: "CONFIRMED",         value: metrics.confirmed,         bgColor: "#c9f7f5", borderColor: "#1bc5bd", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
+          { label: "CANCELLED",         value: metrics.cancelled,         bgColor: "#ffe2e5", borderColor: "#f64e60", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
+          { label: "PENDING",           value: metrics.pending,           bgColor: "#fff4de", borderColor: "#ffa800", sub: "awaiting action" },
+          { label: "CONFIRMATION RATE", value: metrics.confirmation_rate, bgColor: "#e1e9ff", borderColor: "#6993ff", sub: "overall rate" },
         ].map((c, i) => (
-          <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <span style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.5px" }}>{c.label}</span>
-              <span style={{ color: c.color }}>{c.icon}</span>
+          <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+              <span style={{ width: "28px", height: "28px", borderRadius: "50%", background: c.bgColor, border: `2px solid ${c.borderColor}`, flexShrink: 0 }}/>
+              <span style={{ fontSize: "0.6rem", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "0.3px" }}>{c.label}</span>
             </div>
-            <div style={{ fontSize: "1.8rem", fontWeight: "800" }}>{c.value}</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "4px" }}>{c.sub}</div>
+            <div style={{ fontSize: "1.6rem", fontWeight: "800" }}>{c.value}</div>
+            <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", marginTop: "3px" }}>{c.sub}</div>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "8px 12px 8px 36px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none" }}/>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "7px 10px 7px 32px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.75rem", outline: "none" }}/>
         </div>
         <CustomSelect id="source" value={sourceFilter} onChange={setSourceFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Sources"
           options={[{value:"all",label:"All Sources"},{value:"shopify",label:"Shopify"},{value:"sheets",label:"Google Sheets"}]}/>
@@ -517,12 +516,12 @@ export default function AdminOrders() {
           <p style={{ color: "var(--text-muted)", fontWeight: "500" }}>No orders found — create a new order to start</p>
         </div>
       ) : (
-        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
+        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
                 {["ORDER","CLIENT","ARTICLES","TOTAL","STATUS","AGENT","TRACKING","DATE","ACTION"].map(h => (
-                  <th key={h} style={{ padding: "14px 18px", fontWeight: "600", color: "var(--text-muted)", fontSize: "0.72rem", letterSpacing: "0.5px" }}>{h}</th>
+                  <th key={h} style={{ padding: "10px 12px", fontWeight: "700", color: "var(--text-muted)", fontSize: "0.65rem", letterSpacing: "0.3px" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -532,19 +531,19 @@ export default function AdminOrders() {
                 const isPaid = order.financial_status === "paid";
                 return (
                   <tr key={order.id} className="trow" style={{ borderBottom: "1px solid var(--border-color)" }}>
-                    <td style={{ padding: "14px 18px", fontWeight: "700" }}>
+                    <td style={{ padding: "10px 12px", fontWeight: "700" }}>
                       <span onClick={() => setSelectedOrder(order)} style={{ color: "var(--purple)", cursor: "pointer", textDecoration: "underline" }}>{order.order_number}</span>
                     </td>
-                    <td style={{ padding: "14px 18px" }}>
-                      <div style={{ fontWeight: "600" }}>{order.client?.name || order.customer_name || "—"}</div>
-                      <div style={{ color: "var(--text-muted)", fontSize: "0.72rem" }}>{order.client?.phone || order.customer_phone || "—"}</div>
+                    <td style={{ padding: "10px 12px" }}>
+                      <div style={{ fontWeight: "700", fontSize: "0.8rem" }}>{order.client?.name || order.customer_name || "—"}</div>
+                      <div style={{ color: "var(--text-muted)", fontSize: "0.7rem" }}>{order.client?.phone || order.customer_phone || "—"}</div>
                     </td>
-                    <td style={{ padding: "14px 18px" }}>
+                    <td style={{ padding: "10px 12px" }}>
                       {order.items?.map((item, idx) => (
-                        <div key={idx} style={{ fontSize: "0.78rem", marginBottom: "2px" }}>{item.product_name} <span style={{ color: "var(--purple)", fontWeight: "700" }}>×{item.quantity}</span></div>
+                        <div key={idx} style={{ fontSize: "0.75rem", marginBottom: "2px" }}>{item.product_name} <span style={{ color: "var(--purple)", fontWeight: "700" }}>×{item.quantity}</span></div>
                       )) || <span style={{ color: "var(--text-muted)" }}>—</span>}
                     </td>
-                    <td style={{ padding: "14px 18px" }}>
+                    <td style={{ padding: "10px 12px" }}>
                       <div style={{ fontWeight: "700" }}>{order.total_price} {order.currency || currencySymbol}</div>
                       <span style={{ display: "inline-block", fontSize: "0.62rem", padding: "1px 6px", borderRadius: "4px", background: isPaid ? "rgba(27,197,189,0.1)" : "rgba(246,78,96,0.1)", color: isPaid ? "#50cd89" : "#f1416c", marginTop: "3px", fontWeight: "700" }}>{(order.financial_status||"UNPAID").toUpperCase()}</span>
                     </td>

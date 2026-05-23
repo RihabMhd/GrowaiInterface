@@ -40,7 +40,9 @@ function KpiCard({ icon, iconClass, title, value, loading, style = {} }) {
   return (
     <div className="card">
       <div className="card-header">
-        <div className={`card-icon ${iconClass}`}>{icon}</div>
+        <div className={`card-icon ${iconClass}`} style={{ width: "32px", height: "32px" }}>
+          {icon && <>{icon}</> || null}
+        </div>
         <div style={{ textAlign: "right" }}>
           <div className="card-title" style={style.title}>{title}</div>
         </div>
@@ -64,25 +66,31 @@ function StatsBlock({ stats, loading }) {
           iconClass="icon-primary"
           title="Total commandes"
           value={stats.total}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
         />
         <KpiCard loading={loading}
           iconClass="icon-success"
           title="Confirmées"
           value={stats.confirmed}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>}
         />
         <KpiCard loading={loading}
           iconClass="icon-warning"
           title="En attente"
           value={stats.pending}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>}
         />
         <KpiCard loading={loading}
           iconClass="icon-danger"
           title="Annulées"
           value={stats.cancelled}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>}
+        />
+        <KpiCard loading={loading}
+          iconClass="icon-primary"
+          title="Taux de confirmation moyen"
+          value={loading ? "…" : `${stats.confirmation_rate}%`}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 17"/><polyline points="17 6 23 6 23 12"/></svg>}
         />
         <KpiCard loading={loading}
           iconClass=""
@@ -98,32 +106,34 @@ function StatsBlock({ stats, loading }) {
 
         {/* Revenus */}
         <div className="card">
-          <div className="card-header" style={{ marginBottom: "40px" }}>
-            <div className="card-icon icon-purple">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "1.1rem" }}>Revenus</div>
-              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Des commandes confirmées</div>
-            </div>
-            <div className={`badge ${stats.revenue_growth >= 0 ? "badge-success" : "badge-danger"}`}>
-              {loading ? "…" : fmtGrowth(stats.revenue_growth)}
+          <div className="card-header" style={{ marginBottom: "16px", flexDirection: "column", alignItems: "flex-start", gap: "6px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+              <div className="card-icon icon-purple" style={{ width: "32px", height: "32px" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>Revenus</div>
+                <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Des commandes confirmées</div>
+              </div>
+              <div className={`badge ${stats.revenue_growth >= 0 ? "badge-success" : "badge-danger"}`}>
+                {loading ? "…" : fmtGrowth(stats.revenue_growth)}
+              </div>
             </div>
           </div>
-          <div className="card-value" style={{ fontSize: "2.5rem" }}>
+          <div className="card-value" style={{ fontSize: "1.8rem" }}>
             {loading ? "…" : fmt(stats.revenue)}
           </div>
         </div>
 
         {/* Aperçu */}
         <div className="card">
-          <div className="card-header" style={{ justifyContent: "flex-start", gap: "15px" }}>
-            <div className="card-icon icon-primary" style={{ height: "30px", width: "30px" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+          <div className="card-header" style={{ justifyContent: "flex-start", gap: "8px", marginBottom: "10px" }}>
+            <div className="card-icon icon-primary" style={{ width: "32px", height: "32px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
             </div>
-            <div style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "1.1rem" }}>Aperçu</div>
+            <div style={{ fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>Aperçu</div>
           </div>
-          <div className="data-list" style={{ marginTop: "20px" }}>
+          <div className="data-list" style={{ marginTop: "6px" }}>
             <div className="data-item">
               <div className="data-item-label"><div className="data-item-dot dot-primary" />Produits</div>
               <div className="data-item-value">{loading ? "…" : stats.products ?? "—"}</div>
@@ -145,28 +155,28 @@ function StatsBlock({ stats, loading }) {
 
         {/* Taux de confirmation */}
         <div className="card">
-          <div className="card-header" style={{ justifyContent: "flex-start", gap: "15px" }}>
-            <div className="card-icon icon-success" style={{ height: "30px", width: "30px" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <div className="card-header" style={{ justifyContent: "flex-start", gap: "8px", marginBottom: "10px" }}>
+            <div className="card-icon icon-success" style={{ width: "32px", height: "32px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
-            <div style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "1.1rem" }}>Taux de confirmation</div>
+            <div style={{ fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>Taux de confirmation</div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "20px" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "8px" }}>
             <div style={{
-              width: "120px", height: "120px", borderRadius: "50%",
-              border: "8px solid var(--border-color)", borderTopColor: "var(--success)",
+              width: "100px", height: "100px", borderRadius: "50%",
+              border: "6px solid var(--border-color)", borderTopColor: "var(--success)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <span style={{ fontSize: "2rem", fontWeight: "700" }}>
+              <span style={{ fontSize: "1.6rem", fontWeight: "700" }}>
                 {loading ? "…" : `${stats.confirmation_rate}%`}
               </span>
             </div>
-            <div style={{ display: "flex", gap: "20px", marginTop: "20px", fontSize: "0.8rem", color: "var(--text-muted)" }}>
-              <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <div style={{ display: "flex", gap: "12px", marginTop: "10px", fontSize: "0.75rem", color: "var(--text-muted)" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                 <div className="data-item-dot dot-success" />{loading ? "…" : stats.confirmed} confirmées
               </span>
-              <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <div className="data-item-dot" style={{ backgroundColor: "var(--border-color)" }} />
+              <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <div className="data-item-dot" style={{ backgroundColor: "var(--border-color)", width: "5px", height: "5px" }} />
                 {loading ? "…" : confirmOther} autres
               </span>
             </div>

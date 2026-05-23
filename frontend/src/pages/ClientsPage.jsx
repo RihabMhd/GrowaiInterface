@@ -59,63 +59,63 @@ export default function ClientsPage() {
   });
 
   return (
-    <div className="main-content" style={{ padding: '28px 32px', background: 'var(--bg-app)' }}>
+    <div className="main-content" style={{ background: 'var(--bg-app)' }}>
       
       {/* Top Header Layer */}
-      <div className="page-header" style={{ marginBottom: '24px' }}>
+      <div className="page-header" style={{ marginBottom: '12px' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <div className="products-title-icon" style={{ width: '32px', height: '32px' }}>
-              <Users size={16} style={{ color: 'var(--text-main)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+            <div style={{ width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={16} style={{ color: '#2d2d2d' }} />
             </div>
-            <h1 className="products-title" style={{ margin: 0 }}>Clients</h1>
+            <h1 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '700' }}>Clients</h1>
           </div>
-          <p className="products-subtitle" style={{ margin: 0 }}>Manage and view your registered consumer base</p>
+          <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>Manage and view your registered consumer base</p>
         </div>
         
         <button 
           className="btn-primary-action" 
           style={{ 
             backgroundColor: 'var(--purple)', 
-            borderRadius: '8px',
-            padding: '9px 16px',
-            fontSize: '13px'
+            borderRadius: '6px',
+            padding: '6px 12px',
+            fontSize: '12px'
           }}
         >
-          <RefreshCw size={13} />
+          <RefreshCw size={11} />
           Sync from Orders
         </button>
       </div>
 
       {/* Grid of Independent Metric Cards */}
-      <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <div className="card" style={{ padding: '16px 20px', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <Users size={14} style={{ color: 'var(--primary)' }} />
-            <span className="card-title" style={{ textTransform: 'none', fontSize: '11px', fontWeight: '600' }}>TOTAL CLIENTS</span>
+      <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '12px' }}>
+        <div className="card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e1e9ff', border: '2px solid #6993ff', flexShrink: 0 }}/>
+            <span className="card-title">TOTAL CLIENTS</span>
           </div>
-          <div className="card-value" style={{ fontSize: '28px', fontWeight: '700' }}>3</div>
+          <div className="card-value">3</div>
         </div>
         
-        <div className="card" style={{ padding: '16px 20px', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <Users size={14} style={{ color: 'var(--success)' }} />
-            <span className="card-title" style={{ textTransform: 'none', fontSize: '11px', fontWeight: '600' }}>TOTAL ORDERS</span>
+        <div className="card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#c9f7f5', border: '2px solid #1bc5bd', flexShrink: 0 }}/>
+            <span className="card-title">TOTAL ORDERS</span>
           </div>
-          <div className="card-value" style={{ fontSize: '28px', fontWeight: '700' }}>3</div>
+          <div className="card-value">3</div>
         </div>
 
-        <div className="card" style={{ padding: '16px 20px', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <DollarSign size={14} style={{ color: 'var(--warning)' }} />
-            <span className="card-title" style={{ textTransform: 'none', fontSize: '11px', fontWeight: '600' }}>TOTAL REVENUE</span>
+        <div className="card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#fff4de', border: '2px solid #ffa800', flexShrink: 0 }}/>
+            <span className="card-title">TOTAL REVENUE</span>
           </div>
-          <div className="card-value" style={{ fontSize: '28px', fontWeight: '700' }}>18.00 MAD</div>
+          <div className="card-value">18.00 MAD</div>
         </div>
       </div>
 
       {/* Navigation Filter Segment Controls */}
-      <div style={{ display: 'flex', gap: '24px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px', paddingLeft: '4px' }}>
+      <div style={{ display: 'flex', gap: '16px', borderBottom: '1px solid var(--border-color)', marginBottom: '12px', paddingLeft: '0px' }}>
         {[
           { id: 'Recent', label: 'Recent', icon: <History size={13} /> },
           { id: 'Most Orders', label: 'Most Orders', icon: <Crown size={13} /> },
@@ -130,11 +130,11 @@ export default function ClientsPage() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '12px 0',
+                gap: '6px',
+                padding: '8px 0',
                 background: 'none',
-                fontSize: '13px',
-                fontWeight: isSelected ? '600' : '500',
+                fontSize: '12px',
+                fontWeight: isSelected ? '700' : '500',
                 color: isSelected ? 'var(--text-main)' : 'var(--text-muted)',
                 borderBottom: isSelected ? '2px solid var(--text-main)' : '2px solid transparent',
                 marginBottom: '-1px',
@@ -151,7 +151,7 @@ export default function ClientsPage() {
       </div>
 
       {/* Modern Search Row Wrapper */}
-      <div className="search-filter-bar" style={{ marginBottom: '16px' }}>
+      <div className="search-filter-bar" style={{ marginBottom: '10px' }}>
         <div className="search-input-wrapper">
           <Search className="search-icon" size={15} style={{ left: '12px' }} />
           <input
@@ -160,13 +160,13 @@ export default function ClientsPage() {
             placeholder="Search by name, phone, email or city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '36px', height: '38px', borderRadius: '8px' }}
+            style={{ paddingLeft: '32px', height: '34px', borderRadius: '6px', fontSize: '13px' }}
           />
         </div>
       </div>
 
       {/* Main Table Content Module */}
-      <div className="card" style={{ padding: '0px', borderRadius: '12px', overflow: 'hidden' }}>
+      <div className="card" style={{ padding: '0px', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table className="products-table">
             <thead>
