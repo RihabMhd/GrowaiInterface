@@ -1,219 +1,374 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
+import axios from "axios";
 
-export default function Dashboard() {
-  const { user } = useContext(AuthContext);
-  const { t } = useLanguage();
+// ─── helpers ────────────────────────────────────────────────────────────────
+
+const EMPTY_STATS = {
+  total: 0, confirmed: 0, pending: 0, cancelled: 0, delivered: 0,
+  revenue: 0, revenue_growth: 0, confirmation_rate: 0,
+  avg_confirmation_time: null,
+  products: 0, clients: 0, team_members: 0,
+};
+
+const fmt = (v) =>
+  new Intl.NumberFormat("fr-MA", {
+    style: "currency", currency: "MAD", maximumFractionDigits: 0,
+  }).format(v ?? 0);
+
+const fmtGrowth = (v) => `${v >= 0 ? "+" : ""}${v ?? 0}%`;
+
+const fmtTime = (minutes) => {
+  if (minutes === null || minutes === undefined) return "— Aucune donnée";
+  if (minutes < 60) return `${Math.round(minutes)} min`;
+  const h = Math.floor(minutes / 60);
+  const m = Math.round(minutes % 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+};
+
+const PERIOD_OPTIONS = [
+  { label_key: "aujourd_hui",        fallback: "Aujourd'hui",        value: "today"        },
+  { label_key: "hier",               fallback: "Hier",               value: "yesterday"    },
+  { label_key: "les_7_derniers_jours", fallback: "7 derniers jours", value: "last_7_days"  },
+  { label_key: "ce_mois",            fallback: "Ce mois",            value: "this_month"   },
+];
+
+// ─── sub-components ──────────────────────────────────────────────────────────
+
+function KpiCard({ icon, iconClass, title, value, loading, style = {} }) {
+  return (
+    <div className="card">
+      <div className="card-header">
+        <div className={`card-icon ${iconClass}`}>{icon}</div>
+        <div style={{ textAlign: "right" }}>
+          <div className="card-title" style={style.title}>{title}</div>
+        </div>
+      </div>
+      <div className="card-value" style={style.value}>
+        {loading ? "…" : value}
+      </div>
+    </div>
+  );
+}
+
+function StatsBlock({ stats, loading }) {
+  const confirmOther = stats.total - stats.confirmed;
 
   return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h2 className="page-title">
-            <svg style={{ width: '24px', height: '24px', color: '#8950fc' }} viewBox="0 0 24 24" fill="currentColor">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-            </svg>
-            {t("tableau_de_bord")}
-          </h2>
-          <p className="page-subtitle">{t("suivre_indicateurs")}</p>
-        </div>
-        <select className="select-input">
-          <option>{t("aujourd_hui")}</option>
-          <option>{t("hier")}</option>
-          <option>{t("les_7_derniers_jours") || "Les 7 derniers jours"}</option>
-        </select>
+    <>
+      {/* Row 1 – Order KPIs */}
+      <div className="dashboard-grid" style={{ gridTemplateColumns: "repeat(5, 1fr)" }}>
+
+        <KpiCard loading={loading}
+          iconClass="icon-primary"
+          title="Total commandes"
+          value={stats.total}
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
+        />
+        <KpiCard loading={loading}
+          iconClass="icon-success"
+          title="Confirmées"
+          value={stats.confirmed}
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>}
+        />
+        <KpiCard loading={loading}
+          iconClass="icon-warning"
+          title="En attente"
+          value={stats.pending}
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>}
+        />
+        <KpiCard loading={loading}
+          iconClass="icon-danger"
+          title="Annulées"
+          value={stats.cancelled}
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+        />
+        <KpiCard loading={loading}
+          iconClass=""
+          style={{ value: { fontSize: "1rem", color: "var(--text-muted)" }, title: { fontSize: "0.65rem" } }}
+          title={<>Temps moyen<br />Confirmation</>}
+          value={fmtTime(stats.avg_confirmation_time)}
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>}
+        />
       </div>
 
-      <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
-        
-        <div className="card">
-          <div className="card-header">
-            <div className="card-icon icon-primary">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div className="card-title">{t("total_commandes")}</div>
-            </div>
-          </div>
-          <div className="card-value">0</div>
-        </div>
+      {/* Row 2 – Revenue · Overview · Rate · (global: overview card) */}
+      <div className="dashboard-grid-large" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
 
-        <div className="card">
-          <div className="card-header">
-            <div className="card-icon icon-success">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div className="card-title">{t("confirmees")}</div>
-            </div>
-          </div>
-          <div className="card-value">0</div>
-        </div>
-
-        <div className="card">
-          <div className="card-header">
-            <div className="card-icon icon-warning">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div className="card-title">{t("en_attente")}</div>
-            </div>
-          </div>
-          <div className="card-value">0</div>
-        </div>
-
-        <div className="card">
-          <div className="card-header">
-            <div className="card-icon icon-danger">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div className="card-title">{t("annulees")}</div>
-            </div>
-          </div>
-          <div className="card-value">0</div>
-        </div>
-
-        <div className="card">
-          <div className="card-header">
-            <div className="card-icon" style={{ backgroundColor: '#f3f6f9', color: '#b5b5c3' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div className="card-title" style={{ fontSize: '0.65rem' }}>{t("temps_moyen")}<br/>Confirmation</div>
-            </div>
-          </div>
-          <div className="card-value" style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>— Aucune donnée</div>
-        </div>
-
-      </div>
-
-      <div className="dashboard-grid-large" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        
         {/* Revenus */}
         <div className="card">
-          <div className="card-header" style={{ marginBottom: '40px' }}>
+          <div className="card-header" style={{ marginBottom: "40px" }}>
             <div className="card-icon icon-purple">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
             </div>
             <div>
-              <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>{t("revenus") || "Revenus"}</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t("commandes_confirmees") || "Des commandes confirmées"}</div>
+              <div style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "1.1rem" }}>Revenus</div>
+              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Des commandes confirmées</div>
             </div>
-            <div className="badge badge-success">+0%</div>
+            <div className={`badge ${stats.revenue_growth >= 0 ? "badge-success" : "badge-danger"}`}>
+              {loading ? "…" : fmtGrowth(stats.revenue_growth)}
+            </div>
           </div>
-          <div className="card-value" style={{ fontSize: '2.5rem' }}>0</div>
+          <div className="card-value" style={{ fontSize: "2.5rem" }}>
+            {loading ? "…" : fmt(stats.revenue)}
+          </div>
         </div>
 
         {/* Aperçu */}
         <div className="card">
-          <div className="card-header" style={{ justifyContent: 'flex-start', gap: '15px' }}>
-            <div className="card-icon icon-primary" style={{ height: '30px', width: '30px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+          <div className="card-header" style={{ justifyContent: "flex-start", gap: "15px" }}>
+            <div className="card-icon icon-primary" style={{ height: "30px", width: "30px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
             </div>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>{t("apercu") || "Aperçu"}</div>
+            <div style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "1.1rem" }}>Aperçu</div>
           </div>
-          
-          <div className="data-list" style={{ marginTop: '20px' }}>
+          <div className="data-list" style={{ marginTop: "20px" }}>
             <div className="data-item">
-              <div className="data-item-label">
-                <div className="data-item-dot dot-primary"></div>
-                {t("produits")}
-              </div>
-              <div className="data-item-value">0</div>
+              <div className="data-item-label"><div className="data-item-dot dot-primary" />Produits</div>
+              <div className="data-item-value">{loading ? "…" : stats.products ?? "—"}</div>
             </div>
             <div className="data-item">
-              <div className="data-item-label">
-                <div className="data-item-dot dot-success"></div>
-                {t("clients")}
-              </div>
-              <div className="data-item-value">1</div>
+              <div className="data-item-label"><div className="data-item-dot dot-success" />Clients</div>
+              <div className="data-item-value">{loading ? "…" : stats.clients ?? "—"}</div>
             </div>
             <div className="data-item">
-              <div className="data-item-label">
-                <div className="data-item-dot dot-warning"></div>
-                {t("membres_equipe") || "Membres d'équipe"}
-              </div>
-              <div className="data-item-value">0</div>
+              <div className="data-item-label"><div className="data-item-dot dot-warning" />Membres d'équipe</div>
+              <div className="data-item-value">{loading ? "…" : stats.team_members ?? "—"}</div>
             </div>
             <div className="data-item">
-              <div className="data-item-label">
-                <div className="data-item-dot dot-success"></div>
-                {t("livrees") || "Livrées"}
-              </div>
-              <div className="data-item-value">0</div>
+              <div className="data-item-label"><div className="data-item-dot dot-success" />Livrées</div>
+              <div className="data-item-value">{loading ? "…" : stats.delivered}</div>
             </div>
           </div>
         </div>
 
         {/* Taux de confirmation */}
         <div className="card">
-          <div className="card-header" style={{ justifyContent: 'flex-start', gap: '15px' }}>
-            <div className="card-icon icon-success" style={{ height: '30px', width: '30px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <div className="card-header" style={{ justifyContent: "flex-start", gap: "15px" }}>
+            <div className="card-icon icon-success" style={{ height: "30px", width: "30px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '1.1rem' }}>{t("taux_confirmation")}</div>
+            <div style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "1.1rem" }}>Taux de confirmation</div>
           </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}>
-            <div style={{ width: '120px', height: '120px', borderRadius: '50%', border: '8px solid var(--border-color)', borderTopColor: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '2rem', fontWeight: '700' }}>0%</span>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "20px" }}>
+            <div style={{
+              width: "120px", height: "120px", borderRadius: "50%",
+              border: "8px solid var(--border-color)", borderTopColor: "var(--success)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <span style={{ fontSize: "2rem", fontWeight: "700" }}>
+                {loading ? "…" : `${stats.confirmation_rate}%`}
+              </span>
             </div>
-            <div style={{ display: 'flex', gap: '20px', marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><div className="data-item-dot dot-success"></div> 0 confirmed</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><div className="data-item-dot" style={{ backgroundColor: 'var(--border-color)' }}></div> 0 other</span>
+            <div style={{ display: "flex", gap: "20px", marginTop: "20px", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <div className="data-item-dot dot-success" />{loading ? "…" : stats.confirmed} confirmées
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <div className="data-item-dot" style={{ backgroundColor: "var(--border-color)" }} />
+                {loading ? "…" : confirmOther} autres
+              </span>
             </div>
           </div>
-        </div>
-
-        {/* Forfait & utilisation */}
-        <div className="card" style={{ gridColumn: 'span 1' }}>
-           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-               <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>{t("forfait_utilisation") || "Forfait & utilisation"}</h3>
-               <span style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'var(--border-color)', borderRadius: '4px', fontWeight: 600 }}>FREE</span>
-             </div>
-             <div className="card-icon icon-purple" style={{ height: '30px', width: '30px', cursor: 'pointer' }}>
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-             </div>
-           </div>
-           
-           <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '20px' }}>
-             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-             Renouvelle dans 16 jours · 1 juin 2026
-           </div>
-
-           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '15px' }}>
-             <span>{t("periode_facturation") || "Période de Facturation"}</span>
-             <span style={{ textAlign: 'right' }}>1 mai → 1 juin · Jour 15 sur<br/>31</span>
-           </div>
-
-           <div style={{ display: 'flex', gap: '10px' }}>
-             <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '8px', padding: '15px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', border: '4px solid var(--border-color)', borderTopColor: 'var(--purple)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>1<span style={{ fontSize: '0.7rem' }}>%</span></span>
-                </div>
-                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--purple)', letterSpacing: '0.5px' }}>{t("commandes")}</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, margin: '5px 0' }}>1 <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 400 }}>/ 100</span></div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Projection: 2 sur la période</div>
-             </div>
-             <div style={{ flex: 1, border: '1px solid var(--border-color)', borderRadius: '8px', padding: '15px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', border: '4px solid var(--border-color)', borderTopColor: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>0<span style={{ fontSize: '0.7rem' }}>%</span></span>
-                </div>
-                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--success)', letterSpacing: '0.5px' }}>{t("boutiques") || "BOUTIQUES"}</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, margin: '5px 0' }}>0 <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 400 }}>/ 1</span></div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Boutiques connectées</div>
-             </div>
-           </div>
-
         </div>
 
       </div>
+    </>
+  );
+}
+
+// ─── main component ──────────────────────────────────────────────────────────
+
+export default function Dashboard() {
+  const { user }  = useContext(AuthContext);
+  const { t }     = useLanguage();
+
+  const [period,      setPeriod]      = useState("today");
+  const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState(null);
+  const [activeShop,  setActiveShop]  = useState("global"); // "global" | shop.id
+
+  const [global, setGlobal] = useState({ ...EMPTY_STATS });
+  const [shops,  setShops]  = useState([]);                  // array of shop stat objects
+
+  // ── fetch ─────────────────────────────────────────────────────────────────
+  const fetchDashboard = useCallback(async (p) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await axios.get("/api/dashboard", { params: { period: p } });
+      setGlobal(data.global ?? { ...EMPTY_STATS });
+      setShops(data.shops  ?? []);
+    } catch (err) {
+      setError(err?.response?.data?.message ?? "Erreur de chargement");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchDashboard(period); }, [period, fetchDashboard]);
+
+  // ── derived active stats ──────────────────────────────────────────────────
+  const activeStats =
+    activeShop === "global"
+      ? global
+      : shops.find((s) => s.id === activeShop) ?? { ...EMPTY_STATS };
+
+  // ── platform badge icon ────────────────────────────────────────────────────
+  const PlatformDot = ({ platform }) => {
+    const colors = { shopify: "#96bf48", manual: "#8950fc", woocommerce: "#7f54b3" };
+    return (
+      <span style={{
+        display: "inline-block", width: "8px", height: "8px", borderRadius: "50%",
+        backgroundColor: colors[platform] ?? "var(--text-muted)",
+        marginRight: "6px", flexShrink: 0,
+      }} />
+    );
+  };
+
+  // ── render ────────────────────────────────────────────────────────────────
+  return (
+    <div>
+      {/* ── Header ── */}
+      <div className="page-header">
+        <div>
+          <h2 className="page-title">
+            <svg style={{ width: "24px", height: "24px", color: "#8950fc" }} viewBox="0 0 24 24" fill="currentColor">
+              <rect x="3"  y="3"  width="7" height="7" rx="1" />
+              <rect x="14" y="3"  width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3"  y="14" width="7" height="7" rx="1" />
+            </svg>
+            {t("tableau_de_bord")}
+          </h2>
+          <p className="page-subtitle">{t("suivre_indicateurs")}</p>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {error && (
+            <span style={{ fontSize: "0.75rem", color: "var(--danger)", display: "flex", alignItems: "center", gap: "4px" }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              {error}
+            </span>
+          )}
+          <select
+            className="select-input"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+          >
+            {PERIOD_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {t(o.label_key) || o.fallback}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* ── Shop tabs ── */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: "6px",
+        marginBottom: "20px", flexWrap: "wrap",
+      }}>
+        {/* Global tab */}
+        <button
+          onClick={() => setActiveShop("global")}
+          style={{
+            display: "flex", alignItems: "center", gap: "6px",
+            padding: "6px 14px", borderRadius: "20px", cursor: "pointer",
+            fontSize: "0.82rem", fontWeight: 600, transition: "all 0.15s",
+            border: activeShop === "global"
+              ? "2px solid #8950fc"
+              : "2px solid var(--border-color)",
+            background: activeShop === "global" ? "#f3eeff" : "var(--card-bg)",
+            color: activeShop === "global" ? "#8950fc" : "var(--text-muted)",
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          Toutes les boutiques
+          <span style={{
+            fontSize: "0.7rem", padding: "1px 6px", borderRadius: "10px",
+            background: activeShop === "global" ? "#8950fc" : "var(--border-color)",
+            color: activeShop === "global" ? "#fff" : "var(--text-muted)",
+          }}>
+            {loading ? "…" : global.total}
+          </span>
+        </button>
+
+        {/* One tab per shop */}
+        {shops.map((shop) => {
+          const isActive = activeShop === shop.id;
+          return (
+            <button
+              key={shop.id}
+              onClick={() => setActiveShop(shop.id)}
+              style={{
+                display: "flex", alignItems: "center", gap: "6px",
+                padding: "6px 14px", borderRadius: "20px", cursor: "pointer",
+                fontSize: "0.82rem", fontWeight: 600, transition: "all 0.15s",
+                border: isActive
+                  ? "2px solid var(--success)"
+                  : "2px solid var(--border-color)",
+                background: isActive ? "#edfff5" : "var(--card-bg)",
+                color: isActive ? "var(--success)" : "var(--text-muted)",
+              }}
+            >
+              <PlatformDot platform={shop.platform} />
+              {shop.name}
+              <span style={{
+                fontSize: "0.7rem", padding: "1px 6px", borderRadius: "10px",
+                background: isActive ? "var(--success)" : "var(--border-color)",
+                color: isActive ? "#fff" : "var(--text-muted)",
+              }}>
+                {loading ? "…" : shop.total}
+              </span>
+              {!shop.is_active && (
+                <span style={{ fontSize: "0.65rem", color: "var(--danger)", marginLeft: "2px" }}>
+                  ● off
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Active shop label (when not global) ── */}
+      {activeShop !== "global" && (() => {
+        const shop = shops.find((s) => s.id === activeShop);
+        if (!shop) return null;
+        return (
+          <div style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            marginBottom: "16px", padding: "10px 16px",
+            background: "var(--card-bg)", borderRadius: "10px",
+            border: "1px solid var(--border-color)", fontSize: "0.85rem",
+          }}>
+            <PlatformDot platform={shop.platform} />
+            <strong>{shop.name}</strong>
+            {shop.domain && (
+              <span style={{ color: "var(--text-muted)" }}>— {shop.domain}</span>
+            )}
+            <span style={{
+              marginLeft: "auto", fontSize: "0.72rem", padding: "2px 8px",
+              borderRadius: "8px",
+              background: shop.is_active ? "#edfff5" : "#fff0f0",
+              color: shop.is_active ? "var(--success)" : "var(--danger)",
+              fontWeight: 600,
+            }}>
+              {shop.is_active ? "Active" : "Inactive"}
+            </span>
+          </div>
+        );
+      })()}
+
+      {/* ── Stats block for active selection ── */}
+      <StatsBlock stats={activeStats} loading={loading} />
     </div>
   );
 }
