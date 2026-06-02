@@ -1,0 +1,145 @@
+/* The main dropdown card container */
+.custom-more-dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: #1a1a1c; /* Deep dark background matching your app theme */
+  border: 1px solid #2d2d30;
+  border-radius: 14px;
+  padding: 20px;
+  width: 460px; /* Perfect width to hold two calendar panes side-by-side */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Titles (MORE, FROM, TO) */
+.section-title {
+  color: #52525b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+/* Quick selection preset list */
+.more-options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.option-item {
+  background-color: #222225; /* Slightly lighter dark for buttons */
+  color: #e4e4e7;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.option-item:hover {
+  background-color: #2c2c30;
+}
+
+/* Calendar Column Headers Alignment */
+.calendar-headers {
+  display: flex;
+  justify-content: space-between;
+}
+
+.calendar-header-label {
+  color: #52525b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  width: 50%;
+  text-align: center;
+}
+
+/* react-datepicker overrides to match dark mode */
+.react-datepicker {
+  background: transparent !important;
+  border: none !important;
+  display: flex !important;
+  width: 100% !important;
+  justify-content: space-between;
+}
+
+.react-datepicker__month-container {
+  float: none !important;
+  width: 48% !important;
+}
+
+.react-datepicker__header {
+  background: transparent !important;
+  border-bottom: none !important;
+  padding-top: 0 !important;
+}
+
+.react-datepicker__current-month {
+  color: #ffffff !important;
+  font-size: 0.85rem !important;
+  margin-bottom: 10px;
+}
+
+.react-datepicker__day-name, 
+.react-datepicker__day {
+  color: #a1a1aa !important;
+}
+
+/* Selection Range Styling */
+.react-datepicker__day--in-range {
+  background-color: rgba(114, 57, 234, 0.15) !important;
+  color: #ffffff !important;
+}
+
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end {
+  background-color: #7239ea !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+}
+
+/* Footer layout */
+.dropdown-footer {
+  display: flex;
+  flex-direction: row-reverse; /* Put Apply on the left, Clear on the right */
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.apply-btn {
+  flex: 1; /* Makes the apply button stretch beautifully across the card width */
+  background-color: #7239ea;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.apply-btn:hover {
+  background-color: #6029cf;
+}
+
+.clear-btn {
+  background: transparent;
+  color: #a1a1aa;
+  border: 1px solid #3f3f46;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-btn:hover {
+  background: #222225;
+  color: white;
+}

@@ -68,7 +68,18 @@ export default function AgentOrders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [newOrder, setNewOrder] = useState({ notes: "", product_id: "", quantity: 1 });
+  const [newOrder, setNewOrder] = useState({
+    customer_name: "",
+    customer_phone: "",
+    customer_email: "",
+    province: "",
+    city: "",
+    street: "",
+    shipping_price: 0,
+    notes: "",
+    product_id: "",
+    quantity: 1
+  });
 
   // Update states on detailed sheet
   const [editNote, setEditNote] = useState("");
@@ -100,17 +111,37 @@ export default function AgentOrders() {
   // ── Actions ────────────────────────────────────────────────────────────────
   const handleCreateOrder = async (e) => {
     e.preventDefault();
+    if (!newOrder.customer_name?.trim()) { alert("Le nom du client est requis."); return; }
+    if (!newOrder.customer_phone?.trim()) { alert("Le téléphone est requis."); return; }
     if (!newOrder.product_id) { alert("Veuillez choisir un produit."); return; }
     try {
       setIsCreating(true);
       const res = await api.post("/orders", {
+        customer_name: newOrder.customer_name,
+        customer_phone: newOrder.customer_phone,
+        customer_email: newOrder.customer_email || null,
+        province: newOrder.province || null,
+        city: newOrder.city || null,
+        street: newOrder.street || null,
+        shipping_price: parseFloat(newOrder.shipping_price) || 0,
         notes: newOrder.notes || null,
         is_abandoned: isAbandonedPage,
         items: [{ product_id: parseInt(newOrder.product_id), quantity: parseInt(newOrder.quantity) }]
       });
       showToast(res.data.message || "Commande créée.", "success");
       setIsCreateModalOpen(false);
-      setNewOrder({ notes: "", product_id: "", quantity: 1 });
+      setNewOrder({
+        customer_name: "",
+        customer_phone: "",
+        customer_email: "",
+        province: "",
+        city: "",
+        street: "",
+        shipping_price: 0,
+        notes: "",
+        product_id: "",
+        quantity: 1
+      });
       fetchOrders();
     } catch (err) {
       console.error(err);
@@ -347,8 +378,91 @@ export default function AgentOrders() {
             </div>
 
             {/* Body / Form */}
-            <form onSubmit={handleCreateOrder} style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <form onSubmit={handleCreateOrder} style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px", maxHeight: "65vh", overflowY: "auto" }}>
               
+              {/* Customer Info */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Client Name *</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="John Doe"
+                  value={newOrder.customer_name} 
+                  onChange={e => setNewOrder(p => ({ ...p, customer_name: e.target.value }))}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Client Phone *</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="+213..."
+                  value={newOrder.customer_phone} 
+                  onChange={e => setNewOrder(p => ({ ...p, customer_phone: e.target.value }))}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Client Email</label>
+                <input 
+                  type="email" 
+                  placeholder="john@example.com"
+                  value={newOrder.customer_email} 
+                  onChange={e => setNewOrder(p => ({ ...p, customer_email: e.target.value }))}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Province</label>
+                  <input 
+                    type="text" 
+                    placeholder="Province"
+                    value={newOrder.province} 
+                    onChange={e => setNewOrder(p => ({ ...p, province: e.target.value }))}
+                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>City</label>
+                  <input 
+                    type="text" 
+                    placeholder="City"
+                    value={newOrder.city} 
+                    onChange={e => setNewOrder(p => ({ ...p, city: e.target.value }))}
+                    style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Street Address</label>
+                <input 
+                  type="text" 
+                  placeholder="Street"
+                  value={newOrder.street} 
+                  onChange={e => setNewOrder(p => ({ ...p, street: e.target.value }))}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Shipping Price</label>
+                <input 
+                  type="number" 
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={newOrder.shipping_price} 
+                  onChange={e => setNewOrder(p => ({ ...p, shipping_price: e.target.value }))}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", outline: "none" }}
+                />
+              </div>
+
               {/* Product Selection */}
               <div>
                 <label style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Product *</label>

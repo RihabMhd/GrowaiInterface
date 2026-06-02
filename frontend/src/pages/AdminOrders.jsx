@@ -3,7 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
-
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import '../CustomDatePicker.css';
 const Icons = {
   total: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>),
   confirmed: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>),
@@ -354,6 +356,8 @@ export default function AdminOrders() {
   const [message, setMessage] = useState(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [fulfillmentFilter, setFulfillmentFilter] = useState("all");
+  const [deliverCompaniesFilter, setDeliverCompaniesFilter] = useState("all");
   const [productFilter, setProductFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [agentFilter, setAgentFilter] = useState("all");
@@ -362,6 +366,23 @@ export default function AdminOrders() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
+
+  // Drawer States
+  const [drawerTab, setDrawerTab] = useState("details"); // "details" | "history"
+  const [isEditingClient, setIsEditingClient] = useState(false);
+  const [editClientForm, setEditClientForm] = useState({ name: "", phone: "", email: "" });
+  const [isEditingPricing, setIsEditingPricing] = useState(false);
+  const [editPricingForm, setEditPricingForm] = useState({ shipping_price: 0 });
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+
+  // Shipment Creation States
+  const [companies, setCompanies] = useState([]);
+  const [isCreatingParcel, setIsCreatingParcel] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState("");
+  const [parcelWeight, setParcelWeight] = useState(1);
 
   const fetchOrders = async () => {
     try {
@@ -391,8 +412,33 @@ export default function AdminOrders() {
     } catch (err) { console.error(err); setProducts([]); }
   };
 
+  const fetchCompanies = async () => {
+    try {
+      const res = await api.get("/companies");
+      setCompanies(res.data.companies || []);
+    } catch (err) { console.error(err); }
+  };
+
   useEffect(() => { fetchOrders(); }, [location.pathname, search, statusFilter]);
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => {
+    fetchProducts();
+    fetchCompanies();
+  }, []);
+
+  useEffect(() => {
+    if (selectedOrder) {
+      setEditClientForm({
+        name: selectedOrder.client?.name || selectedOrder.customer_name || "",
+        phone: selectedOrder.client?.phone || selectedOrder.customer_phone || "",
+        email: selectedOrder.client?.email || selectedOrder.customer_email || ""
+      });
+      setEditPricingForm({
+        shipping_price: selectedOrder.shipping_price || 0
+      });
+      setDrawerTab("details");
+    }
+  }, [selectedOrder]);
+
   useEffect(() => {
     const h = (e) => {
       if (!e.target.closest(".custom-select-wrapper")) setOpenDropdown(null);
@@ -419,17 +465,114 @@ export default function AdminOrders() {
     } catch (err) { console.error(err); alert("Erreur de mise à jour."); }
   };
 
+  const handleUpdateQuantity = async (productId, newQty) => {
+    if (newQty < 1) return;
+    const updatedItems = selectedOrder.items.map(item =>
+      item.product_id === productId ? { ...item, quantity: newQty } : item
+    );
+    try {
+      const res = await api.put(`/orders/${selectedOrder.id}`, {
+        items: updatedItems.map(i => ({ product_id: i.product_id, quantity: i.quantity }))
+      });
+      setSelectedOrder(res.data.order);
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, items: res.data.order.items, total_price: res.data.order.total_price } : o));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update quantity");
+    }
+  };
+
+  const handleDeleteItem = async (productId) => {
+    if (selectedOrder.items.length <= 1) {
+      alert("An order must have at least one product.");
+      return;
+    }
+    const updatedItems = selectedOrder.items.filter(item => item.product_id !== productId);
+    try {
+      const res = await api.put(`/orders/${selectedOrder.id}`, {
+        items: updatedItems.map(i => ({ product_id: i.product_id, quantity: i.quantity }))
+      });
+      setSelectedOrder(res.data.order);
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, items: res.data.order.items, total_price: res.data.order.total_price } : o));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete item");
+    }
+  };
+
+  const handleSaveClientDetails = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.put(`/orders/${selectedOrder.id}`, {
+        customer_name: editClientForm.name,
+        customer_phone: editClientForm.phone,
+        customer_email: editClientForm.email
+      });
+      setSelectedOrder(res.data.order);
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, client: res.data.order.client, customer_name: res.data.order.customer_name, customer_phone: res.data.order.customer_phone } : o));
+      setIsEditingClient(false);
+      showToast("Client details updated successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update client details");
+    }
+  };
+
+  const handleSavePricing = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.put(`/orders/${selectedOrder.id}`, {
+        shipping_price: parseFloat(editPricingForm.shipping_price) || 0
+      });
+      setSelectedOrder(res.data.order);
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, shipping_price: res.data.order.shipping_price, total_price: res.data.order.total_price } : o));
+      setIsEditingPricing(false);
+      showToast("Pricing updated successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update pricing");
+    }
+  };
+
+  const handleCreateParcelSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedCompanyId) { alert("Please select a delivery company."); return; }
+    try {
+      const res = await api.post("/shipments", {
+        order_id: selectedOrder.id,
+        delivery_company_id: parseInt(selectedCompanyId),
+        weight: parseFloat(parcelWeight) || 1
+      });
+      showToast(res.data.message || "Colis créé avec succès !");
+      setIsCreatingParcel(false);
+      const orderRes = await api.get(`/orders/${selectedOrder.id}`);
+      setSelectedOrder(orderRes.data.order);
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? orderRes.data.order : o));
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to create shipment");
+    }
+  };
+
   const showToast = (text, type = "success") => { setMessage({ text, type }); setTimeout(() => setMessage(null), 5000); };
 
   const filteredOrders = orders.filter(order => {
     if (productFilter !== "all" && !order.items?.some(i => i.product_id === parseInt(productFilter))) return false;
     if (agentFilter !== "all" && String(order.assigned_to) !== agentFilter) return false;
     if (sourceFilter !== "all" && !(order.shop?.name || "").toLowerCase().includes(sourceFilter.toLowerCase())) return false;
+    if (fulfillmentFilter !== "all") {
+      const shipmentStatus = order.shipments?.[0]?.status || "unfulfilled";
+      if (shipmentStatus.toLowerCase() !== fulfillmentFilter.toLowerCase()) return false;
+    }
     if (periodFilter !== "all") {
       const d = new Date(order.created_at), today = new Date();
       if (periodFilter === "today") return d.toDateString() === today.toDateString();
       if (periodFilter === "yesterday") { const y = new Date(); y.setDate(today.getDate() - 1); return d.toDateString() === y.toDateString(); }
       if (periodFilter === "this_week") { const w = new Date(); w.setDate(today.getDate() - 7); return d >= w; }
+    }
+    if (startDate && endDate) {
+      const orderDate = new Date(order.created_at);
+      if (orderDate < startDate || orderDate > endDate) return false;
     }
     return true;
   });
@@ -463,9 +606,40 @@ export default function AdminOrders() {
                 More <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
               </button>
               {isMoreOpen && (
-                <div style={{ position: "absolute", top: "100%", right: 0, background: "#18181b", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "4px", minWidth: "160px", boxShadow: "0 10px 25px rgba(0,0,0,0.5)", zIndex: 1000 }}>
-                  <button className="ddi" onClick={() => { setPeriodFilter("all"); setIsMoreOpen(false); }} style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px", width: "100%" }}>Clear Filter</button>
-                  <button className="ddi" onClick={() => { navigate(isAbandonedPage ? "/commandes/toutes" : "/commandes/abandonnees"); setIsMoreOpen(false); }} style={{ padding: "8px 12px", background: "none", border: "none", color: "var(--text-main)", fontSize: "0.75rem", textAlign: "left", cursor: "pointer", borderRadius: "6px", width: "100%" }}>{isAbandonedPage ? "All Orders" : "Abandoned Orders"}</button>
+                <div className="custom-more-dropdown">
+                  {/* 1. Top Section: Quick Select Options */}
+                  <div className="more-options-section">
+                    <span className="section-title">MORE</span>
+                    <div className="option-item">Last 7 days</div>
+                    <div className="option-item">Last 30 days</div>
+                    <div className="option-item">This month</div>
+                    <div className="option-item">Last month</div>
+                    <div className="option-item">Last 3 months</div>
+                  </div>
+
+                  {/* 2. Middle Section: Dynamic Labels */}
+                  <div className="calendar-headers">
+                    <div className="calendar-header-label">FROM</div>
+                    <div className="calendar-header-label">TO</div>
+                  </div>
+
+                  {/* 3. Calendar View */}
+                  <div className="calendar-picker-section">
+                    <DatePicker
+                      selectsRange={true}
+                      startDate={startDate}
+                      endDate={endDate}
+                      onChange={(update) => setDateRange(update)}
+                      monthsShown={2}
+                      inline
+                    />
+                  </div>
+
+                  {/* 4. Bottom Section: Styled Action Buttons */}
+                  <div className="dropdown-footer">
+                    <button onClick={() => setIsMoreOpen(false)} className="apply-btn">Apply</button>
+                    <button onClick={() => setDateRange([null, null])} className="clear-btn">Clear</button>
+                  </div>
                 </div>
               )}
             </div>
@@ -544,6 +718,8 @@ export default function AdminOrders() {
         ))}
       </div>
 
+
+
       {/* Filters */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
@@ -551,9 +727,61 @@ export default function AdminOrders() {
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "7px 10px 7px 32px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.75rem", outline: "none" }} />
         </div>
         <CustomSelect id="source" value={sourceFilter} onChange={setSourceFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Sources"
-          options={[{ value: "all", label: "All Sources" }, { value: "shopify", label: "Shopify" }, { value: "sheets", label: "Google Sheets" }]} />
+          options={[
+            { value: "all", label: "All Sources" },
+            { value: "shopify", label: "Shopify" },
+            { value: "facebook", label: "Facebook" },
+            { value: "instagram", label: "Instagram" },
+            { value: "tiktok", label: "TikTok" },
+            { value: "snapchat", label: "Snapchat" },
+            { value: "whatsapp", label: "WhatsApp" },
+            { value: "google_sheets", label: "Google Sheets" }
+          ]} />
         <CustomSelect id="status" value={statusFilter} onChange={setStatusFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Status"
-          options={[{ value: "all", label: "All Status", dot: "#7239ea" }, { value: "pending", label: "Pending", dot: "#ffc700" }, { value: "confirmed", label: "Confirmed", dot: "#50cd89" }, { value: "processing", label: "Processing", dot: "#00a3ff" }, { value: "shipped", label: "Shipped", dot: "#00a3ff" }, { value: "delivered", label: "Delivered", dot: "#50cd89" }, { value: "cancelled", label: "Cancelled", dot: "#f1416c" }, { value: "returned", label: "Returned", dot: "#f1416c" }]} />
+          options={[
+            { value: "all", label: "All Status" },
+            { value: "new", label: "New", dot: "#ffc700" },
+            { value: "confirmed", label: "Confirmed", dot: "#50cd89" },
+            { value: "no_response", label: "No Response", dot: "#00a3ff" },
+            { value: "follow_up", label: "Follow-up", dot: "#00a3ff" },
+            { value: "cancelled", label: "Cancelled", dot: "#f1416c" },
+            { value: "duplicate", label: "Duplicate", dot: "#f1416c" },
+            { value: "wrong_number", label: "Wrong Number", dot: "#f1416c" }
+          ]} />
+        <CustomSelect
+          id="fulfillment"
+          value={fulfillmentFilter}
+          onChange={setFulfillmentFilter}
+          openDropdown={openDropdown}
+          setOpenDropdown={setOpenDropdown}
+          placeholder="All Fulfillment"
+          options={[
+            { value: "all", label: "All Fulfillment" },
+            { value: "unfulfilled", label: "Unfulfilled", dot: "#ffc700" },
+            { value: "label_created", label: "Label Created", dot: "#a970ff" },
+            { value: "label_purchased", label: "Label Purchased", dot: "#8e6cff" },
+            { value: "label_printed", label: "Label Printed", dot: "#d63384" },
+            { value: "confirmed", label: "Confirmed", dot: "#50cd89" },
+            { value: "in_transit", label: "In Transit", dot: "#3f7cff" },
+            { value: "out_for_delivery", label: "Out for Delivery", dot: "#0d6efd" },
+            { value: "delivered", label: "Delivered", dot: "#50cd89" },
+            { value: "attempted_delivery", label: "Attempted Delivery", dot: "#fd7e14" },
+            { value: "delivery_failed", label: "Delivery Failed", dot: "#f1416c" },
+            { value: "delayed", label: "Delayed", dot: "#ffc700" },
+            { value: "carrier_picked_up", label: "Carrier Picked Up", dot: "#20c997" },
+            { value: "fulfilled", label: "Fulfilled", dot: "#198754" },
+            { value: "partial", label: "Partial", dot: "#6f42c1" }
+          ]}
+        />
+        <CustomSelect
+          id="deliveryCompanies"
+          value={deliverCompaniesFilter}
+          onChange={setDeliverCompaniesFilter}
+          openDropdown={openDropdown}
+          setOpenDropdown={setOpenDropdown}
+          placeholder="All Companies"
+          options={[
+            { value: "all", label: "All Companies" }, ...companies.map(p => ({ value: String(p.id), label: p.name }))]} />
         <CustomSelect id="agent" value={agentFilter} onChange={setAgentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les agents"
           options={[{ value: "all", label: "Tous les agents" }, ...activeAgents.map(a => ({ value: String(a.id), label: a.name }))]} />
         <CustomSelect id="product" value={productFilter} onChange={setProductFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Tous les produits"
