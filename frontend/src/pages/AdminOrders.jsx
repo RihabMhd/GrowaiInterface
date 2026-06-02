@@ -8,7 +8,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import '../CustomDatePicker.css';
 import OrderDetails from './OrderDetails';
 
-// ── Constants ─────────────────────────────────────────────────────────────────
 const CURRENCY = "MAD";
 
 const ORDER_STATUSES = [
@@ -31,7 +30,6 @@ const FULFILLMENT_STATUSES = [
 
 const PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 const getStatusMeta = (val) =>
   ORDER_STATUSES.find(s => s.value === val) || { label: val || "Pending", color: "#ffc700", icon: "●" };
 
@@ -52,7 +50,6 @@ const Icons = {
   rate: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>),
 };
 
-// ── Inline Status Dropdown ────────────────────────────────────────────────────
 function StatusDropdown({ orderId, currentStatus, onChange }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);

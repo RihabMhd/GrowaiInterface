@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 
-// Refined icons matching Image 2 style (lighter stroke, clean look)
 const Icons = {
   dashboard: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -290,8 +289,8 @@ export default function Sidebar({ user, onLogout }) {
           </div>
         )}
         <div className="sidebar-user-info">
-          <div className="sidebar-user-name">{user?.name || "Rihab Mahdi"}</div>
-          <div className="sidebar-user-email">{user?.email || "rihabmahdi19@gmail.com"}</div>
+          <div className="sidebar-user-name">{user?.name}</div>
+          <div className="sidebar-user-email">{user?.email}</div>
         </div>
         <span className={`sidebar-arrow${isPopupOpen ? " open" : ""}`}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
@@ -308,8 +307,8 @@ export default function Sidebar({ user, onLogout }) {
                 </div>
               )}
               <div className="popup-user-details">
-                <strong>{user?.name || "Rihab Mahdi"}</strong>
-                <span>{user?.email || "rihabmahdi19@gmail.com"}</span>
+                <strong>{user?.name}</strong>
+                <span>{user?.email}</span>
               </div>
             </div>
 
