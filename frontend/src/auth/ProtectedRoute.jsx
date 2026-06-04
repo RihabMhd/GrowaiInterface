@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("auth_token");
 
   if (loading) {
     return (

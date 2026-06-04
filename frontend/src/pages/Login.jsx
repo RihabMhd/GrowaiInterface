@@ -16,11 +16,11 @@ export default function Login() {
     setError("");
     try {
       const response = await loginUser(data);
-      if (response.data && response.data.token) {
-        await login(response.data.token);
+      if (response.data && response.data.data && response.data.data.token) {
+        await login(response.data.data.token);
         navigate("/dashboard");
       } else {
-        await login(response.token || response.access_token);
+        await login(response.data?.token || response.data?.access_token);
         navigate("/dashboard");
       }
     } catch (err) {

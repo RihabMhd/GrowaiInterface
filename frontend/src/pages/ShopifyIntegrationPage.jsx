@@ -73,9 +73,10 @@ function ShopifyLogo({ size = 28 }) {
 // ---------------------------------------------------------------------------
 // Single store card
 // ---------------------------------------------------------------------------
-function StoreCard({ shop, onDisconnect, onSaveBoutiqueName }) {
+function StoreCard({ shop, onDisconnect, onSaveBoutiqueName, onSync }) {
   const [boutiqueName, setBoutiqueName] = useState(shop.boutique_name || '');
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving]             = useState(false);
+  const [syncing, setSyncing]           = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -83,6 +84,15 @@ function StoreCard({ shop, onDisconnect, onSaveBoutiqueName }) {
       await onSaveBoutiqueName(shop.id, boutiqueName);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      await onSync(shop.id);
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -98,7 +108,7 @@ function StoreCard({ shop, onDisconnect, onSaveBoutiqueName }) {
       background: 'var(--bg-card, #fff)',
       marginBottom: 12,
     }}>
-      {/* Top row: logo + name + status + disconnect */}
+      {/* Top row: logo + name + status + sync + disconnect */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
         <div style={{
           width: 44, height: 44, borderRadius: 10, background: '#f6fef0',
@@ -127,6 +137,27 @@ function StoreCard({ shop, onDisconnect, onSaveBoutiqueName }) {
           Active
         </span>
 
+        {/* Sync products button — explicit shop ID, no fallback */}
+        <button
+          onClick={handleSync}
+          disabled={syncing}
+          title="Sync products from this store"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            background: syncing ? '#e0e7d4' : '#f0f7e6',
+            border: '1px solid #c0dd97',
+            borderRadius: 8, padding: '6px 12px', cursor: syncing ? 'not-allowed' : 'pointer',
+            color: syncing ? '#888' : '#3B6D11',
+            fontSize: 12, fontWeight: 600,
+            transition: 'all 0.15s', flexShrink: 0,
+          }}
+          onMouseEnter={e => { if (!syncing) { e.currentTarget.style.background = '#d8efb8'; e.currentTarget.style.borderColor = '#9ac55a'; } }}
+          onMouseLeave={e => { if (!syncing) { e.currentTarget.style.background = '#f0f7e6'; e.currentTarget.style.borderColor = '#c0dd97'; } }}
+        >
+          <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
+          {syncing ? 'Syncing…' : 'Sync products'}
+        </button>
+
         {/* Disconnect button */}
         <button
           onClick={() => onDisconnect(shop.id)}
@@ -154,7 +185,10 @@ function StoreCard({ shop, onDisconnect, onSaveBoutiqueName }) {
           )}
           {shop.last_synced_at && (
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span>🔄</span> Auto-sync active
+              <span>🔄</span> Last synced {new Date(shop.last_synced_at).toLocaleString('en-GB', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit',
+              })}
             </span>
           )}
         </div>
@@ -252,34 +286,15 @@ export default function ShopifyIntegrationPage() {
     setLoading(true);
     try {
       // GET /api/shopify/shops  →  { shops: [...] }
-      // Falls back gracefully: if endpoint returns single status, wrap it
       const data = await apiFetch('/shopify/shops');
       const list = Array.isArray(data.shops) ? data.shops
                  : Array.isArray(data)        ? data
-                 : data.connected             ? [data] : [];
+                 : [];
       setShops(list);
       setAnyConnected(list.length > 0);
     } catch {
-      // Try legacy single-shop status endpoint
-      try {
-        const data = await apiFetch('/shopify/status');
-        if (data.connected) {
-          setShops([{
-            id: data.shop_id,
-            name: data.domain,
-            shopify_domain: data.domain,
-            last_synced_at: data.last_synced_at,
-            boutique_name: '',
-          }]);
-          setAnyConnected(true);
-        } else {
-          setShops([]);
-          setAnyConnected(false);
-        }
-      } catch {
-        setShops([]);
-        setAnyConnected(false);
-      }
+      setShops([]);
+      setAnyConnected(false);
     } finally {
       setLoading(false);
     }
@@ -330,6 +345,24 @@ export default function ShopifyIntegrationPage() {
       setShops(prev => prev.map(s => s.id === shopId ? { ...s, boutique_name: name } : s));
     } catch (err) {
       showToast(err.message || 'Failed to save.', 'error');
+    }
+  };
+
+  /**
+   * Trigger product sync for one specific shop.
+   * Calls POST /api/shopify/shops/{shop}/sync-products.
+   * The shop ID comes from the shop object already loaded from the server —
+   * there is no fallback to any default or first shop.
+   */
+  const handleSync = async (shopId) => {
+    try {
+      await apiFetch(`/shopify/shops/${shopId}/sync-products`, { method: 'POST' });
+      showToast('Product sync queued. Products will appear shortly.', 'success');
+      // Reload shop list so last_synced_at updates after the job completes,
+      // if the server already stamped it (sync is async, so this is best-effort).
+      setTimeout(loadShops, 3000);
+    } catch (err) {
+      showToast(err.message || 'Sync failed. Please try again.', 'error');
     }
   };
 
@@ -385,10 +418,11 @@ export default function ShopifyIntegrationPage() {
               shop={shop}
               onDisconnect={handleDisconnect}
               onSaveBoutiqueName={handleSaveBoutiqueName}
+              onSync={handleSync}
             />
           ))}
 
-          {/* No stores yet → single connect prompt */}
+          {/* No stores yet → connect prompt */}
           {shops.length === 0 && (
             <div style={{
               border: '2px dashed var(--border-color, #e5e7eb)', borderRadius: 12,
@@ -470,7 +504,6 @@ export default function ShopifyIntegrationPage() {
           {/* "Add another store" toggle + inline panel */}
           {shops.length > 0 && (
             <>
-              {/* Collapsed: dashed button */}
               {!showAddPanel && (
                 <button
                   onClick={() => setShowAddPanel(true)}
@@ -495,7 +528,6 @@ export default function ShopifyIntegrationPage() {
                 </button>
               )}
 
-              {/* Expanded: handle input panel */}
               {showAddPanel && (
                 <div style={{
                   border: '2px dashed #c0dd97', borderRadius: 12,
