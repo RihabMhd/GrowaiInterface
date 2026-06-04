@@ -4,6 +4,7 @@ import {
   CheckCircle, FileText, Boxes, RefreshCw, Lock
 } from 'lucide-react';
 import api from '../api/axios';
+import { useShop } from '../context/ShopContext';
 
 // ─── Shopify SVG ─────────────────────────────────────────────────────────────
 const ShopifyIcon = ({ size = 16, color = '#fff' }) => (
@@ -23,8 +24,8 @@ const ShopifyIcon = ({ size = 16, color = '#fff' }) => (
 const PenIcon = ({ size = 13, color = '#fff' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 20h9"/>
-    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
   </svg>
 );
 
@@ -44,34 +45,34 @@ const defaultVariant = () => ({ title: 'Default Title', price: '', compare_at_pr
 
 const ProductForm = ({ product, onSave, onCancel }) => {
   const isShopify = product?.source_type === 'shopify';
-  const fileRef   = useRef();
+  const fileRef = useRef();
 
   const initVariants = () => {
     if (product?.variants && Array.isArray(product.variants) && product.variants.length > 0) {
       return product.variants.map(v => ({
-        title:            v.title            || 'Default Title',
-        price:            v.price            != null ? String(v.price)            : '',
+        title: v.title || 'Default Title',
+        price: v.price != null ? String(v.price) : '',
         compare_at_price: v.compare_at_price != null ? String(v.compare_at_price) : '',
-        sku:              v.sku              || '',
-        stock:            v.stock            != null ? String(v.stock)            : '',
-        cost:             v.cost             != null ? String(v.cost)             : '',
+        sku: v.sku || '',
+        stock: v.stock != null ? String(v.stock) : '',
+        cost: v.cost != null ? String(v.cost) : '',
       }));
     }
     return [defaultVariant()];
   };
 
   const [form, setForm] = useState({
-    title:        product?.title        || '',
-    vendor:       product?.vendor       || '',
+    title: product?.title || '',
+    vendor: product?.vendor || '',
     product_type: product?.product_type || '',
-    handle:       product?.handle       || '',
-    status:       product?.status       || 'active',
-    tags:         Array.isArray(product?.tags) ? product.tags.join(', ') : (product?.tags || ''),
-    description:  product?.description  || '',
-    image:        product?.image        || '',
+    handle: product?.handle || '',
+    status: product?.status || 'active',
+    tags: Array.isArray(product?.tags) ? product.tags.join(', ') : (product?.tags || ''),
+    description: product?.description || '',
+    image: product?.image || '',
   });
-  const [variants, setVariants]     = useState(initVariants);
-  const [saving, setSaving]         = useState(false);
+  const [variants, setVariants] = useState(initVariants);
+  const [saving, setSaving] = useState(false);
   const [imagePreview, setImagePreview] = useState(product?.image || '');
 
   const setField = (key, val) => setForm(f => ({ ...f, [key]: val }));
@@ -104,16 +105,16 @@ const ProductForm = ({ product, onSave, onCancel }) => {
     setSaving(true);
     try {
       const parsedVariants = variants.map(v => ({
-        title:            v.title || 'Default Title',
-        price:            parseFloat(v.price)            || 0,
+        title: v.title || 'Default Title',
+        price: parseFloat(v.price) || 0,
         compare_at_price: v.compare_at_price ? parseFloat(v.compare_at_price) : null,
-        sku:              v.sku || null,
-        stock:            parseInt(v.stock)              || 0,
-        cost:             v.cost ? parseFloat(v.cost)   : null,
+        sku: v.sku || null,
+        stock: parseInt(v.stock) || 0,
+        cost: v.cost ? parseFloat(v.cost) : null,
       }));
       const payload = {
         ...form,
-        tags:     form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
         variants: parsedVariants,
       };
       await onSave(payload);
@@ -122,23 +123,23 @@ const ProductForm = ({ product, onSave, onCancel }) => {
     }
   };
 
-  const IS = { // input style
+  const IS = {
     width: '100%', padding: '9px 12px', fontSize: 13,
     border: '1px solid #e5e7eb', borderRadius: 8,
     background: '#fff', color: '#111827', outline: 'none',
     boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s',
   };
-  const LS = { fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 5, display: 'block' }; // label
-  const HS = { fontSize: 11, color: '#9ca3af', marginTop: 4 };                                       // hint
+  const LS = { fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 5, display: 'block' };
+  const HS = { fontSize: 11, color: '#9ca3af', marginTop: 4 };
   const R2 = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 };
   const R3 = { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 };
-  const SH = { // section header
+  const SH = {
     fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase',
     letterSpacing: '0.07em', marginBottom: 12, paddingBottom: 8,
     borderBottom: '1px solid #f3f4f6',
   };
   const focusPurple = e => e.target.style.borderColor = '#7c3aed';
-  const blurGray    = e => e.target.style.borderColor = '#e5e7eb';
+  const blurGray = e => e.target.style.borderColor = '#e5e7eb';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -404,17 +405,18 @@ const ProductForm = ({ product, onSave, onCancel }) => {
 
 // ─── Main Products page ───────────────────────────────────────────────────────
 const Products = () => {
-  const [products, setProducts]                 = useState([]);
-  const [loading, setLoading]                   = useState(false);
+  const { activeShopId, loading: shopLoading } = useShop();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
-  const [editingProduct, setEditingProduct]     = useState(null);
-  const [pagination, setPagination]             = useState({ current_page: 1, last_page: 1, total: 0 });
-  const [searchTerm, setSearchTerm]             = useState('');
-  const [filterStatus, setFilterStatus]         = useState('');
-  const [viewMode, setViewMode]                 = useState('grid');
-  const [error, setError]                       = useState(null);
-  const [shopConnected, setShopConnected]       = useState(false);
-  const [syncing, setSyncing]                   = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [viewMode, setViewMode] = useState('grid');
+  const [error, setError] = useState(null);
+  const [shopConnected, setShopConnected] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   // ─── Check shop connection ────────────────────────────────────────────────
   useEffect(() => {
@@ -423,19 +425,29 @@ const Products = () => {
     }).catch(() => setShopConnected(false));
   }, []);
 
+  useEffect(() => {
+    console.log('[Products] activeShopId changed:', activeShopId);
+  }, [activeShopId]);
   // ─── Fetch ────────────────────────────────────────────────────────────────
   const fetchProducts = async (page = 1) => {
-    setLoading(true); setError(null);
+    if (!activeShopId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
     try {
-      const params = {
-        page, per_page: 15,
-        ...(searchTerm   && { search: searchTerm }),
-        ...(filterStatus && { status: filterStatus }),
-      };
-      const { data } = await api.get('/products', { params });
-      setProducts(data.data);
-      setPagination({ current_page: data.current_page, last_page: data.last_page, total: data.total });
+      const response = await api.get(`/shops/${activeShopId}/products`, {
+        params: { page, search: searchTerm, status: filterStatus },
+      });
+      setProducts(response.data.data ?? []);
+      setPagination({
+        current_page: response.data.current_page ?? 1,
+        last_page: response.data.last_page ?? 1,
+        total: response.data.total ?? 0,
+      });
     } catch (err) {
+      console.error('PRODUCT FETCH ERROR', err);
       setError('Failed to load products.');
     } finally {
       setLoading(false);
@@ -444,9 +456,10 @@ const Products = () => {
 
   // ─── Resync ───────────────────────────────────────────────────────────────
   const handleResync = async () => {
+    if (!activeShopId) { alert('No store selected'); return; }
     setSyncing(true);
     try {
-      await api.post('/shopify/sync-products');
+      await api.post(`/shopify/shops/${activeShopId}/sync-products`);
       await fetchProducts(1);
     } catch { /* silent */ } finally {
       setSyncing(false);
@@ -455,10 +468,11 @@ const Products = () => {
 
   // ─── Save ─────────────────────────────────────────────────────────────────
   const saveProduct = async (productData) => {
+    if (!activeShopId) { alert('No store selected'); return; }
     if (editingProduct) {
-      await api.put(`/products/${editingProduct.id}`, productData);
+      await api.put(`/shops/${activeShopId}/products/${editingProduct.id}`, productData);
     } else {
-      await api.post('/products', productData);
+      await api.post(`/shops/${activeShopId}/products`, productData);
     }
     setEditingProduct(null);
     await fetchProducts(pagination.current_page);
@@ -467,31 +481,44 @@ const Products = () => {
 
   // ─── Delete ───────────────────────────────────────────────────────────────
   const deleteProduct = async (id) => {
+    if (!activeShopId) { alert('No store selected'); return; }
     if (!window.confirm('Delete this product?')) return;
     try {
-      await api.delete(`/products/${id}`);
+      await api.delete(`/shops/${activeShopId}/products/${id}`);
       fetchProducts(pagination.current_page);
     } catch { alert('Failed to delete product'); }
   };
 
-  useEffect(() => { fetchProducts(); }, []);
+  // Fires when active shop changes — immediate fetch
   useEffect(() => {
-    const t = setTimeout(() => fetchProducts(1), 500);
+    if (!activeShopId) return;
+    fetchProducts(1);
+  }, [activeShopId]);
+
+  // Fires when search/filter changes — debounced
+  useEffect(() => {
+    if (!activeShopId) return;
+    const t = setTimeout(() => fetchProducts(1), 400);
     return () => clearTimeout(t);
   }, [searchTerm, filterStatus]);
 
-  const activeCount    = products.filter(p => p.status === 'active').length;
-  const draftCount     = products.filter(p => p.status === 'draft').length;
+  const activeCount = products.filter(p => p.status === 'active').length;
+  const draftCount = products.filter(p => p.status === 'draft').length;
   const totalInventory = products.reduce((acc, p) => acc + (p.total_stock || 0), 0);
 
-  const now      = new Date();
-  const syncTime = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  const now = new Date();
+  const syncTime = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
   const openCreate = () => { setEditingProduct(null); setShowProductModal(true); };
-  const openEdit   = (p) => { setEditingProduct(p);   setShowProductModal(true); };
+  const openEdit = (p) => { setEditingProduct(p); setShowProductModal(true); };
   const closeModal = () => { setShowProductModal(false); setEditingProduct(null); };
 
   const isShopifyEdit = editingProduct?.source_type === 'shopify';
+
+  // Block render while ShopContext is still resolving shops
+  if (shopLoading) {
+    return <div className="loading-container"><div className="spinner-dark" /></div>;
+  }
 
   return (
     <div className="products-page">
@@ -628,14 +655,14 @@ const Products = () => {
               onClick={handleResync}
               disabled={syncing}
               className="btn-secondary-action"
-              style={{ display:'flex', alignItems:'center', gap:6 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
             >
               <RefreshCw size={14} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
               {syncing ? 'Syncing…' : 'Re-sync All'}
             </button>
           ) : (
             <button className="btn-secondary-action">
-              <span style={{ fontWeight:700 }}>$</span> Connect your Shop
+              <span style={{ fontWeight: 700 }}>$</span> Connect your Shop
             </button>
           )}
         </div>
@@ -651,10 +678,10 @@ const Products = () => {
       {/* ── Stats ──────────────────────────────── */}
       {products.length > 0 && (
         <div className="stats-grid">
-          <StatCard icon={Package}     iconColor="#60a5fa" label="TOTAL PRODUCTS"  value={pagination.total} />
-          <StatCard icon={CheckCircle} iconColor="#4ade80" label="ACTIVE"          value={activeCount} />
-          <StatCard icon={FileText}    iconColor="#fb923c" label="DRAFT"           value={draftCount} />
-          <StatCard icon={Boxes}       iconColor="#a78bfa" label="TOTAL INVENTORY" value={totalInventory} />
+          <StatCard icon={Package} iconColor="#60a5fa" label="TOTAL PRODUCTS" value={pagination.total} />
+          <StatCard icon={CheckCircle} iconColor="#4ade80" label="ACTIVE" value={activeCount} />
+          <StatCard icon={FileText} iconColor="#fb923c" label="DRAFT" value={draftCount} />
+          <StatCard icon={Boxes} iconColor="#a78bfa" label="TOTAL INVENTORY" value={totalInventory} />
         </div>
       )}
 
@@ -675,7 +702,7 @@ const Products = () => {
             <option value="draft">Draft</option>
             <option value="archived">Archived</option>
           </select>
-          <button className={`filter-button ${viewMode === 'grid'  ? 'active' : ''}`} onClick={() => setViewMode('grid')}>
+          <button className={`filter-button ${viewMode === 'grid' ? 'active' : ''}`} onClick={() => setViewMode('grid')}>
             <LayoutGrid size={15} />
           </button>
           <button className={`filter-button ${viewMode === 'table' ? 'active' : ''}`} onClick={() => setViewMode('table')}>
@@ -768,12 +795,12 @@ const GridView = ({ products, onEdit, onDelete }) => (
   <div className="products-grid">
     {products.map(product => {
       const isShopify = product.source_type === 'shopify';
-      const price     = product.min_price || product.variants?.[0]?.price || 0;
+      const price = product.min_price || product.variants?.[0]?.price || 0;
       const compareAt = product.variants?.[0]?.compare_at_price;
-      const cost      = product.cost || 0;
-      const margin    = price > 0 && cost > 0 ? Math.round(((price - cost) / price) * 100) : null;
-      const stock     = product.total_stock || 0;
-      const status    = product.status || 'draft';
+      const cost = product.cost || 0;
+      const margin = price > 0 && cost > 0 ? Math.round(((price - cost) / price) * 100) : null;
+      const stock = product.total_stock || 0;
+      const status = product.status || 'draft';
       return (
         <div key={product.id} className="pcv2" onClick={() => onEdit(product)}>
           <div className="pcv2-img-wrap">
@@ -827,12 +854,12 @@ const TableView = ({ products, onEdit, onDelete, pagination }) => (
     <div style={{ overflowX: 'auto' }}>
       <table className="products-table">
         <thead>
-          <tr>{['PRODUCT','SOURCE','STATUS','TYPE','VENDOR','PRICE','COST','MARGIN','ACTIONS'].map(c => <th key={c}>{c}</th>)}</tr>
+          <tr>{['PRODUCT', 'SOURCE', 'STATUS', 'TYPE', 'VENDOR', 'PRICE', 'COST', 'MARGIN', 'ACTIONS'].map(c => <th key={c}>{c}</th>)}</tr>
         </thead>
         <tbody>
           {products.map(product => {
-            const price  = product.min_price || product.variants?.[0]?.price || 0;
-            const cost   = product.cost || 0;
+            const price = product.min_price || product.variants?.[0]?.price || 0;
+            const cost = product.cost || 0;
             const margin = price > 0 && cost > 0 ? Math.round(((price - cost) / price) * 100) : 0;
             return (
               <tr key={product.id}>
