@@ -47,9 +47,15 @@ const ProductForm = ({ product, onSave, onCancel }) => {
   const isShopify = product?.source_type === 'shopify';
   const fileRef = useRef();
 
+
   const initVariants = () => {
     if (product?.variants && Array.isArray(product.variants) && product.variants.length > 0) {
       return product.variants.map(v => ({
+        // Shopify identifiers — non-editable, must survive the round-trip
+        external_variant_id: v.external_variant_id ?? null,
+        external_inventory_item_id: v.external_inventory_item_id ?? null,
+        shopify_variant_id: v.shopify_variant_id ?? null,
+        // Editable fields
         title: v.title || 'Default Title',
         price: v.price != null ? String(v.price) : '',
         compare_at_price: v.compare_at_price != null ? String(v.compare_at_price) : '',
@@ -105,6 +111,11 @@ const ProductForm = ({ product, onSave, onCancel }) => {
     setSaving(true);
     try {
       const parsedVariants = variants.map(v => ({
+        // Pass Shopify identifiers through unchanged
+        external_variant_id: v.external_variant_id ?? null,
+        external_inventory_item_id: v.external_inventory_item_id ?? null,
+        shopify_variant_id: v.shopify_variant_id ?? null,
+        // Parsed editable fields
         title: v.title || 'Default Title',
         price: parseFloat(v.price) || 0,
         compare_at_price: v.compare_at_price ? parseFloat(v.compare_at_price) : null,

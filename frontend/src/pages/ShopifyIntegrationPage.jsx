@@ -77,6 +77,8 @@ function StoreCard({ shop, onDisconnect, onSaveBoutiqueName, onSync }) {
   const [boutiqueName, setBoutiqueName] = useState(shop.boutique_name || '');
   const [saving, setSaving]             = useState(false);
   const [syncing, setSyncing]           = useState(false);
+  const [syncingOrders, setSyncingOrders] = useState(false);
+const [syncResult, setSyncResult] = useState(null);
 
   const handleSave = async () => {
     setSaving(true);

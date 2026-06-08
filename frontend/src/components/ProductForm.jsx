@@ -22,7 +22,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
       }
     ]
   });
-  
+
   const [imageUrl, setImageUrl] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -80,7 +80,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
     const updatedVariants = [...formData.variants];
     updatedVariants[index][field] = value;
     setFormData({ ...formData, variants: updatedVariants });
-    
+
     // Clear variant errors if exists
     if (errors[`variants.${index}.${field}`]) {
       const newErrors = { ...errors };
@@ -166,7 +166,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const file = e.dataTransfer.files[0];
     if (file) {
       const fakeEvent = { target: { files: [file] } };
@@ -176,15 +176,16 @@ const ProductForm = ({ product, onSave, onCancel }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.title || formData.title.trim() === '') {
       newErrors.title = 'Title is required';
     }
+
     
     if (!formData.handle || formData.handle.trim() === '') {
       newErrors.handle = 'Handle is required';
     }
-    
+
     formData.variants.forEach((variant, index) => {
       if (!variant.title || variant.title.trim() === '') {
         newErrors[`variants.${index}.title`] = 'Variant title is required';
@@ -196,13 +197,13 @@ const ProductForm = ({ product, onSave, onCancel }) => {
         newErrors[`variants.${index}.stock`] = 'Stock cannot be negative';
       }
     });
-    
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    alert('HANDLE SUBMIT CALLED');
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -215,10 +216,9 @@ const ProductForm = ({ product, onSave, onCancel }) => {
     }
 
     setSaving(true);
-    
+
     const submitData = {
       ...formData,
-      // shop_id resolved server-side from auth token
       tags_string: formData.tags_string,
       variants: formData.variants.map(v => ({
         ...v,
@@ -243,12 +243,12 @@ const ProductForm = ({ product, onSave, onCancel }) => {
       <div className="form-header">
         <h2>{product ? '✏️ Edit Product' : '➕ New Product'}</h2>
       </div>
-      
+
       <form onSubmit={handleSubmit}>
         {/* Basic Information Section */}
         <div className="form-section">
           <h3 className="section-title">Basic Information</h3>
-          
+
           {/* Title */}
           <div className="form-field">
             <label className="field-label">
@@ -335,8 +335,8 @@ const ProductForm = ({ product, onSave, onCancel }) => {
         {/* Image Section */}
         <div className="form-section">
           <h3 className="section-title">Image</h3>
-          
-          <div 
+
+          <div
             className="image-upload-area"
             onDragOver={handleDragOver}
             onDrop={handleDrop}
@@ -360,7 +360,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
               <div className="dropzone" onClick={() => fileInputRef.current?.click()}>
                 <div className="dropzone-content">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 4v16M4 12h16" stroke="currentColor" strokeLinecap="round"/>
+                    <path d="M12 4v16M4 12h16" stroke="currentColor" strokeLinecap="round" />
                   </svg>
                   <p>Drop an image here or click to upload</p>
                   <span className="file-types">PNG · JPG · WEBP · GIF · AVIF — up to 10 MB</span>
@@ -374,14 +374,14 @@ const ProductForm = ({ product, onSave, onCancel }) => {
                 />
               </div>
             )}
-            
+
             {uploading && (
               <div className="uploading">
                 <div className="spinner-small"></div>
                 <span>Uploading...</span>
               </div>
             )}
-            
+
             <button
               type="button"
               className="url-toggle-btn"
@@ -389,7 +389,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
             >
               {showUrlInput ? '▲ Hide URL input' : '▼ Or paste an image URL'}
             </button>
-            
+
             {showUrlInput && (
               <div className="url-input">
                 <input
@@ -437,7 +437,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
               + Add variant
             </button>
           </div>
-          
+
           {formData.variants.map((variant, index) => (
             <div key={index} className="variant-card">
               <div className="variant-header">
@@ -452,7 +452,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
                   </button>
                 )}
               </div>
-              
+
               <div className="variant-grid">
                 <div className="variant-field">
                   <label className="field-label">
@@ -469,7 +469,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
                     <span className="error-message">{errors[`variants.${index}.title`]}</span>
                   )}
                 </div>
-                
+
                 <div className="variant-field">
                   <label className="field-label">
                     Price <span className="required">*</span>
@@ -489,7 +489,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
                     <span className="error-message">{errors[`variants.${index}.price`]}</span>
                   )}
                 </div>
-                
+
                 <div className="variant-field">
                   <label className="field-label">Compare at</label>
                   <div className="currency-input">
@@ -505,7 +505,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
                   </div>
                   <small className="field-hint">Original price (for sale display)</small>
                 </div>
-                
+
                 <div className="variant-field">
                   <label className="field-label">SKU</label>
                   <input
@@ -517,7 +517,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
                   />
                   <small className="field-hint">Stock keeping unit</small>
                 </div>
-                
+
                 <div className="variant-field">
                   <label className="field-label">Cost</label>
                   <div className="currency-input">
@@ -533,7 +533,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
                   </div>
                   <small className="field-hint">Your cost per item</small>
                 </div>
-                
+
                 <div className="variant-field">
                   <label className="field-label">
                     Stock <span className="required">*</span>
