@@ -417,6 +417,10 @@ const ProductForm = ({ product, onSave, onCancel }) => {
 // ─── Main Products page ───────────────────────────────────────────────────────
 const Products = () => {
   const { activeShopId, loading: shopLoading } = useShop();
+  console.log('[Products]', {
+    activeShopId,
+    shopLoading,
+  });
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -441,6 +445,10 @@ const Products = () => {
   }, [activeShopId]);
   // ─── Fetch ────────────────────────────────────────────────────────────────
   const fetchProducts = async (page = 1) => {
+    if (shopLoading) {
+      return;
+    }
+
     if (!activeShopId) {
       setLoading(false);
       return;
@@ -467,7 +475,14 @@ const Products = () => {
 
   // ─── Resync ───────────────────────────────────────────────────────────────
   const handleResync = async () => {
-    if (!activeShopId) { alert('No store selected'); return; }
+    if (shopLoading) {
+      return;
+    }
+
+    if (!activeShopId) {
+      alert('No store selected');
+      return;
+    }
     setSyncing(true);
     try {
       await api.post(`/shopify/shops/${activeShopId}/sync-products`);

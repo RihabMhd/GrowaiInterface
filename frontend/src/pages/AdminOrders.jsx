@@ -7,25 +7,25 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import '../CustomDatePicker.css';
 import OrderDetails from './OrderDetails';
-
+import { useShop } from '../context/ShopContext';
 const CURRENCY = "MAD";
 
 const ORDER_STATUSES = [
-  { value: "nouveau",       label: "Nouveau",        color: "#7239ea", icon: "●" },
-  { value: "confirmed",     label: "Confirmé",       color: "#50cd89", icon: "●" },
-  { value: "no_response",   label: "Pas de réponse", color: "#00a3ff", icon: "◎" },
-  { value: "rappel",        label: "Rappel",         color: "#9b6dff", icon: "☎" },
-  { value: "cancelled",     label: "Annulé",         color: "#f1416c", icon: "⊗" },
-  { value: "doublon",       label: "Doublon",        color: "#ffc700", icon: "◈" },
-  { value: "wrong_number",  label: "Mauvais numéro", color: "#fd7e14", icon: "⚠" },
+  { value: "nouveau", label: "Nouveau", color: "#7239ea", icon: "●" },
+  { value: "confirmed", label: "Confirmé", color: "#50cd89", icon: "●" },
+  { value: "no_response", label: "Pas de réponse", color: "#00a3ff", icon: "◎" },
+  { value: "rappel", label: "Rappel", color: "#9b6dff", icon: "☎" },
+  { value: "cancelled", label: "Annulé", color: "#f1416c", icon: "⊗" },
+  { value: "doublon", label: "Doublon", color: "#ffc700", icon: "◈" },
+  { value: "wrong_number", label: "Mauvais numéro", color: "#fd7e14", icon: "⚠" },
 ];
 
 const FULFILLMENT_STATUSES = [
-  { value: "unfulfilled",   label: "Unfulfilled",   color: "#ffc700" },
-  { value: "fulfilled",     label: "Fulfilled",     color: "#50cd89" },
-  { value: "in_transit",    label: "In Transit",    color: "#00a3ff" },
-  { value: "delivered",     label: "Delivered",     color: "#50cd89" },
-  { value: "delivery_failed", label: "Failed",      color: "#f1416c" },
+  { value: "unfulfilled", label: "Unfulfilled", color: "#ffc700" },
+  { value: "fulfilled", label: "Fulfilled", color: "#50cd89" },
+  { value: "in_transit", label: "In Transit", color: "#00a3ff" },
+  { value: "delivered", label: "Delivered", color: "#50cd89" },
+  { value: "delivery_failed", label: "Failed", color: "#f1416c" },
 ];
 
 const PER_PAGE_OPTIONS = [10, 25, 50, 100];
@@ -44,10 +44,10 @@ const inputStyle = {
 };
 
 const Icons = {
-  total: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>),
-  confirmed: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>),
-  cancelled: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>),
-  rate: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>),
+  total: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>),
+  confirmed: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>),
+  cancelled: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>),
+  rate: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>),
 };
 
 function StatusDropdown({ orderId, currentStatus, onChange }) {
@@ -76,7 +76,7 @@ function StatusDropdown({ orderId, currentStatus, onChange }) {
         {meta.label}
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
           style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}>
-          <path d="M6 9l6 6 6-6"/>
+          <path d="M6 9l6 6 6-6" />
         </svg>
       </button>
       {open && (
@@ -103,7 +103,7 @@ function StatusDropdown({ orderId, currentStatus, onChange }) {
               </div>
               {s.value === currentStatus && (
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={s.color} strokeWidth="3">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               )}
             </div>
@@ -160,11 +160,11 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
           }}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+            <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
           </svg>
           Actions
           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M6 9l6 6 6-6"/>
+            <path d="M6 9l6 6 6-6" />
           </svg>
         </button>
         {open && (
@@ -179,7 +179,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
               className="sd-item"
               style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 12px", borderRadius: "7px", cursor: "pointer" }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8l4 1 3 3v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8l4 1 3 3v4h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
               <span style={{ fontSize: "0.82rem", fontWeight: "600" }}>Create Parcel</span>
             </div>
 
@@ -191,10 +191,10 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: "7px", cursor: "pointer" }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#50cd89" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#50cd89" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   <span style={{ fontSize: "0.82rem", fontWeight: "600" }}>Update Status</span>
                 </div>
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 6l6 6-6 6"/></svg>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 6l6 6-6 6" /></svg>
               </div>
               {showStatusSub && (
                 <div style={{
@@ -225,10 +225,10 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: "7px", cursor: "pointer" }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00a3ff" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00a3ff" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>
                   <span style={{ fontSize: "0.82rem", fontWeight: "600" }}>Assign to</span>
                 </div>
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 6l6 6-6 6"/></svg>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 6l6 6-6 6" /></svg>
               </div>
               {showAgentSub && (
                 <div style={{
@@ -285,7 +285,7 @@ function CustomSelect({ id, value, onChange, options, placeholder, openDropdown,
         <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected?.label || placeholder}</span>
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
           style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>
-          <path d="M6 9l6 6 6-6"/>
+          <path d="M6 9l6 6 6-6" />
         </svg>
       </div>
       {isOpen && (
@@ -348,7 +348,7 @@ function ProductPicker({ products, onSelect, onClose }) {
                   <div style={{ fontSize: "0.83rem", fontWeight: "600", color: "var(--text-main)" }}>{p.title || p.name}</div>
                   <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "2px" }}>{price} MAD</div>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
               </div>
             );
           })}
@@ -377,7 +377,7 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
   };
 
   const removeItem = (pid) => setForm(p => ({ ...p, items: p.items.filter(i => i.product_id !== pid) }));
-  const updateQty  = (pid, qty) => { const q = Math.max(1, parseInt(qty) || 1); setForm(p => ({ ...p, items: p.items.map(i => i.product_id === pid ? { ...i, quantity: q } : i) })); };
+  const updateQty = (pid, qty) => { const q = Math.max(1, parseInt(qty) || 1); setForm(p => ({ ...p, items: p.items.map(i => i.product_id === pid ? { ...i, quantity: q } : i) })); };
   const subtotal = form.items.reduce((s, i) => s + i.price * i.quantity, 0);
   const total = subtotal + parseFloat(form.shipping_price || 0);
 
@@ -416,7 +416,7 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{ width: "32px", height: "32px", background: "rgba(114,57,234,0.15)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
             </div>
             <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-main)" }}>New Manual Order</h3>
           </div>
@@ -445,7 +445,7 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
                   <option value="whatsapp">WhatsApp</option>
                   <option value="google_sheets">Google Sheets</option>
                 </select>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><path d="M6 9l6 6 6-6"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><path d="M6 9l6 6 6-6" /></svg>
               </div>
             </div>
             <div style={{ marginBottom: "22px" }}>
@@ -468,7 +468,7 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
               <label style={{ ...lbl, marginBottom: 0 }}>Products *</label>
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowPicker(v => !v)} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "5px 10px", borderRadius: "6px", background: "rgba(114,57,234,0.12)", border: "1px solid rgba(114,57,234,0.25)", color: "#9b6dff", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                   Add product
                 </button>
                 {showPicker && <ProductPicker products={products} onSelect={addProduct} onClose={() => setShowPicker(false)} />}
@@ -477,9 +477,9 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
             <div style={{ flex: 1, border: "1.5px dashed rgba(255,255,255,0.1)", borderRadius: "10px", background: "rgba(255,255,255,0.02)", overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "200px" }}>
               {form.items.length === 0 ? (
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", padding: "20px" }}>
-                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
                   <button onClick={() => setShowPicker(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 18px", borderRadius: "8px", background: "#7239ea", color: "white", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     Add product
                   </button>
                 </div>
@@ -488,7 +488,7 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
                   {form.items.map(item => (
                     <div key={item.product_id} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                       <div style={{ width: "30px", height: "30px", borderRadius: "7px", background: "rgba(114,57,234,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.product_name}</div>
@@ -501,7 +501,7 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
                       </div>
                       <div style={{ fontSize: "0.78rem", fontWeight: "700", minWidth: "46px", textAlign: "right", flexShrink: 0 }}>{(item.price * item.quantity).toFixed(2)}</div>
                       <button className="rm-btn" onClick={() => removeItem(item.product_id)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                       </button>
                     </div>
                   ))}
@@ -541,41 +541,42 @@ export default function AdminOrders() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
   const isAbandonedPage = location.pathname.includes("abandonnees");
+  const { activeShopId } = useShop();
 
   // Data
-  const [orders,       setOrders]       = useState([]);
-  const [metrics,      setMetrics]      = useState({ total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, today_orders: 0, failed_delivery: 0, delivery_rate: "0%" });
+  const [orders, setOrders] = useState([]);
+  const [metrics, setMetrics] = useState({ total_orders: 0, confirmed: 0, cancelled: 0, pending: 0, today_orders: 0, failed_delivery: 0, delivery_rate: "0%" });
   const [activeAgents, setActiveAgents] = useState([]);
-  const [products,     setProducts]     = useState([]);
-  const [companies,    setCompanies]    = useState([]);
-  const [loading,      setLoading]      = useState(true);
-  const [message,      setMessage]      = useState(null);
+  const [products, setProducts] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(null);
 
   // Pagination
-  const [currentPage,  setCurrentPage]  = useState(1);
-  const [perPage,      setPerPage]      = useState(50);
-  const [totalOrders,  setTotalOrders]  = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(50);
+  const [totalOrders, setTotalOrders] = useState(0);
   const totalPages = Math.max(1, Math.ceil(totalOrders / perPage));
 
   // Filters
-  const [search,               setSearch]               = useState("");
-  const [statusFilter,         setStatusFilter]         = useState("all");
-  const [fulfillmentFilter,    setFulfillmentFilter]    = useState("all");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [fulfillmentFilter, setFulfillmentFilter] = useState("all");
   const [deliverCompaniesFilter, setDeliverCompaniesFilter] = useState("all");
-  const [productFilter,        setProductFilter]        = useState("all");
-  const [agentFilter,          setAgentFilter]          = useState("all");
-  const [periodFilter,         setPeriodFilter]         = useState("all");
-  const [dateRange,            setDateRange]            = useState([null, null]);
+  const [productFilter, setProductFilter] = useState("all");
+  const [agentFilter, setAgentFilter] = useState("all");
+  const [periodFilter, setPeriodFilter] = useState("all");
+  const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
-  const [openDropdown,         setOpenDropdown]         = useState(null);
-  const [isMoreOpen,           setIsMoreOpen]           = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   // Selection
-  const [selectedIds,  setSelectedIds]  = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // Modals
-  const [selectedOrder,       setSelectedOrder]       = useState(null);
-  const [isCreateModalOpen,   setIsCreateModalOpen]   = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
   const fetchOrders = async (page = currentPage) => {
@@ -598,12 +599,22 @@ export default function AdminOrders() {
   };
 
   const fetchProducts = async () => {
+    if (!activeShopId) {
+      setProducts([]);
+      return;
+    }
+
     try {
-      const res = await api.get("/products");
-      const raw = res.data;
-      setProducts(Array.isArray(raw) ? raw : Array.isArray(raw?.data) ? raw.data : []);
-    } catch (err) { setProducts([]); }
-  };
+      const res = await api.get(
+        `/shops/${activeShopId}/products`
+      );
+
+      setProducts(res.data.data ?? []);
+    } catch (err) {
+      console.error(err);
+      setProducts([]);
+    }
+  };[]
 
   const fetchCompanies = async () => {
     try {
@@ -614,7 +625,11 @@ export default function AdminOrders() {
 
   useEffect(() => { setCurrentPage(1); fetchOrders(1); }, [location.pathname, search, statusFilter, perPage]);
   useEffect(() => { fetchOrders(currentPage); }, [currentPage]);
-  useEffect(() => { fetchProducts(); fetchCompanies(); }, []);
+  useEffect(() => {
+    if (!activeShopId) return;
+
+    fetchProducts();
+  }, [activeShopId]);
   useEffect(() => {
     const h = (e) => {
       if (!e.target.closest(".custom-select-wrapper")) setOpenDropdown(null);
@@ -716,7 +731,7 @@ export default function AdminOrders() {
       <div className="page-header" style={{ marginBottom: "12px" }}>
         <div>
           <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.05rem" }}>
-            <svg style={{ width: "18px", height: "18px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <svg style={{ width: "18px", height: "18px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
             {isAbandonedPage ? "Abandoned Orders" : "Orders"}
           </h2>
           <p className="page-subtitle">Manage, assign, and track all orders</p>
@@ -724,18 +739,18 @@ export default function AdminOrders() {
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {/* Period tabs */}
           <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "6px", gap: "1px" }}>
-            {[["all","All"],["today","Today"],["yesterday","Yesterday"],["this_week","This week"]].map(([v,l]) => (
+            {[["all", "All"], ["today", "Today"], ["yesterday", "Yesterday"], ["this_week", "This week"]].map(([v, l]) => (
               <button key={v} onClick={() => setPeriodFilter(v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: periodFilter === v ? "var(--bg-card)" : "transparent", color: periodFilter === v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
             ))}
             <div className="more-dd" style={{ position: "relative" }}>
               <button onClick={() => setIsMoreOpen(v => !v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: "transparent", color: "var(--text-muted)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "3px" }}>
-                More <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                More <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
               </button>
               {isMoreOpen && (
                 <div className="custom-more-dropdown">
                   <div className="more-options-section">
                     <span className="section-title">MORE</span>
-                    {[["last7","Last 7 days"],["last30","Last 30 days"],["this_month","This month"]].map(([v,l]) => (
+                    {[["last7", "Last 7 days"], ["last30", "Last 30 days"], ["this_month", "This month"]].map(([v, l]) => (
                       <div key={v} className="option-item" onClick={() => { setPeriodFilter(v); setIsMoreOpen(false); }}>{l}</div>
                     ))}
                   </div>
@@ -755,7 +770,7 @@ export default function AdminOrders() {
             </div>
           </div>
           <button onClick={() => setIsCreateModalOpen(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 14px", background: "var(--purple)", color: "white", borderRadius: "6px", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
             New Order
           </button>
         </div>
@@ -764,11 +779,11 @@ export default function AdminOrders() {
       {/* Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px", marginBottom: "12px" }}>
         {[
-          { label: "TOTAL ORDERS",   value: metrics.total_orders,     icon: Icons.total,     bg: "#e1e9ff", ic: "#6993ff", sub: `${metrics.today_orders || 0} today` },
-          { label: "CONFIRMED",      value: metrics.confirmed,        icon: Icons.confirmed, bg: "#c9f7f5", ic: "#1bc5bd", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% rate` },
-          { label: "CANCELLED",      value: metrics.cancelled,        icon: Icons.cancelled, bg: "#ffe2e5", ic: "#f64e60", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% rate` },
-          { label: "FAILED DELIVERY",value: metrics.failed_delivery || 0, icon: Icons.cancelled, bg: "#ffe2e5", ic: "#f64e60", sub: "failed" },
-          { label: "DELIVERY RATE",  value: metrics.delivery_rate || "0%", icon: Icons.rate, bg: "#e1e9ff", ic: "#6993ff", sub: "rate" },
+          { label: "TOTAL ORDERS", value: metrics.total_orders, icon: Icons.total, bg: "#e1e9ff", ic: "#6993ff", sub: `${metrics.today_orders || 0} today` },
+          { label: "CONFIRMED", value: metrics.confirmed, icon: Icons.confirmed, bg: "#c9f7f5", ic: "#1bc5bd", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed / metrics.total_orders) * 100) : 0}% rate` },
+          { label: "CANCELLED", value: metrics.cancelled, icon: Icons.cancelled, bg: "#ffe2e5", ic: "#f64e60", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled / metrics.total_orders) * 100) : 0}% rate` },
+          { label: "FAILED DELIVERY", value: metrics.failed_delivery || 0, icon: Icons.cancelled, bg: "#ffe2e5", ic: "#f64e60", sub: "failed" },
+          { label: "DELIVERY RATE", value: metrics.delivery_rate || "0%", icon: Icons.rate, bg: "#e1e9ff", ic: "#6993ff", sub: "rate" },
         ].map((c, i) => (
           <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
@@ -784,7 +799,7 @@ export default function AdminOrders() {
       {/* Filters row */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ flex: 1, minWidth: "180px", position: "relative" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "7px 10px 7px 30px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.75rem", outline: "none", boxSizing: "border-box" }} />
         </div>
         <CustomSelect id="status" value={statusFilter} onChange={setStatusFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Status"
@@ -806,7 +821,7 @@ export default function AdminOrders() {
         </div>
       ) : filteredOrders.length === 0 ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px" }}>
-          <svg style={{ width: "56px", height: "56px", marginBottom: "16px", opacity: 0.1 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+          <svg style={{ width: "56px", height: "56px", marginBottom: "16px", opacity: 0.1 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /></svg>
           <p style={{ color: "var(--text-muted)", fontWeight: "500" }}>No orders found</p>
         </div>
       ) : (
@@ -888,7 +903,7 @@ export default function AdminOrders() {
                         {order.client?.phone && (
                           <a href={`https://wa.me/${order.client.phone}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
                             style={{ color: "#25D366", display: "flex", alignItems: "center", flexShrink: 0 }}>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
                           </a>
                         )}
                         <div>

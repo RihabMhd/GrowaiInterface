@@ -78,7 +78,11 @@ export function ShopProvider({ children }) {
             localStorage.setItem('activeShopId', targetShop.id);
         }
     };
-
+    console.log('[ShopContext]', {
+        activeShopId,
+        loading,
+        shops,
+    });
     return (
         <ShopContext.Provider
             value={{
