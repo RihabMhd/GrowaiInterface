@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-import { 
-  getTeamData, 
-  addTeamMember, 
-  updateTeamMember, 
-  saveTeamSettings, 
+import {
+  getTeamData,
+  addTeamMember,
+  updateTeamMember,
+  saveTeamSettings,
   deleteTeamMember,
   impersonateUser
 } from "../services/teamService";
@@ -191,9 +191,9 @@ export default function Team() {
 
   // Quick Select All / Deselect All for visible (filtered) products
   const getFilteredProducts = () => {
-    return allProducts.filter(p => 
-      p.name.toLowerCase().includes(productSearch.toLowerCase()) || 
-      (p.sku && p.sku.toLowerCase().includes(productSearch.toLowerCase()))
+    return allProducts.filter(p =>
+      (p.name ?? '').toLowerCase().includes(productSearch.toLowerCase()) ||
+      (p.sku ?? '').toLowerCase().includes(productSearch.toLowerCase())
     );
   };
 
@@ -395,7 +395,7 @@ export default function Team() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "25px", paddingBottom: "40px" }}>
-      
+
       {/* Success Toast */}
       {successMsg && (
         <div style={{
@@ -414,7 +414,7 @@ export default function Team() {
           gap: "10px",
           animation: "popupFadeIn 0.2s ease-out"
         }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
           {successMsg}
         </div>
       )}
@@ -424,13 +424,13 @@ export default function Team() {
         <div>
           <h1 className="page-title" style={{ fontSize: "1.6rem", display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "35px", height: "35px", borderRadius: "8px", background: "rgba(137, 80, 252, 0.1)", color: "var(--purple)" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>
             </span>
             {t("equipe")}
           </h1>
           <p className="page-subtitle">{members.filter(m => m.is_active).length} {t("actif").toLowerCase()}(s)</p>
         </div>
-        <button 
+        <button
           onClick={() => setIsAddModalOpen(true)}
           style={{
             backgroundColor: "var(--purple)",
@@ -448,7 +448,7 @@ export default function Team() {
           }}
           className="btn-purple-hover"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="17" y1="11" x2="23" y2="11" /></svg>
           {t("ajouter_membre")}
         </button>
       </div>
@@ -457,7 +457,7 @@ export default function Team() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
         {members.map(member => (
           <div key={member.id} className="card" style={{ display: "flex", flexDirection: "column", gap: "15px", padding: "18px", position: "relative" }}>
-            
+
             {/* Action buttons row top right: Impersonate, Edit, Delete */}
             <div style={{
               position: "absolute",
@@ -467,9 +467,9 @@ export default function Team() {
               alignItems: "center",
               gap: "8px"
             }}>
-              
+
               {/* Impersonate Login-as (🚪➡️) */}
-              <button 
+              <button
                 onClick={() => handleImpersonate(member)}
                 style={{
                   background: "none",
@@ -486,11 +486,11 @@ export default function Team() {
                 className="btn-action-hover"
                 title="Se connecter en tant que ce membre"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" /></svg>
               </button>
 
               {/* Edit Member pencil (✏️) */}
-              <button 
+              <button
                 onClick={() => openEditModal(member)}
                 style={{
                   background: "none",
@@ -507,11 +507,11 @@ export default function Team() {
                 className="btn-action-hover"
                 title="Modifier le membre"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
               </button>
 
               {/* Delete Member trash (🗑️) */}
-              <button 
+              <button
                 onClick={() => handleDeleteMember(member.id)}
                 style={{
                   background: "none",
@@ -528,15 +528,15 @@ export default function Team() {
                 className="btn-action-hover"
                 title="Supprimer ce membre"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
               </button>
 
             </div>
 
             {/* Profile Avatar & Details */}
             <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-              <img 
-                src={member.avatar_url} 
+              <img
+                src={member.avatar_url}
                 alt={member.name}
                 style={{
                   width: "48px",
@@ -558,7 +558,7 @@ export default function Team() {
             </div>
 
             {/* Clickable Product Assignment Card Area */}
-            <div 
+            <div
               onClick={() => openProductModal(member)}
               style={{
                 backgroundColor: "var(--bg-app)",
@@ -575,7 +575,7 @@ export default function Team() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1 }}>
                 <span style={{ color: "var(--text-muted)" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
                 </span>
                 {member.products && member.products.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column" }}>
@@ -595,7 +595,7 @@ export default function Team() {
                 )}
               </div>
               <span style={{ color: "var(--text-muted)", fontSize: "1rem" }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
               </span>
             </div>
 
@@ -614,7 +614,7 @@ export default function Team() {
                 fontWeight: "600"
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="2" y="4" width="20" height="16" rx="2" /><line x1="12" y1="10" x2="12" y2="10" /><line x1="2" y1="10" x2="22" y2="10" /></svg>
                   <span>Portefeuille</span>
                 </div>
                 <span>{member.wallet_balance ? parseFloat(member.wallet_balance).toFixed(2) : "0.00"} {currentCurrencySymbol}</span>
@@ -636,7 +636,7 @@ export default function Team() {
                   {member.role === "admin" ? "Admin" : "Agent"}
                 </span>
 
-                <button 
+                <button
                   onClick={() => handleToggleActive(member)}
                   style={{
                     fontSize: "0.7rem",
@@ -660,7 +660,7 @@ export default function Team() {
                   {member.is_active ? "Actif" : "Inactif"}
                 </button>
               </div>
-              
+
               <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                 Jamais
               </span>
@@ -676,7 +676,7 @@ export default function Team() {
           <div>
             <h2 style={{ fontSize: "1.15rem", fontWeight: 600, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ color: "var(--warning)" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>
               </span>
               Dispatch des commandes
             </h2>
@@ -684,9 +684,9 @@ export default function Team() {
               Définissez les quotas pour distribuer automatiquement les commandes
             </p>
           </div>
-          
+
           <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-            <button 
+            <button
               onClick={handleSaveQuotas}
               style={{
                 backgroundColor: "transparent",
@@ -704,7 +704,7 @@ export default function Team() {
 
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ fontSize: "0.8rem", fontWeight: 500, color: "var(--text-muted)" }}>Dispatch auto</span>
-              <button 
+              <button
                 onClick={handleToggleAutoDispatch}
                 style={{
                   width: "40px",
@@ -738,8 +738,8 @@ export default function Team() {
             return (
               <div key={member.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 10px", borderRadius: "8px", borderBottom: "1px solid var(--border-color)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <img 
-                    src={member.avatar_url} 
+                  <img
+                    src={member.avatar_url}
                     alt={member.name}
                     style={{ width: "32px", height: "32px", borderRadius: "50%" }}
                   />
@@ -750,17 +750,17 @@ export default function Team() {
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "25px" }}>
-                  
+
                   {/* Quota Clicker */}
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <span style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "var(--text-muted)" }}>Quota</span>
                     <div style={{ display: "flex", alignItems: "center", gap: "3px", backgroundColor: "var(--bg-app)", border: "1px solid var(--border-color)", borderRadius: "6px", padding: "2px" }}>
-                      <button 
+                      <button
                         onClick={() => handleQuotaChange(member.id, -1)}
                         style={{ width: "24px", height: "24px", borderRadius: "4px", backgroundColor: "transparent", color: "var(--text-main)", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}
                       >-</button>
                       <span style={{ width: "30px", textAlign: "center", fontSize: "0.85rem", fontWeight: 600 }}>{member.quota}</span>
-                      <button 
+                      <button
                         onClick={() => handleQuotaChange(member.id, 1)}
                         style={{ width: "24px", height: "24px", borderRadius: "4px", backgroundColor: "transparent", color: "var(--text-main)", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}
                       >+</button>
@@ -773,7 +773,7 @@ export default function Team() {
                   </span>
 
                   {/* Dispatch toggle per member */}
-                  <button 
+                  <button
                     onClick={() => handleToggleDispatchActive(member.id)}
                     style={{
                       width: "35px",
@@ -809,7 +809,7 @@ export default function Team() {
         <div>
           <h2 style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ color: "var(--danger)" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
             </span>
             Si un agent est inactif
           </h2>
@@ -820,8 +820,8 @@ export default function Team() {
 
         {/* 3 Choice Cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "15px", marginTop: "10px" }}>
-          
-          <div 
+
+          <div
             onClick={() => handleStrategyChange("do_nothing")}
             style={{
               padding: "20px 15px",
@@ -836,7 +836,7 @@ export default function Team() {
             }}
           >
             <span style={{ color: teamSettings.inactive_strategy === "do_nothing" ? "var(--purple)" : "var(--text-muted)" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
             </span>
             <div>
               <h3 style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-main)" }}>Ne rien faire</h3>
@@ -846,7 +846,7 @@ export default function Team() {
             </div>
           </div>
 
-          <div 
+          <div
             onClick={() => handleStrategyChange("transfer")}
             style={{
               padding: "20px 15px",
@@ -861,7 +861,7 @@ export default function Team() {
             }}
           >
             <span style={{ color: teamSettings.inactive_strategy === "transfer" ? "var(--purple)" : "var(--text-muted)" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
             </span>
             <div>
               <h3 style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-main)" }}>Transférer à un ou plusieurs agents</h3>
@@ -871,7 +871,7 @@ export default function Team() {
             </div>
           </div>
 
-          <div 
+          <div
             onClick={() => handleStrategyChange("redistribute")}
             style={{
               padding: "20px 15px",
@@ -886,7 +886,7 @@ export default function Team() {
             }}
           >
             <span style={{ color: teamSettings.inactive_strategy === "redistribute" ? "var(--purple)" : "var(--text-muted)" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>
             </span>
             <div>
               <h3 style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-main)" }}>Redistribuer par quota</h3>
@@ -905,7 +905,7 @@ export default function Team() {
           <div>
             <h2 style={{ fontSize: "1.15rem", fontWeight: 600, color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ color: "var(--success)" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
               </span>
               Commissions
             </h2>
@@ -915,10 +915,10 @@ export default function Team() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "12px", position: "relative" }}>
-            
+
             {/* Custom Currency Selector Dropdown matching Image 3 perfectly */}
             <div style={{ position: "relative" }}>
-              <button 
+              <button
                 onClick={() => setIsCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
                 style={{
                   backgroundColor: "var(--bg-app)",
@@ -940,7 +940,7 @@ export default function Team() {
                   return (
                     <>
                       <span style={{ color: "var(--purple)", fontWeight: 700 }}>{code} {sym}</span>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
                     </>
                   );
                 })()}
@@ -948,11 +948,11 @@ export default function Team() {
 
               {isCurrencyDropdownOpen && (
                 <>
-                  <div 
+                  <div
                     style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 999 }}
                     onClick={() => setIsCurrencyDropdownOpen(false)}
                   ></div>
-                  
+
                   <div style={{
                     position: "absolute",
                     bottom: "38px",
@@ -971,7 +971,7 @@ export default function Team() {
                     {currencies.map(curr => {
                       const isSelected = teamSettings.commission_currency === `${curr.code} ${curr.symbol}`;
                       return (
-                        <div 
+                        <div
                           key={curr.code}
                           onClick={() => handleSelectCurrency(curr)}
                           style={{
@@ -1000,7 +1000,7 @@ export default function Team() {
               )}
             </div>
 
-            <button 
+            <button
               onClick={handleSaveCommissions}
               style={{
                 backgroundColor: "transparent",
@@ -1023,8 +1023,8 @@ export default function Team() {
           {members.filter(m => m.role === "staff").map(member => (
             <div key={member.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 10px", borderBottom: "1px solid var(--border-color)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <img 
-                  src={member.avatar_url} 
+                <img
+                  src={member.avatar_url}
                   alt={member.name}
                   style={{ width: "32px", height: "32px", borderRadius: "50%" }}
                 />
@@ -1037,11 +1037,11 @@ export default function Team() {
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                
+
                 {/* Commission Trigger Dropdown */}
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Déclencheur</span>
-                  <select 
+                  <select
                     value={member.commission_trigger || "none"}
                     onChange={(e) => handleCommissionTriggerChange(member.id, e.target.value)}
                     style={{
@@ -1063,12 +1063,12 @@ export default function Team() {
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Montant</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "3px", backgroundColor: "var(--bg-app)", border: "1px solid var(--border-color)", borderRadius: "6px", padding: "2px" }}>
-                    <button 
+                    <button
                       onClick={() => handleCommissionAmountChange(member.id, -5)}
                       style={{ width: "24px", height: "24px", borderRadius: "4px", backgroundColor: "transparent", color: "var(--text-main)", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >-</button>
                     <span style={{ width: "40px", textAlign: "center", fontSize: "0.85rem", fontWeight: 600 }}>{parseFloat(member.commission_amount || 0)}</span>
-                    <button 
+                    <button
                       onClick={() => handleCommissionAmountChange(member.id, 5)}
                       style={{ width: "24px", height: "24px", borderRadius: "4px", backgroundColor: "transparent", color: "var(--text-main)", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >+</button>
@@ -1077,7 +1077,7 @@ export default function Team() {
 
                 {/* Amount Type Selector */}
                 <div style={{ display: "flex", border: "1px solid var(--border-color)", borderRadius: "6px", overflow: "hidden" }}>
-                  <button 
+                  <button
                     onClick={() => handleCommissionTypeChange(member.id, "fixed")}
                     style={{
                       backgroundColor: member.commission_type === "fixed" ? "var(--purple)" : "var(--bg-app)",
@@ -1090,7 +1090,7 @@ export default function Team() {
                   >
                     {currentCurrencySymbol}
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleCommissionTypeChange(member.id, "percent")}
                     style={{
                       backgroundColor: member.commission_type === "percent" ? "var(--purple)" : "var(--bg-app)",
@@ -1119,7 +1119,7 @@ export default function Team() {
           display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100000,
           animation: "popupFadeIn 0.2s ease"
         }} onClick={() => setIsAddModalOpen(false)}>
-          <div 
+          <div
             style={{
               width: "480px", backgroundColor: "#18181b", borderRadius: "14px",
               border: "1px solid #27272a", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
@@ -1134,7 +1134,7 @@ export default function Team() {
                   width: "40px", height: "40px", borderRadius: "10px",
                   background: "rgba(137, 80, 252, 0.1)", color: "var(--purple)"
                 }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="17" y1="11" x2="23" y2="11" /></svg>
                 </span>
                 <div>
                   <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "white" }}>Ajouter un membre</h3>
@@ -1148,17 +1148,17 @@ export default function Team() {
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "#d4d4d8" }}>Email</label>
                 <div style={{ position: "relative" }}>
-                  <input 
+                  <input
                     type="email" placeholder="rihabmahdi18@gmail.com" value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)} required
                     style={{ width: "100%", padding: "12px 40px 12px 14px", backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid #3f3f46", borderRadius: "8px", color: "white", fontSize: "0.9rem", outline: "none" }}
                   />
                   <div style={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", justifyContent: "center", width: "18px", height: "18px", backgroundColor: "white", borderRadius: "50%" }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" /></svg>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.75rem", color: "#a1a1aa", marginTop: "4px" }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24"><path fill="#ea4335" d="M21.35 11.1H12v2.7h5.3c-.2 1.2-.9 2.1-2 2.8v2.3h3.2c1.9-1.8 3-4.4 3-7.5 0-.6-.05-1.1-.15-1.6z"/><path fill="#34a853" d="M12 21c2.4 0 4.5-.8 6-2.2l-3.2-2.3c-.9.6-2 .9-3.2.9-2.5 0-4.6-1.7-5.3-4H2.9v2.5C4.4 18.8 8 21 12 21z"/><path fill="#fbbc05" d="M6.7 13.4c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V6.9H2.9C2.1 8.5 1.7 10.2 1.7 12s.4 3.5 1.2 5.1l3.8-3.7z"/><path fill="#4285f4" d="M12 5.9c1.3 0 2.5.5 3.4 1.3l2.6-2.6C16.4 3.2 14.4 2.5 12 2.5 8 2.5 4.4 4.7 2.9 7.8l3.8 3.7c.7-2.4 2.8-4.1 5.3-4.1z"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24"><path fill="#ea4335" d="M21.35 11.1H12v2.7h5.3c-.2 1.2-.9 2.1-2 2.8v2.3h3.2c1.9-1.8 3-4.4 3-7.5 0-.6-.05-1.1-.15-1.6z" /><path fill="#34a853" d="M12 21c2.4 0 4.5-.8 6-2.2l-3.2-2.3c-.9.6-2 .9-3.2.9-2.5 0-4.6-1.7-5.3-4H2.9v2.5C4.4 18.8 8 21 12 21z" /><path fill="#fbbc05" d="M6.7 13.4c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V6.9H2.9C2.1 8.5 1.7 10.2 1.7 12s.4 3.5 1.2 5.1l3.8-3.7z" /><path fill="#4285f4" d="M12 5.9c1.3 0 2.5.5 3.4 1.3l2.6-2.6C16.4 3.2 14.4 2.5 12 2.5 8 2.5 4.4 4.7 2.9 7.8l3.8 3.7c.7-2.4 2.8-4.1 5.3-4.1z" /></svg>
                   Le membre recevra une invitation par email pour se connecter via Google
                 </div>
               </div>
@@ -1166,14 +1166,14 @@ export default function Team() {
                 <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "#d4d4d8" }}>Rôle</label>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
                   <div onClick={() => setNewRole("agent")} style={{ padding: "16px", borderRadius: "10px", border: `2px solid ${newRole === "agent" ? "var(--purple)" : "#27272a"}`, backgroundColor: newRole === "agent" ? "rgba(137, 80, 252, 0.05)" : "rgba(255,255,255,0.01)", cursor: "pointer", display: "flex", flexDirection: "column", gap: "10px", transition: "all 0.2s" }}>
-                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: newRole === "agent" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: newRole === "agent" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: newRole === "agent" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: newRole === "agent" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg></span>
                     <div>
                       <h4 style={{ fontSize: "0.85rem", fontWeight: 700, color: newRole === "agent" ? "var(--purple)" : "white" }}>Agent</h4>
                       <p style={{ fontSize: "0.75rem", color: "#a1a1aa", marginTop: "3px", lineHeight: "1.2" }}>Peut voir et gérer les commandes</p>
                     </div>
                   </div>
                   <div onClick={() => setNewRole("admin")} style={{ padding: "16px", borderRadius: "10px", border: `2px solid ${newRole === "admin" ? "var(--purple)" : "#27272a"}`, backgroundColor: newRole === "admin" ? "rgba(137, 80, 252, 0.05)" : "rgba(255,255,255,0.01)", cursor: "pointer", display: "flex", flexDirection: "column", gap: "10px", transition: "all 0.2s" }}>
-                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: newRole === "admin" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: newRole === "admin" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: newRole === "admin" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: newRole === "admin" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg></span>
                     <div>
                       <h4 style={{ fontSize: "0.85rem", fontWeight: 700, color: newRole === "admin" ? "var(--purple)" : "white" }}>Admin</h4>
                       <p style={{ fontSize: "0.75rem", color: "#a1a1aa", marginTop: "3px", lineHeight: "1.2" }}>Accès complet à tout</p>
@@ -1185,7 +1185,7 @@ export default function Team() {
               <div style={{ display: "flex", gap: "15px", justifyContent: "flex-end" }}>
                 <button type="button" onClick={() => setIsAddModalOpen(false)} style={{ backgroundColor: "transparent", border: "1px solid #3f3f46", color: "white", padding: "10px 20px", borderRadius: "8px", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer" }}>Annuler</button>
                 <button type="submit" disabled={isCreating} style={{ backgroundColor: "var(--purple)", color: "white", padding: "10px 24px", borderRadius: "8px", fontWeight: 600, fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
-                  {isCreating ? <span className="spinner" style={{ width: "12px", height: "12px", border: "2px solid white", borderTopColor: "transparent" }}></span> : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>Créer</>}
+                  {isCreating ? <span className="spinner" style={{ width: "12px", height: "12px", border: "2px solid white", borderTopColor: "transparent" }}></span> : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="17" y1="11" x2="23" y2="11" /></svg>Créer</>}
                 </button>
               </div>
             </form>
@@ -1201,7 +1201,7 @@ export default function Team() {
           display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100000,
           animation: "popupFadeIn 0.2s ease"
         }} onClick={() => setIsEditModalOpen(false)}>
-          <div 
+          <div
             style={{
               width: "480px", backgroundColor: "#18181b", borderRadius: "14px",
               border: "1px solid #27272a", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
@@ -1216,7 +1216,7 @@ export default function Team() {
                   width: "40px", height: "40px", borderRadius: "10px",
                   background: "rgba(137, 80, 252, 0.1)", color: "var(--purple)"
                 }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                 </span>
                 <div>
                   <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "white" }}>Modifier le membre</h3>
@@ -1229,7 +1229,7 @@ export default function Team() {
             <form onSubmit={handleEditMemberSubmit} style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "#d4d4d8" }}>Nom</label>
-                <input 
+                <input
                   type="text" value={editName} onChange={(e) => setEditName(e.target.value)} required
                   style={{ width: "100%", padding: "12px 14px", backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid #3f3f46", borderRadius: "8px", color: "white", fontSize: "0.9rem", outline: "none" }}
                 />
@@ -1238,14 +1238,14 @@ export default function Team() {
                 <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "#d4d4d8" }}>Rôle</label>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
                   <div onClick={() => setEditRole("agent")} style={{ padding: "16px", borderRadius: "10px", border: `2px solid ${editRole === "agent" ? "var(--purple)" : "#27272a"}`, backgroundColor: editRole === "agent" ? "rgba(137, 80, 252, 0.05)" : "rgba(255,255,255,0.01)", cursor: "pointer", display: "flex", flexDirection: "column", gap: "10px", transition: "all 0.2s" }}>
-                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: editRole === "agent" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: editRole === "agent" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: editRole === "agent" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: editRole === "agent" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg></span>
                     <div>
                       <h4 style={{ fontSize: "0.85rem", fontWeight: 700, color: editRole === "agent" ? "var(--purple)" : "white" }}>Agent</h4>
                       <p style={{ fontSize: "0.75rem", color: "#a1a1aa", marginTop: "3px", lineHeight: "1.2" }}>Peut voir et gérer les commandes</p>
                     </div>
                   </div>
                   <div onClick={() => setEditRole("admin")} style={{ padding: "16px", borderRadius: "10px", border: `2px solid ${editRole === "admin" ? "var(--purple)" : "#27272a"}`, backgroundColor: editRole === "admin" ? "rgba(137, 80, 252, 0.05)" : "rgba(255,255,255,0.01)", cursor: "pointer", display: "flex", flexDirection: "column", gap: "10px", transition: "all 0.2s" }}>
-                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: editRole === "admin" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: editRole === "admin" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "30px", height: "30px", borderRadius: "50%", background: editRole === "admin" ? "rgba(137, 80, 252, 0.15)" : "rgba(255,255,255,0.05)", color: editRole === "admin" ? "var(--purple)" : "#71717a" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg></span>
                     <div>
                       <h4 style={{ fontSize: "0.85rem", fontWeight: 700, color: editRole === "admin" ? "var(--purple)" : "white" }}>Admin</h4>
                       <p style={{ fontSize: "0.75rem", color: "#a1a1aa", marginTop: "3px", lineHeight: "1.2" }}>Accès complet à tout</p>
@@ -1273,8 +1273,8 @@ export default function Team() {
           display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100000,
           animation: "popupFadeIn 0.2s ease"
         }} onClick={() => setIsProductModalOpen(false)}>
-          
-          <div 
+
+          <div
             style={{
               width: "500px", backgroundColor: "#18181b", borderRadius: "14px",
               border: "1px solid #27272a", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
@@ -1282,7 +1282,7 @@ export default function Team() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            
+
             {/* Modal Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "20px 24px" }}>
               <div style={{ display: "flex", gap: "15px" }}>
@@ -1291,15 +1291,15 @@ export default function Team() {
                   width: "40px", height: "40px", borderRadius: "10px",
                   background: "rgba(137, 80, 252, 0.1)", color: "var(--purple)"
                 }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
                 </span>
                 <div>
                   <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "white" }}>Assigner des produits</h3>
                   <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "2px" }}>{productMember?.name}</p>
                 </div>
               </div>
-              
-              <button 
+
+              <button
                 onClick={() => setIsProductModalOpen(false)}
                 style={{
                   width: "24px", height: "24px", borderRadius: "50%",
@@ -1316,10 +1316,10 @@ export default function Team() {
 
             {/* Modal Content */}
             <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "15px" }}>
-              
+
               {/* Product Search Bar */}
               <div style={{ position: "relative" }}>
-                <input 
+                <input
                   type="text"
                   placeholder="Rechercher des produits..."
                   value={productSearch}
@@ -1342,7 +1342,7 @@ export default function Team() {
                   transform: "translateY(-50%)",
                   color: "#a1a1aa"
                 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
                 </span>
               </div>
 
@@ -1351,15 +1351,15 @@ export default function Team() {
                 <span style={{ color: "#a1a1aa", fontWeight: 500 }}>
                   {selectedProductIds.length} sélectionné(s)
                 </span>
-                
+
                 <div style={{ display: "flex", gap: "15px" }}>
-                  <button 
+                  <button
                     onClick={handleSelectAllProducts}
                     style={{ background: "none", border: 0, color: "var(--purple)", fontWeight: 600, cursor: "pointer" }}
                   >
                     Tout sélectionner
                   </button>
-                  <button 
+                  <button
                     onClick={handleDeselectAllProducts}
                     style={{ background: "none", border: 0, color: "var(--text-muted)", fontWeight: 600, cursor: "pointer" }}
                   >
@@ -1376,7 +1376,7 @@ export default function Team() {
                 borderRadius: "8px",
                 padding: "6px"
               }} className="custom-scrollbar">
-                
+
                 {getFilteredProducts().length === 0 ? (
                   <div style={{ padding: "40px 10px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>
                     Aucun produit trouvé
@@ -1385,7 +1385,7 @@ export default function Team() {
                   getFilteredProducts().map(prod => {
                     const isChecked = selectedProductIds.includes(prod.id);
                     return (
-                      <div 
+                      <div
                         key={prod.id}
                         onClick={() => handleToggleProductSelection(prod.id)}
                         style={{
@@ -1402,7 +1402,7 @@ export default function Team() {
                         className="product-item-hover"
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          
+
                           {/* Checked box */}
                           <div style={{
                             width: "18px", height: "18px",
@@ -1413,23 +1413,27 @@ export default function Team() {
                             transition: "all 0.15s"
                           }}>
                             {isChecked && (
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
                             )}
                           </div>
 
                           <div style={{ display: "flex", flexDirection: "column" }}>
                             <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "white" }}>
-                              {prod.name}
+                              {prod.title}
                             </span>
                             <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                              SKU: {prod.sku || "N/A"}
+                              SKU: {
+                                prod.default_variant?.sku
+                                ?? prod.default_variant?.external_variant_id
+                                ?? "N/A"
+                              }
                             </span>
                           </div>
                         </div>
 
-                        <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "white" }}>
-                          {prod.price} $
-                        </span>
+                       <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "white" }}>
+                        {prod.default_variant?.price ?? prod.min_price ?? 0} $
+                      </span>
 
                       </div>
                     );
@@ -1442,8 +1446,8 @@ export default function Team() {
 
               {/* Action Buttons */}
               <div style={{ display: "flex", gap: "15px", justifyContent: "flex-end" }}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsProductModalOpen(false)}
                   style={{
                     backgroundColor: "transparent",
@@ -1458,7 +1462,7 @@ export default function Team() {
                 >
                   Annuler
                 </button>
-                <button 
+                <button
                   onClick={handleSaveProductAssignment}
                   disabled={isSavingProducts}
                   style={{
@@ -1478,7 +1482,7 @@ export default function Team() {
                     <span className="spinner" style={{ width: "12px", height: "12px", border: "2px solid white", borderTopColor: "transparent" }}></span>
                   ) : (
                     <>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
                       Enregistrer
                     </>
                   )}
