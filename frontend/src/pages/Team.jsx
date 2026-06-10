@@ -231,10 +231,10 @@ export default function Team() {
   const handleToggleActive = async (member) => {
     try {
       const updated = await updateTeamMember(member.id, {
-        is_active: !member.is_active
+        is_active: !member.isActive
       });
       setMembers(members.map(m => m.id === member.id ? updated.member : m));
-      triggerToast(`${member.name} est maintenant ${!member.is_active ? 'actif' : 'inactif'}.`);
+      triggerToast(`${member.name} est maintenant ${!member.isActive ? 'actif' : 'inactif'}.`);
     } catch (err) {
       console.error(err);
     }
@@ -267,7 +267,7 @@ export default function Team() {
   const handleToggleDispatchActive = (memberId) => {
     setMembers(members.map(m => {
       if (m.id === memberId) {
-        return { ...m, is_dispatch_active: !m.is_dispatch_active };
+        return { ...m, isDispatchActive: !m.isDispatchActive };
       }
       return m;
     }));
@@ -278,7 +278,7 @@ export default function Team() {
       await Promise.all(
         members.map(m => updateTeamMember(m.id, {
           quota: m.quota,
-          is_dispatch_active: m.is_dispatch_active
+          is_dispatch_active: m.isDispatchActive
         }))
       );
       triggerToast("Quotas enregistrés avec succès !");
@@ -371,7 +371,7 @@ export default function Team() {
   };
 
   // Calculate dynamic quota percentages
-  const activeDispatchMembers = members.filter(m => m.role === "staff" && m.is_dispatch_active);
+  const activeDispatchMembers = members.filter(m => m.role === "staff" && m.isDispatchActive);
   const totalQuota = activeDispatchMembers.reduce((sum, m) => sum + (parseInt(m.quota) || 0), 0);
 
   const getQuotaPercentage = (quota, isDispatchActive, role) => {
@@ -428,7 +428,7 @@ export default function Team() {
             </span>
             {t("equipe")}
           </h1>
-          <p className="page-subtitle">{members.filter(m => m.is_active).length} {t("actif").toLowerCase()}(s)</p>
+          <p className="page-subtitle">{members.filter(m => m.isActive).length} {t("actif").toLowerCase()}(s)</p>
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
@@ -643,8 +643,8 @@ export default function Team() {
                     fontWeight: 600,
                     padding: "4px 8px",
                     borderRadius: "4px",
-                    backgroundColor: member.is_active ? "rgba(27, 197, 189, 0.15)" : "rgba(246, 78, 96, 0.15)",
-                    color: member.is_active ? "var(--success)" : "var(--danger)",
+                    backgroundColor: member.isActive ? "rgba(27, 197, 189, 0.15)" : "rgba(246, 78, 96, 0.15)",
+                    color: member.isActive ? "var(--success)" : "var(--danger)",
                     display: "flex",
                     alignItems: "center",
                     gap: "5px",
@@ -655,9 +655,9 @@ export default function Team() {
                     width: "6px",
                     height: "6px",
                     borderRadius: "50%",
-                    backgroundColor: member.is_active ? "var(--success)" : "var(--danger)"
+                    backgroundColor: member.isActive ? "var(--success)" : "var(--danger)"
                   }}></span>
-                  {member.is_active ? "Actif" : "Inactif"}
+                  {member.isActive ? "Actif" : "Inactif"}
                 </button>
               </div>
 
@@ -734,7 +734,7 @@ export default function Team() {
         {/* Quota members list */}
         <div style={{ display: "flex", flexDirection: "column", gap: "2px", borderTop: "1px solid var(--border-color)", paddingTop: "10px" }}>
           {members.filter(m => m.role === "staff").map(member => {
-            const pct = getQuotaPercentage(member.quota, member.is_dispatch_active, member.role);
+            const pct = getQuotaPercentage(member.quota, member.isDispatchActive, member.role);
             return (
               <div key={member.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 10px", borderRadius: "8px", borderBottom: "1px solid var(--border-color)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -768,7 +768,7 @@ export default function Team() {
                   </div>
 
                   {/* Percentage quota */}
-                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: member.is_dispatch_active ? "var(--warning)" : "var(--text-muted)", width: "45px", textAlign: "right" }}>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: member.isDispatchActive ? "var(--warning)" : "var(--text-muted)", width: "45px", textAlign: "right" }}>
                     {pct}%
                   </span>
 
@@ -779,7 +779,7 @@ export default function Team() {
                       width: "35px",
                       height: "18px",
                       borderRadius: "10px",
-                      backgroundColor: member.is_dispatch_active ? "var(--success)" : "var(--border-color)",
+                      backgroundColor: member.isDispatchActive ? "var(--success)" : "var(--border-color)",
                       position: "relative",
                       cursor: "pointer",
                       transition: "background-color 0.2s"
@@ -792,7 +792,7 @@ export default function Team() {
                       backgroundColor: "white",
                       position: "absolute",
                       top: "3px",
-                      left: member.is_dispatch_active ? "20px" : "3px",
+                      left: member.isDispatchActive ? "20px" : "3px",
                       transition: "left 0.2s"
                     }}></div>
                   </button>
