@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-import axios from "axios";
+import api from "../api/axios";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -28,10 +28,10 @@ const fmtTime = (minutes) => {
 };
 
 const PERIOD_OPTIONS = [
-  { label_key: "aujourd_hui",        fallback: "Aujourd'hui",        value: "today"        },
-  { label_key: "hier",               fallback: "Hier",               value: "yesterday"    },
-  { label_key: "les_7_derniers_jours", fallback: "7 derniers jours", value: "last_7_days"  },
-  { label_key: "ce_mois",            fallback: "Ce mois",            value: "this_month"   },
+  { label_key: "aujourd_hui", fallback: "Aujourd'hui", value: "today" },
+  { label_key: "hier", fallback: "Hier", value: "yesterday" },
+  { label_key: "les_7_derniers_jours", fallback: "7 derniers jours", value: "last_7_days" },
+  { label_key: "ce_mois", fallback: "Ce mois", value: "this_month" },
 ];
 
 // ─── sub-components ──────────────────────────────────────────────────────────
@@ -66,38 +66,38 @@ function StatsBlock({ stats, loading }) {
           iconClass="icon-primary"
           title="Total commandes"
           value={stats.total}
-          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>}
         />
         <KpiCard loading={loading}
           iconClass="icon-success"
           title="Confirmées"
           value={stats.confirmed}
-          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>}
         />
         <KpiCard loading={loading}
           iconClass="icon-warning"
           title="En attente"
           value={stats.pending}
-          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" /></svg>}
         />
         <KpiCard loading={loading}
           iconClass="icon-danger"
           title="Annulées"
           value={stats.cancelled}
-          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>}
         />
         <KpiCard loading={loading}
           iconClass="icon-primary"
           title="Taux de confirmation moyen"
           value={loading ? "…" : `${stats.confirmation_rate}%`}
-          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 17"/><polyline points="17 6 23 6 23 12"/></svg>}
+          icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 17" /><polyline points="17 6 23 6 23 12" /></svg>}
         />
         <KpiCard loading={loading}
           iconClass=""
           style={{ value: { fontSize: "1rem", color: "var(--text-muted)" }, title: { fontSize: "0.65rem" } }}
           title={<>Temps moyen<br />Confirmation</>}
           value={fmtTime(stats.avg_confirmation_time)}
-          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>}
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>}
         />
       </div>
 
@@ -109,7 +109,7 @@ function StatsBlock({ stats, loading }) {
           <div className="card-header" style={{ marginBottom: "16px", flexDirection: "column", alignItems: "flex-start", gap: "6px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
               <div className="card-icon icon-purple" style={{ width: "32px", height: "32px" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>Revenus</div>
@@ -129,7 +129,7 @@ function StatsBlock({ stats, loading }) {
         <div className="card">
           <div className="card-header" style={{ justifyContent: "flex-start", gap: "8px", marginBottom: "10px" }}>
             <div className="card-icon icon-primary" style={{ width: "32px", height: "32px" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /></svg>
             </div>
             <div style={{ fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>Aperçu</div>
           </div>
@@ -157,7 +157,7 @@ function StatsBlock({ stats, loading }) {
         <div className="card">
           <div className="card-header" style={{ justifyContent: "flex-start", gap: "8px", marginBottom: "10px" }}>
             <div className="card-icon icon-success" style={{ width: "32px", height: "32px" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
             </div>
             <div style={{ fontWeight: 700, color: "var(--text-main)", fontSize: "0.9rem" }}>Taux de confirmation</div>
           </div>
@@ -191,25 +191,28 @@ function StatsBlock({ stats, loading }) {
 // ─── main component ──────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const { user }  = useContext(AuthContext);
-  const { t }     = useLanguage();
+  const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
 
-  const [period,      setPeriod]      = useState("today");
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState(null);
-  const [activeShop,  setActiveShop]  = useState("global"); // "global" | shop.id
+  const [period, setPeriod] = useState("today");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeShop, setActiveShop] = useState("global"); // "global" | shop.id
 
   const [global, setGlobal] = useState({ ...EMPTY_STATS });
-  const [shops,  setShops]  = useState([]);                  // array of shop stat objects
+  const [shops, setShops] = useState([]);                  // array of shop stat objects
 
   // ── fetch ─────────────────────────────────────────────────────────────────
   const fetchDashboard = useCallback(async (p) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await axios.get("/api/dashboard", { params: { period: p } });
+      const { data } = await api.get("/dashboard", {
+        params: { period: p }
+      });
+      console.log(data);
       setGlobal(data.global ?? { ...EMPTY_STATS });
-      setShops(data.shops  ?? []);
+      setShops(data.shops ?? []);
     } catch (err) {
       setError(err?.response?.data?.message ?? "Erreur de chargement");
     } finally {
@@ -245,10 +248,10 @@ export default function Dashboard() {
         <div>
           <h2 className="page-title">
             <svg style={{ width: "24px", height: "24px", color: "#8950fc" }} viewBox="0 0 24 24" fill="currentColor">
-              <rect x="3"  y="3"  width="7" height="7" rx="1" />
-              <rect x="14" y="3"  width="7" height="7" rx="1" />
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
               <rect x="14" y="14" width="7" height="7" rx="1" />
-              <rect x="3"  y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
             </svg>
             {t("tableau_de_bord")}
           </h2>
@@ -258,7 +261,7 @@ export default function Dashboard() {
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {error && (
             <span style={{ fontSize: "0.75rem", color: "var(--danger)", display: "flex", alignItems: "center", gap: "4px" }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
               {error}
             </span>
           )}
@@ -296,10 +299,10 @@ export default function Dashboard() {
           }}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <rect x="3" y="3" width="7" height="7" rx="1"/>
-            <rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="14" y="14" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
           </svg>
           Toutes les boutiques
           <span style={{
