@@ -43,7 +43,13 @@ const StatCard = ({ icon: Icon, iconColor, label, value }) => (
 // ─── Inline Product Form ──────────────────────────────────────────────────────
 const defaultVariant = () => ({ title: 'Default Title', price: '', compare_at_price: '', sku: '', stock: '', cost: '' });
 
-const ProductForm = ({ product, onSave, onCancel }) => {
+const ProductForm = ({
+  product,
+  onSave,
+  onCancel,
+  onDelete,
+  activeShopId,
+}) => {
   const isShopify = product?.source_type === 'shopify';
   const fileRef = useRef();
 
@@ -97,11 +103,41 @@ const ProductForm = ({ product, onSave, onCancel }) => {
   const addVariant = () => setVariants(vs => [...vs, defaultVariant()]);
   const removeVariant = (idx) => setVariants(vs => vs.filter((_, i) => i !== idx));
 
-  const handleImageFile = (file) => {
+  const handleImageFile = async (file) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => { setImagePreview(e.target.result); setField('image', e.target.result); };
-    reader.readAsDataURL(file);
+
+    const previousImage = imagePreview;
+
+    try {
+      const formData = new FormData();
+
+      formData.append('file', file);
+
+      const { data } = await api.post(
+        '/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      setField('image', data.url);
+
+      setImagePreview(data.url);
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        error.response?.data?.message ||
+        'Failed to upload image'
+      );
+
+      setImagePreview(previousImage);
+    }
   };
 
   const handleDrop = (e) => { e.preventDefault(); handleImageFile(e.dataTransfer.files[0]); };
@@ -261,11 +297,39 @@ const ProductForm = ({ product, onSave, onCancel }) => {
             ) : <div style={{ fontSize: 12, color: '#9ca3af' }}>No image from Shopify</div>
         ) : (
           imagePreview ? (
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <img src={imagePreview} alt="preview" style={{ width: 88, height: 88, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }} />
-              <button onClick={() => { setImagePreview(''); setField('image', ''); }}
-                style={{ fontSize: 12, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
-                Remove
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <img src={imagePreview} alt="product" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }} />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                style={{
+                  background: '#7c3aed',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '8px 12px',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                }}
+              >
+                Change image
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setImagePreview('');
+                  setField('image', '');
+                }}
+                style={{
+                  background: 'none',
+                  color: '#ef4444',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                }}
+              >
+                Remove image
               </button>
             </div>
           ) : (
@@ -276,8 +340,13 @@ const ProductForm = ({ product, onSave, onCancel }) => {
               <div style={{ fontSize: 30, marginBottom: 8 }}>☁️</div>
               <div style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>Drop an image here or click to upload</div>
               <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>PNG · JPG · WEBP · GIF · AVIF — up to 10 MB</div>
-              <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
-                onChange={e => handleImageFile(e.target.files[0])} />
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => handleImageFile(e.target.files?.[0])}
+              />
             </div>
           )
         )}
@@ -390,25 +459,83 @@ const ProductForm = ({ product, onSave, onCancel }) => {
 
       {/* ── Actions ── */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, paddingTop: 6, borderTop: '1px solid #f3f4f6' }}>
-        <button onClick={onCancel} style={{
-          padding: '9px 20px', fontSize: 13, fontWeight: 500,
-          background: 'none', border: '1px solid #e5e7eb', borderRadius: 8,
-          color: '#374151', cursor: 'pointer',
-        }}>Cancel</button>
-        <button onClick={handleSubmit} disabled={saving} style={{
-          padding: '9px 22px', fontSize: 13, fontWeight: 600,
-          background: saving ? '#a78bfa' : '#7c3aed', color: '#fff',
-          border: 'none', borderRadius: 8, cursor: saving ? 'not-allowed' : 'pointer',
-          display: 'flex', alignItems: 'center', gap: 6, transition: 'background 0.15s',
-        }}
-          onMouseEnter={e => !saving && (e.currentTarget.style.background = '#6d28d9')}
-          onMouseLeave={e => !saving && (e.currentTarget.style.background = '#7c3aed')}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: 24,
+          }}
         >
-          {product
-            ? <><PenIcon size={13} color="#fff" /> Save changes</>
-            : <><Plus size={14} /> Create product</>
-          }
-        </button>
+
+          <div>
+            {product && product.source_type !== 'shopify' && (
+              <button
+                type="button"
+                onClick={async () => {
+                  if (
+                    !window.confirm(
+                      'Delete this product?'
+                    )
+                  ) {
+                    return;
+                  }
+
+                  try {
+                    await api.delete(
+                      `/shops/${activeShopId}/products/${product.id}`
+                    );
+
+                    alert('Product deleted');
+
+                    onCancel();
+
+                  } catch {
+                    alert(
+                      'Failed to delete product'
+                    );
+                  }
+                }}
+                style={{
+                  background: '#ef4444',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  cursor: 'pointer',
+                }}
+              >
+                Delete product
+              </button>
+            )}
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: 12,
+            }}
+          >
+            <button
+              type="button"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={saving}
+            >
+              {saving
+                ? 'Saving...'
+                : product
+                  ? 'Update product'
+                  : 'Create product'}
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
   );
@@ -444,32 +571,69 @@ const Products = () => {
     console.log('[Products] activeShopId changed:', activeShopId);
   }, [activeShopId]);
   // ─── Fetch ────────────────────────────────────────────────────────────────
-  const fetchProducts = async (page = 1) => {
-    if (shopLoading) {
+  const fetchProducts = async (page = 1, force = false) => {
+    // Prevent initial fetches while the shop is still loading,
+    // but allow forced refreshes after create/update operations.
+    if (shopLoading && !force) {
       return;
     }
 
     if (!activeShopId) {
       setLoading(false);
+      setProducts([]);
       return;
     }
+
     setLoading(true);
     setError(null);
+
     try {
-      const response = await api.get(`/shops/${activeShopId}/products`, {
-        params: { page, search: searchTerm, status: filterStatus },
-      });
-      setProducts(response.data.data ?? []);
+      const response = await api.get(
+        `/shops/${activeShopId}/products`,
+        {
+          params: {
+            page,
+            search: searchTerm,
+            status: filterStatus,
+          },
+        }
+      );
+
+      console.log(
+        'Products fetched:',
+        response.data
+      );
+
+      setProducts(
+        response.data.data ?? []
+      );
+
       setPagination({
-        current_page: response.data.current_page ?? 1,
-        last_page: response.data.last_page ?? 1,
-        total: response.data.total ?? 0,
+        current_page:
+          response.data.current_page ?? 1,
+
+        last_page:
+          response.data.last_page ?? 1,
+
+        total:
+          response.data.total ?? 0,
       });
+
     } catch (err) {
-      console.error('PRODUCT FETCH ERROR', err);
-      setError('Failed to load products.');
+
+      console.error(
+        'PRODUCT FETCH ERROR',
+        err
+      );
+
+      setError(
+        'Failed to load products.'
+      );
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
@@ -494,15 +658,61 @@ const Products = () => {
 
   // ─── Save ─────────────────────────────────────────────────────────────────
   const saveProduct = async (productData) => {
-    if (!activeShopId) { alert('No store selected'); return; }
-    if (editingProduct) {
-      await api.put(`/shops/${activeShopId}/products/${editingProduct.id}`, productData);
-    } else {
-      await api.post(`/shops/${activeShopId}/products`, productData);
+    if (!activeShopId) {
+      alert('No store selected');
+      return;
     }
-    setEditingProduct(null);
-    await fetchProducts(pagination.current_page);
-    setShowProductModal(false);
+
+    try {
+
+      // Ensure manual products always have a source type
+      if (!editingProduct) {
+        productData = {
+          ...productData,
+          source_type:
+            productData.source_type ||
+            'manual',
+        };
+      }
+
+      if (editingProduct) {
+
+        await api.put(
+          `/shops/${activeShopId}/products/${editingProduct.id}`,
+          productData
+        );
+
+      } else {
+
+        await api.post(
+          `/shops/${activeShopId}/products`,
+          productData
+        );
+
+      }
+
+      // Clear edit mode
+      setEditingProduct(null);
+
+      // Force a fresh reload of products
+      await fetchProducts(1, true);
+
+      // Close modal only after refresh succeeds
+      setShowProductModal(false);
+
+    } catch (error) {
+
+      console.error(
+        'SAVE PRODUCT ERROR',
+        error
+      );
+
+      alert(
+        error.response?.data?.message ||
+        'Failed to save product'
+      );
+
+    }
   };
 
   // ─── Delete ───────────────────────────────────────────────────────────────
@@ -549,6 +759,7 @@ const Products = () => {
   return (
     <div className="products-page">
       <style>{`
+
         /* ─── Cards ─── */
         .products-grid {
           display: grid;
@@ -805,6 +1016,8 @@ const Products = () => {
                 product={editingProduct}
                 onSave={saveProduct}
                 onCancel={closeModal}
+                onDelete={deleteProduct}
+                activeShopId={activeShopId}
               />
             </div>
           </div>

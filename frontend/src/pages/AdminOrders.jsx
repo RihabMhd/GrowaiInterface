@@ -1007,7 +1007,13 @@ export default function AdminOrders() {
             }}
             onClick={e => e.stopPropagation()}
           >
-            <OrderDetails order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+            <OrderDetails
+              order={selectedOrder}
+              onClose={() => setSelectedOrder(null)}
+              onStatusChange={(newStatus) => handleUpdateStatus(selectedOrder.id, newStatus)}
+              onAgentChange={(agentId) => handleAssignAgent(selectedOrder.id, agentId)}
+              activeAgents={activeAgents}
+            />
           </div>
         </div>
       )}

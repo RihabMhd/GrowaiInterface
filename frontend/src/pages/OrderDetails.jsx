@@ -85,6 +85,7 @@ const OrderDetails = ({ order, onClose, onStatusChange, onCreateParcel }) => {
     const handleStatusChange = (newVal) => {
         setStatus(newVal);
         setShowStatusMenu(false);
+        // Parent expects only new status (order ID is known in parent)
         if (onStatusChange) onStatusChange(newVal);
     };
 
