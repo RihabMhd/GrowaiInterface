@@ -75,7 +75,14 @@ export default function Team() {
     try {
       setLoading(true);
       const data = await getTeamData();
-      setMembers(data.members || []);
+      setMembers(
+        data.members.map(member => ({
+          ...member,
+          commission_amount: Number(member.commission_amount) || 0,
+          isActive: member.is_active,
+          isDispatchActive: member.is_dispatch_active,
+        }))
+      );
       setAllProducts(data.products || []);
       if (data.team) {
         setTeamSettings({
@@ -323,13 +330,27 @@ export default function Team() {
   };
 
   const handleCommissionAmountChange = (memberId, amount) => {
-    setMembers(members.map(m => {
-      if (m.id === memberId) {
-        const next = Math.max(0, parseFloat(m.commission_amount) + amount);
-        return { ...m, commission_amount: next };
-      }
-      return m;
-    }));
+    setMembers(prev =>
+      prev.map(m => {
+        if (m.id !== memberId) {
+          return m;
+        }
+
+        // Convert undefined, null, NaN to 0
+        const current = Number(m.commission_amount);
+
+        // Prevent negative values
+        const next = Math.max(
+          0,
+          (Number.isFinite(current) ? current : 0) + amount
+        );
+
+        return {
+          ...m,
+          commission_amount: next,
+        };
+      })
+    );
   };
 
   const handleCommissionTypeChange = (memberId, type) => {
@@ -847,7 +868,7 @@ export default function Team() {
           </div>
 
           <div
-            onClick={() => handleStrategyChange("transfer")}
+            onClick={() => handleStrategyChange("reassign")}
             style={{
               padding: "20px 15px",
               borderRadius: "10px",
@@ -872,7 +893,7 @@ export default function Team() {
           </div>
 
           <div
-            onClick={() => handleStrategyChange("redistribute")}
+            onClick={() => handleStrategyChange("deactivate")}
             style={{
               padding: "20px 15px",
               borderRadius: "10px",
@@ -1431,9 +1452,9 @@ export default function Team() {
                           </div>
                         </div>
 
-                       <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "white" }}>
-                        {prod.default_variant?.price ?? prod.min_price ?? 0} $
-                      </span>
+                        <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "white" }}>
+                          {prod.default_variant?.price ?? prod.min_price ?? 0} $
+                        </span>
 
                       </div>
                     );

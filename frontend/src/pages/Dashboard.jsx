@@ -29,17 +29,17 @@ const fmtTime = (minutes) => {
 
 // period value → API param (null = no param, handled as "all" on backend or largest range)
 const PERIOD_PILLS = [
-  { label: "All time",   value: "all_time" },
-  { label: "Today",      value: "today" },
-  { label: "Yesterday",  value: "yesterday" },
-  { label: "This week",  value: "last_7_days" },
+  { label: "All time", value: "all_time" },
+  { label: "Today", value: "today" },
+  { label: "Yesterday", value: "yesterday" },
+  { label: "This week", value: "last_7_days" },
 ];
 
 const MORE_PRESETS = [
-  { label: "Last 7 days",  value: "last_7_days" },
+  { label: "Last 7 days", value: "last_7_days" },
   { label: "Last 30 days", value: "last_30_days" },
-  { label: "This month",   value: "this_month" },
-  { label: "Last month",   value: "last_month" },
+  { label: "This month", value: "this_month" },
+  { label: "Last month", value: "last_month" },
   { label: "Last 90 days", value: "last_90_days" },
 ];
 
@@ -119,20 +119,20 @@ function KpiCard({ icon, bgColor, title, value, sub, loading }) {
 function CalendarPicker({ onApply, onClose }) {
   const today = new Date();
   const [fromMonth, setFromMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-  const [toMonth,   setToMonth]   = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-  const [fromDate,  setFromDate]  = useState(null);
-  const [toDate,    setToDate]    = useState(null);
+  const [toMonth, setToMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
 
-  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const renderCalendar = (base, selected, onSelect) => {
-    const year  = base.getFullYear();
+    const year = base.getFullYear();
     const month = base.getMonth();
     const first = new Date(year, month, 1).getDay(); // 0=Sun
-    const days  = new Date(year, month + 1, 0).getDate();
+    const days = new Date(year, month + 1, 0).getDate();
     // adjust so Monday = col 0
     const offset = (first + 6) % 7;
-    const cells  = [];
+    const cells = [];
     for (let i = 0; i < offset; i++) cells.push(null);
     for (let d = 1; d <= days; d++) cells.push(new Date(year, month, d));
 
@@ -151,7 +151,7 @@ function CalendarPicker({ onApply, onClose }) {
             style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted,#888)", fontSize: "14px", padding: "2px 6px" }}>›</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "2px", textAlign: "center" }}>
-          {["Mo","Tu","We","Th","Fr","Sa","Su"].map(d => (
+          {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(d => (
             <div key={d} style={{ fontSize: "0.6rem", color: "var(--text-muted,#888)", padding: "2px 0", fontWeight: 600 }}>{d}</div>
           ))}
           {cells.map((d, i) => (
@@ -245,7 +245,13 @@ function CalendarPicker({ onApply, onClose }) {
           Apply
         </button>
         <button
-          onClick={() => { setFromDate(null); setToDate(null); }}
+          onClick={() => {
+            setFromDate(null);
+            setToDate(null);
+
+            onApply("today");
+            onClose();
+          }}
           style={{
             padding: "9px 18px", borderRadius: "8px",
             background: "none", border: "1px solid var(--border-color,#eee)",
@@ -263,15 +269,15 @@ function CalendarPicker({ onApply, onClose }) {
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
-  const { t }    = useLanguage();
+  const { t } = useLanguage();
 
-  const [period,     setPeriod]     = useState("today");
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState(null);
+  const [period, setPeriod] = useState("today");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeShop, setActiveShop] = useState("global");
-  const [global,     setGlobal]     = useState({ ...EMPTY_STATS });
-  const [shops,      setShops]      = useState([]);
-  const [showMore,   setShowMore]   = useState(false);
+  const [global, setGlobal] = useState({ ...EMPTY_STATS });
+  const [shops, setShops] = useState([]);
+  const [showMore, setShowMore] = useState(false);
   const moreRef = useRef(null);
 
   // close More dropdown on outside click
@@ -289,18 +295,21 @@ export default function Dashboard() {
     setError(null);
     try {
       // "all_time" → omit period param so backend returns all
-      const params = p && p !== "all_time" && !p.startsWith("custom:") ? { period: p } : {};
+      const params =
+        p && p !== "all_time" && !p?.startsWith("custom:")
+          ? { period: p }
+          : {};
 
       // custom date range: pass start/end
-      if (p && p.startsWith("custom:")) {
+      if (p?.startsWith("custom:")) {
         const [, from, to] = p.split(":");
         params.from = from;
-        params.to   = to;
+        params.to = to;
       }
 
       const { data } = await api.get("/dashboard", { params });
       setGlobal(data.global ?? { ...EMPTY_STATS });
-      setShops(data.shops  ?? []);
+      setShops(data.shops ?? []);
     } catch (err) {
       setError(err?.response?.data?.message ?? "Erreur de chargement");
     } finally {
@@ -323,11 +332,12 @@ export default function Dashboard() {
   const confirmationRate = activeStats.confirmation_rate ?? 0;
 
   const morePeriods = new Set(MORE_PRESETS.map(p => p.value));
-  const isMoreActive = morePeriods.has(period) || period.startsWith("custom:");
+  const isMoreActive =
+    morePeriods.has(period) || period?.startsWith("custom:");
 
   // ── period label for active pill ─────────────────────────────────────────
   const activePillLabel = () => {
-    if (period.startsWith("custom:")) {
+    if (period?.startsWith("custom:")) {
       const [, from, to] = period.split(":");
       return `${from} → ${to}`;
     }
@@ -424,6 +434,10 @@ export default function Dashboard() {
               <button
                 onClick={() => setShowMore(v => !v)}
                 style={{
+                  maxWidth: "220px",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
                   display: "flex", alignItems: "center", gap: "6px",
                   padding: "7px 14px", borderRadius: "8px",
                   border: `1px solid ${isMoreActive ? "var(--text-main,#1a1a1a)" : "var(--border-color,#ddd)"}`,
