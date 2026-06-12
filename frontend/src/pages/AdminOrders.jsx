@@ -988,8 +988,25 @@ export default function AdminOrders() {
 
       {/* Order Detail Drawer */}
       {selectedOrder && (
-        <div className="order-modal-overlay" onClick={() => setSelectedOrder(null)}>
-          <div className="order-modal-content" onClick={e => e.stopPropagation()}>
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(0,0,0,0.45)",
+            backdropFilter: "blur(2px)",
+          }}
+          onClick={() => setSelectedOrder(null)}
+        >
+          <div
+            style={{
+              position: "absolute", top: 0, right: 0, bottom: 0,
+              width: "min(520px, 100vw)",
+              background: "#fff",
+              overflowY: "auto",
+              boxShadow: "-8px 0 40px rgba(0,0,0,0.25)",
+              animation: "drawerSlideIn 0.22s ease-out",
+            }}
+            onClick={e => e.stopPropagation()}
+          >
             <OrderDetails order={selectedOrder} onClose={() => setSelectedOrder(null)} />
           </div>
         </div>

@@ -366,7 +366,33 @@
   color: #aaa;
   margin-top: 2px;
 }
-
+.od-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+.od-tab-btn {
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+}
+.od-tab-btn--active {
+    border-bottom-color: var(--primary, #7239ea);
+    color: var(--primary, #7239ea);
+}
+.od-tab-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.od-status-section {
+    /* placeholder — implement status modal trigger here */
+}
 /* Status colors for all statuses */
 .status-pending    { background-color: #fff3e0; color: #f57c00; border-color: #ffe0b2; }
 .status-confirmed  { background-color: #e3f2fd; color: #1976d2; border-color: #bbdefb; }
@@ -375,3 +401,198 @@
 .status-delivered  { background-color: #e0f2f1; color: #00695c; border-color: #b2dfdb; }
 .status-cancelled  { background-color: #ffebee; color: #c62828; border-color: #ffcdd2; }
 .status-returned   { background-color: #fce4ec; color: #ad1457; border-color: #f8bbd0; }
+/* ── Status Bar (FlashManager-style) ─────────────────────────────────── */
+.od-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.od-status-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.od-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #7239ea;
+  flex-shrink: 0;
+}
+
+.od-status-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.od-status-change-btn {
+  background: none;
+  border: none;
+  color: #7239ea;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.od-create-parcel-btn {
+  background: #7239ea;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.od-create-parcel-btn:hover {
+  background: #5b2bc7;
+}
+
+/* ── Customer Card ─────────────────────────────────────────────────── */
+.od-customer-card {
+  padding: 16px 20px;
+}
+
+.od-customer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.od-customer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e8e0f8;
+  color: #7239ea;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.od-customer-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.od-customer-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.od-customer-phone {
+  font-size: 0.85rem;
+  color: #7239ea;
+  font-weight: 500;
+}
+
+.od-customer-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.od-icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  background: #fafafa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+
+.od-icon-btn:hover {
+  background: #f0f0f0;
+}
+
+/* ── Address Cards ─────────────────────────────────────────────────── */
+.od-address-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.od-address-icon {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.od-address-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 0.04em;
+}
+
+.od-fulfillment-badge {
+  margin-left: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.od-address-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* ── Item qty controls ─────────────────────────────────────────────── */
+.od-item-qty-price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.od-qty-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+}
+
+.od-qty-btn:hover {
+  background: #e8e0f8;
+  color: #7239ea;
+  border-color: #d0c0f0;
+}
+
+.od-qty-value {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}

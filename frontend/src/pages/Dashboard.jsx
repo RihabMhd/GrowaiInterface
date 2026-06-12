@@ -45,71 +45,123 @@ const MORE_PRESETS = [
 
 // ─── DonutChart ──────────────────────────────────────────────────────────────
 
+// ─── DonutChart ──────────────────────────────────────────────────────────────
+// Enlarged to 120×120 (r=46) for better visual weight in the metric cards
+
 function DonutChart({ percent, color }) {
-  const r = 38;
+  const r = 46;
   const circ = 2 * Math.PI * r;
-  const dash = (percent / 100) * circ;
+  const dash = (Math.min(Math.max(percent, 0), 100) / 100) * circ;
 
   return (
-    <svg width="100" height="100" viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r={r} fill="none" stroke="#e8e8e8" strokeWidth="8" />
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      {/* Track */}
+      <circle cx="60" cy="60" r={r} fill="none" stroke="var(--border-color,#e8e8e8)" strokeWidth="10" />
+      {/* Progress arc */}
       <circle
-        cx="50" cy="50" r={r} fill="none"
+        cx="60" cy="60" r={r} fill="none"
         stroke={color}
-        strokeWidth="8"
+        strokeWidth="10"
         strokeDasharray={`${dash} ${circ}`}
         strokeLinecap="round"
-        transform="rotate(-90 50 50)"
+        transform="rotate(-90 60 60)"
         style={{ transition: "stroke-dasharray 0.5s ease" }}
       />
-      <circle cx="50" cy="50" r="5" fill={color} />
     </svg>
   );
 }
 
 // ─── KpiCard ─────────────────────────────────────────────────────────────────
+// Matches reference: circular icon bg, label on same row as icon (top),
+// value on its own row below — left-aligned. Sub shows em-dash + text (No data style).
 
 function KpiCard({ icon, bgColor, title, value, sub, loading }) {
   return (
     <div style={{
       background: "var(--card-bg, #fff)",
-      border: "1px solid var(--border-color, #eee)",
-      borderRadius: "12px",
-      padding: "16px 18px",
+      border: "1px solid var(--border-color, #f0f0f0)",
+      borderRadius: "14px",
+      padding: "16px 18px 18px",
       display: "flex",
       flexDirection: "column",
-      gap: "10px",
+      gap: "12px",
       minWidth: 0,
     }}>
+      {/* Row 1: circular icon + uppercase label */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        {/* Circle icon — matches reference pill shape */}
         <div style={{
-          width: "36px", height: "36px", borderRadius: "10px",
-          background: bgColor, display: "flex", alignItems: "center", justifyContent: "center",
+          width: "36px", height: "36px",
+          borderRadius: "50%",
+          background: bgColor,
+          display: "flex", alignItems: "center", justifyContent: "center",
           flexShrink: 0,
         }}>
           {icon}
         </div>
         <span style={{
-          fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.05em",
-          textTransform: "uppercase", color: "var(--text-muted, #888)",
+          fontSize: "0.67rem", fontWeight: 600, letterSpacing: "0.06em",
+          textTransform: "uppercase", color: "var(--text-muted, #9ca3af)",
+          lineHeight: 1.2,
         }}>
           {title}
         </span>
       </div>
-      <div style={{ paddingLeft: "2px" }}>
+
+      {/* Row 2: large value */}
+      <div>
         {loading ? (
-          <div style={{ height: "28px", width: "48px", background: "var(--border-color, #eee)", borderRadius: "6px" }} />
+          <div style={{ height: "32px", width: "48px", background: "var(--border-color, #f0f0f0)", borderRadius: "6px" }} />
         ) : (
-          <span style={{ fontSize: "1.7rem", fontWeight: 700, color: "var(--text-main, #1a1a1a)", lineHeight: 1 }}>
+          <span style={{
+            fontSize: "1.9rem", fontWeight: 700,
+            color: "var(--text-main, #111827)", lineHeight: 1,
+            letterSpacing: "-0.02em",
+          }}>
             {value}
           </span>
         )}
         {sub && !loading && (
-          <div style={{ fontSize: "0.72rem", color: "var(--text-muted, #888)", marginTop: "4px" }}>
-            {sub}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "5px" }}>
+            {/* Em-dash mark before "No data" — matches reference visual */}
+            <span style={{
+              width: "16px", height: "2px",
+              background: "var(--text-muted, #9ca3af)",
+              borderRadius: "2px", display: "inline-block", flexShrink: 0,
+            }} />
+            <span style={{ fontSize: "0.72rem", color: "var(--text-muted, #9ca3af)" }}>
+              {sub}
+            </span>
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ─── DonutLegend ─────────────────────────────────────────────────────────────
+// Two-item legend row shown beneath each donut chart
+
+function DonutLegend({ items }) {
+  return (
+    <div style={{
+      display: "flex", justifyContent: "center", gap: "20px",
+      marginTop: "12px", flexWrap: "wrap",
+    }}>
+      {items.map(({ color, label, value }) => (
+        <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{
+            width: "8px", height: "8px", borderRadius: "50%",
+            background: color, flexShrink: 0, display: "inline-block",
+          }} />
+          <span style={{ fontSize: "0.72rem", color: "var(--text-muted,#888)", whiteSpace: "nowrap" }}>
+            {label}
+          </span>
+          <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-main,#1a1a1a)" }}>
+            {value}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -381,10 +433,10 @@ export default function Dashboard() {
                 value={activeShop}
                 onChange={e => setActiveShop(e.target.value === "global" ? "global" : Number(e.target.value))}
                 style={{
-                  appearance: "none", padding: "7px 32px 7px 30px",
+                  appearance: "none", padding: "5px 28px 5px 28px",
                   borderRadius: "8px", border: "1px solid var(--border-color,#ddd)",
-                  background: "var(--card-bg,#fff)", fontSize: "0.82rem", fontWeight: 600,
-                  color: "var(--text-main,#1a1a1a)", cursor: "pointer", minWidth: "160px",
+                  background: "var(--card-bg,#fff)", fontSize: "0.78rem", fontWeight: 600,
+                  color: "var(--text-main,#1a1a1a)", cursor: "pointer", minWidth: "130px",
                 }}
               >
                 <option value="global">All stores</option>
@@ -407,19 +459,19 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Period pills */}
-          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          {/* Period pills — compact sizing */}
+          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
             {PERIOD_PILLS.map(pill => {
               const isActive = period === pill.value;
               return (
                 <button key={pill.value}
                   onClick={() => { setPeriod(pill.value); setShowMore(false); }}
                   style={{
-                    padding: "7px 14px", borderRadius: "8px", border: "1px solid",
+                    padding: "5px 11px", borderRadius: "7px", border: "1px solid",
                     borderColor: isActive ? "var(--text-main,#1a1a1a)" : "transparent",
                     background: isActive ? "var(--card-bg,#fff)" : "none",
                     fontWeight: isActive ? 700 : 500,
-                    fontSize: "0.82rem",
+                    fontSize: "0.78rem",
                     color: isActive ? "var(--text-main,#1a1a1a)" : "var(--text-muted,#888)",
                     cursor: "pointer",
                   }}
@@ -439,11 +491,11 @@ export default function Dashboard() {
                   whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
                   display: "flex", alignItems: "center", gap: "6px",
-                  padding: "7px 14px", borderRadius: "8px",
+                  padding: "5px 11px", borderRadius: "7px",
                   border: `1px solid ${isMoreActive ? "var(--text-main,#1a1a1a)" : "var(--border-color,#ddd)"}`,
                   background: "var(--card-bg,#fff)",
                   fontWeight: isMoreActive ? 700 : 500,
-                  fontSize: "0.82rem",
+                  fontSize: "0.78rem",
                   color: isMoreActive ? "var(--text-main,#1a1a1a)" : "var(--text-muted,#888)",
                   cursor: "pointer",
                 }}
@@ -554,10 +606,12 @@ export default function Dashboard() {
         <div style={{
           background: "var(--card-bg,#fff)", border: "1px solid var(--border-color,#eee)",
           borderRadius: "12px", padding: "18px 20px",
+          display: "flex", flexDirection: "column",
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+          {/* Header row: icon + title/subtitle + growth badge */}
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "16px" }}>
             <div style={{
-              width: "36px", height: "36px", borderRadius: "10px", background: "#ede7f6",
+              width: "34px", height: "34px", borderRadius: "10px", background: "#ede7f6",
               display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
             }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8950fc" strokeWidth="2">
@@ -565,31 +619,37 @@ export default function Dashboard() {
               </svg>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-main,#1a1a1a)" }}>Revenue</div>
-              <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)" }}>From confirmed orders</div>
+              <div style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-main,#1a1a1a)", lineHeight: 1.2 }}>Revenue</div>
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)", marginTop: "2px" }}>From confirmed orders</div>
             </div>
+            {/* Growth badge — top-right */}
             <span style={{
-              fontSize: "0.75rem", fontWeight: 700, padding: "3px 8px", borderRadius: "20px",
+              fontSize: "0.72rem", fontWeight: 700, padding: "3px 8px", borderRadius: "20px",
               background: activeStats.revenue_growth >= 0 ? "#e6f9f0" : "#fdecea",
               color: activeStats.revenue_growth >= 0 ? "#1db954" : "#e53935",
+              flexShrink: 0,
             }}>
               {loading ? "…" : fmtGrowth(activeStats.revenue_growth)}
             </span>
           </div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 700, color: "var(--text-main,#1a1a1a)" }}>
-            {loading ? "…" : fmt(activeStats.revenue)}
+          {/* Revenue value */}
+          <div style={{ fontSize: "1.85rem", fontWeight: 700, color: "var(--text-main,#1a1a1a)", lineHeight: 1 }}>
+            {loading ? (
+              <div style={{ height: "32px", width: "120px", background: "var(--border-color,#eee)", borderRadius: "6px" }} />
+            ) : fmt(activeStats.revenue)}
           </div>
         </div>
 
-        {/* Delivery Rate */}
+        {/* Delivery Rate — larger donut + legend */}
         <div style={{
           background: "var(--card-bg,#fff)", border: "1px solid var(--border-color,#eee)",
           borderRadius: "12px", padding: "18px 20px",
           display: "flex", flexDirection: "column",
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
             <div style={{
-              width: "36px", height: "36px", borderRadius: "10px", background: "#e8f0fe",
+              width: "34px", height: "34px", borderRadius: "10px", background: "#e8f0fe",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4285f4" strokeWidth="2">
@@ -597,14 +657,16 @@ export default function Dashboard() {
                 <path d="M16 8h4l3 5v3h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
               </svg>
             </div>
-            <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-main,#1a1a1a)" }}>Delivery Rate</span>
+            <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-main,#1a1a1a)" }}>Delivery Rate</span>
           </div>
+          {/* Donut */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
             <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
               {loading
-                ? <div style={{ width: "100px", height: "100px", borderRadius: "50%", border: "8px solid var(--border-color,#eee)" }} />
+                ? <div style={{ width: "120px", height: "120px", borderRadius: "50%", border: "10px solid var(--border-color,#eee)" }} />
                 : <DonutChart percent={deliveryRate} color="#4285f4" />
               }
+              {/* Centered percentage label */}
               <span style={{
                 position: "absolute", fontSize: "1.1rem", fontWeight: 700,
                 color: "var(--text-main,#1a1a1a)",
@@ -613,31 +675,41 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
+          {/* Legend: Delivered · In Transit (pending orders not yet delivered) */}
+          {!loading && (
+            <DonutLegend items={[
+              { color: "#4285f4", label: "Delivered", value: activeStats.delivered },
+              { color: "var(--border-color,#e0e0e0)", label: "In Transit", value: activeStats.pending },
+            ]} />
+          )}
         </div>
 
-        {/* Confirmation Rate */}
+        {/* Confirmation Rate — larger donut + legend */}
         <div style={{
           background: "var(--card-bg,#fff)", border: "1px solid var(--border-color,#eee)",
           borderRadius: "12px", padding: "18px 20px",
           display: "flex", flexDirection: "column",
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
             <div style={{
-              width: "36px", height: "36px", borderRadius: "10px", background: "#e6f9f0",
+              width: "34px", height: "34px", borderRadius: "10px", background: "#e6f9f0",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1db954" strokeWidth="2">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
-            <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-main,#1a1a1a)" }}>Confirmation Rate</span>
+            <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-main,#1a1a1a)" }}>Confirmation Rate</span>
           </div>
+          {/* Donut */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
             <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
               {loading
-                ? <div style={{ width: "100px", height: "100px", borderRadius: "50%", border: "8px solid var(--border-color,#eee)" }} />
+                ? <div style={{ width: "120px", height: "120px", borderRadius: "50%", border: "10px solid var(--border-color,#eee)" }} />
                 : <DonutChart percent={confirmationRate} color="#1db954" />
               }
+              {/* Centered percentage label */}
               <span style={{
                 position: "absolute", fontSize: "1.1rem", fontWeight: 700,
                 color: "var(--text-main,#1a1a1a)",
@@ -646,6 +718,13 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
+          {/* Legend: Confirmed · Other (pending + cancelled = not yet confirmed) */}
+          {!loading && (
+            <DonutLegend items={[
+              { color: "#1db954", label: "Confirmed", value: activeStats.confirmed },
+              { color: "var(--border-color,#e0e0e0)", label: "Other", value: activeStats.total - activeStats.confirmed },
+            ]} />
+          )}
         </div>
       </div>
     </div>
