@@ -291,22 +291,22 @@ export default function Dashboard() {
 
   // ── fetch ─────────────────────────────────────────────────────────────────
   const fetchDashboard = useCallback(async (p) => {
+    console.log("Selected period:", p);
     setLoading(true);
     setError(null);
     try {
       // "all_time" → omit period param so backend returns all
       const params =
-        p && p !== "all_time" && !p?.startsWith("custom:")
+        p && !p?.startsWith("custom:")
           ? { period: p }
           : {};
-
+      console.log("Params:", params);
       // custom date range: pass start/end
       if (p?.startsWith("custom:")) {
         const [, from, to] = p.split(":");
         params.from = from;
         params.to = to;
       }
-
       const { data } = await api.get("/dashboard", { params });
       setGlobal(data.global ?? { ...EMPTY_STATS });
       setShops(data.shops ?? []);
