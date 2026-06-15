@@ -60,7 +60,6 @@ function StatusDropdown({ orderId, currentStatus, onChange }) {
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
   }, []);
-
   return (
     <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
       <button
@@ -644,9 +643,9 @@ export default function AdminOrders() {
   // ── Inline status update ──────────────────────────────────────────────────
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
-      await api.put(`/orders/${orderId}`, { status: newStatus });
-      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-      if (selectedOrder?.id === orderId) setSelectedOrder(prev => ({ ...prev, status: newStatus }));
+      const res = await api.put(`/orders/${orderId}`, { status: newStatus });
+      const updatedOrder = res.data?.data ?? res.data;
+      handleOrderUpdated(updatedOrder);
     } catch (err) { console.error(err); showToast("Erreur de mise à jour.", "error"); }
   };
 
@@ -654,16 +653,34 @@ export default function AdminOrders() {
   const handleAssignAgent = async (orderId, agentId) => {
     try {
       const value = agentId === "" ? null : parseInt(agentId);
-      const res = await api.post(`/orders/${orderId}/assign`, { assigned_to: value });
-      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, assigned_to: value, assignedAgent: res.data.order?.assignedAgent } : o));
+      const res = await api.post(`/orders/${orderId}/assign`, { agent_id: value });
+      const updatedOrder = res.data?.data ?? res.data;
+      handleOrderUpdated(updatedOrder);
     } catch (err) { console.error(err); showToast("Erreur d'attribution.", "error"); }
+  };
+
+  // ── Handle order updated ──────────────────────────────────────────────────
+  const handleOrderUpdated = (updatedOrder) => {
+    setOrders(prev =>
+        prev.map(order =>
+            order.id === updatedOrder.id
+                ? updatedOrder
+                : order
+        )
+    );
+
+    setSelectedOrder(prev =>
+        prev?.id === updatedOrder.id
+            ? updatedOrder
+            : prev
+    );
   };
 
   // ── Bulk actions ──────────────────────────────────────────────────────────
   const handleBulkUpdateStatus = async (ids, status) => {
     try {
-      await api.put("/orders/bulk/status", { ids, status });
-      setOrders(prev => prev.map(o => ids.includes(o.id) ? { ...o, status } : o));
+      await api.post("/orders/bulk-status", { order_ids: ids, status });
+      fetchOrders();
       setSelectedIds([]);
       showToast(`${ids.length} orders updated to "${status}".`);
     } catch (err) { console.error(err); showToast("Bulk update failed.", "error"); }
@@ -671,9 +688,9 @@ export default function AdminOrders() {
 
   const handleBulkAssign = async (ids, agentId) => {
     try {
-      await api.put("/orders/bulk/assign", { ids, assigned_to: agentId });
-      const agent = agentId ? activeAgents.find(a => a.id === agentId) : null;
-      setOrders(prev => prev.map(o => ids.includes(o.id) ? { ...o, assigned_to: agentId, assignedAgent: agent } : o));
+      const value = agentId === "" ? null : parseInt(agentId);
+      await api.post("/orders/bulk-assign", { order_ids: ids, agent_id: value });
+      fetchOrders();
       setSelectedIds([]);
       showToast(`${ids.length} orders assigned.`);
     } catch (err) { console.error(err); showToast("Bulk assign failed.", "error"); }
@@ -1007,13 +1024,18 @@ export default function AdminOrders() {
             }}
             onClick={e => e.stopPropagation()}
           >
-            <OrderDetails
-              order={selectedOrder}
-              onClose={() => setSelectedOrder(null)}
-              onStatusChange={(newStatus) => handleUpdateStatus(selectedOrder.id, newStatus)}
-              onAgentChange={(agentId) => handleAssignAgent(selectedOrder.id, agentId)}
-              activeAgents={activeAgents}
-            />
+<OrderDetails
+    order={selectedOrder}
+    onClose={() => setSelectedOrder(null)}
+    onStatusChange={(newStatus) =>
+        handleUpdateStatus(selectedOrder.id, newStatus)
+    }
+    onAgentChange={(agentId) =>
+        handleAssignAgent(selectedOrder.id, agentId)
+    }
+    onOrderUpdated={handleOrderUpdated}
+    activeAgents={activeAgents}
+/>
           </div>
         </div>
       )}
