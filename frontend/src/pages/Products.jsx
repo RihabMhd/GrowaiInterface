@@ -458,83 +458,96 @@ const ProductForm = ({
       </div>
 
       {/* ── Actions ── */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, paddingTop: 6, borderTop: '1px solid #f3f4f6' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid #f3f4f6', marginTop: 24 }}>
+        <div>
+          {product && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (
+                  !window.confirm(
+                    'Delete this product?'
+                  )
+                ) {
+                  return;
+                }
+
+                try {
+                  await api.delete(
+                    `/shops/${activeShopId}/products/${product.id}`
+                  );
+
+                  alert('Product deleted');
+
+                  onCancel();
+
+                } catch {
+                  alert(
+                    'Failed to delete product'
+                  );
+                }
+              }}
+              style={{
+                background: '#ef4444',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '10px 16px',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              Delete product
+            </button>
+          )}
+        </div>
+
         <div
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: 24,
+            gap: 12,
           }}
         >
-
-          <div>
-            {product && product.source_type !== 'shopify' && (
-              <button
-                type="button"
-                onClick={async () => {
-                  if (
-                    !window.confirm(
-                      'Delete this product?'
-                    )
-                  ) {
-                    return;
-                  }
-
-                  try {
-                    await api.delete(
-                      `/shops/${activeShopId}/products/${product.id}`
-                    );
-
-                    alert('Product deleted');
-
-                    onCancel();
-
-                  } catch {
-                    alert(
-                      'Failed to delete product'
-                    );
-                  }
-                }}
-                style={{
-                  background: '#ef4444',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '10px 16px',
-                  cursor: 'pointer',
-                }}
-              >
-                Delete product
-              </button>
-            )}
-          </div>
-
-          <div
+          <button
+            type="button"
+            onClick={onCancel}
             style={{
-              display: 'flex',
-              gap: 12,
+              background: '#fff',
+              color: '#374151',
+              border: '1px solid #d1d5db',
+              borderRadius: 8,
+              padding: '10px 16px',
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: 500,
             }}
           >
-            <button
-              type="button"
-              onClick={onCancel}
-            >
-              Cancel
-            </button>
+            Cancel
+          </button>
 
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={saving}
-            >
-              {saving
-                ? 'Saving...'
-                : product
-                  ? 'Update product'
-                  : 'Create product'}
-            </button>
-          </div>
-
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={saving}
+            style={{
+              background: '#7c3aed',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 16px',
+              cursor: saving ? 'not-allowed' : 'pointer',
+              opacity: saving ? 0.7 : 1,
+              fontSize: 13,
+              fontWeight: 500,
+            }}
+          >
+            {saving
+              ? 'Saving...'
+              : product
+                ? 'Update product'
+                : 'Create product'}
+          </button>
         </div>
       </div>
     </div>

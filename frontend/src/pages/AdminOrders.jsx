@@ -825,7 +825,7 @@ export default function AdminOrders() {
           <p style={{ color: "var(--text-muted)", fontWeight: "500" }}>No orders found</p>
         </div>
       ) : (
-        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden" }}>
+        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px",position: "relative", overflow: "visible" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
