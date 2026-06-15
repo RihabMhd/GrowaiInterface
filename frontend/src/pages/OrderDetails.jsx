@@ -117,23 +117,23 @@ const OrderDetails = ({
     };
 
     const handleCustomerSave = async () => {
-    try {
-        const response = await api.put(
-            `/orders/${order.id}`,
-            customerForm
-        );
+        try {
+            const response = await api.put(
+                `/orders/${order.id}`,
+                customerForm
+            );
 
-        const updatedOrder =
-            response.data.data ?? response.data;
+            const updatedOrder =
+                response.data.data ?? response.data;
 
-        onOrderUpdated?.(updatedOrder);
+            onOrderUpdated?.(updatedOrder);
 
-        setShowCustomerModal(false);
+            setShowCustomerModal(false);
 
-    } catch (err) {
-        console.error('Failed to update customer:', err);
-    }
-};
+        } catch (err) {
+            console.error('Failed to update customer:', err);
+        }
+    };
 
     const handleProductSearch = async (val) => {
         setProductSearch(val);
@@ -243,6 +243,15 @@ const OrderDetails = ({
         alignItems: 'center', fontSize: '0.82rem',
         color: '#444', marginBottom: 4,
     };
+
+    const [histories, setHistories] = useState(order?.histories ?? []);
+
+    useEffect(() => {
+        if (activeTab !== 'history') return;
+        api.get(`/orders/${order.id}?with=histories`)
+            .then(r => setHistories(r.data?.data?.histories ?? r.data?.histories ?? []))
+            .catch(() => { });
+    }, [activeTab, order.id]);
 
     useEffect(() => {
         if (!order) return;
@@ -509,7 +518,7 @@ const OrderDetails = ({
                                         flexShrink: 0, overflow: 'hidden', fontSize: '0.65rem', color: '#aaa',
                                     }}>
                                         {(item.image_url || item.product?.image)
-                                            ?  <img src={item.image_url || item.product?.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ? <img src={item.image_url || item.product?.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                             : 'IMG'}
                                     </div>
                                     {/* Info */}
@@ -653,41 +662,44 @@ const OrderDetails = ({
                                 <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#999', letterSpacing: '0.04em' }}>CONFIRMATION STATUS</div>
                             </div>
                             <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
-                                {order?.histories && order.histories.length > 0 ? (
-                                    [...order.histories].reverse().map((h, i, arr) => {
-                                        const newMeta = ORDER_STATUSES_OD.find(s => s.value === h.new_value) || { label: h.new_value || h.action_type, color: '#7239ea' };
-                                        return (
-                                            <div key={h.id ?? i} style={{ display: 'flex', gap: 12, paddingBottom: 20, position: 'relative' }}>
-                                                {i < arr.length - 1 && (
-                                                    <div style={{ position: 'absolute', top: 20, left: 7, width: 2, height: 'calc(100% - 20px)', background: '#e8e8ee' }} />
-                                                )}
-                                                <div style={{ width: 16, height: 16, borderRadius: '50%', border: `3px solid ${newMeta.color}30`, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2, zIndex: 1 }}>
-                                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: newMeta.color }} />
-                                                </div>
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ marginBottom: 4 }}>
-                                                        <span style={{ fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 12, background: newMeta.color + '18', color: newMeta.color, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                                                            <div style={{ width: 4, height: 4, borderRadius: '50%', background: newMeta.color }} />
-                                                            {newMeta.label}
-                                                        </span>
-                                                    </div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.72rem', color: '#888' }}>
-                                                        <span>{formatDateShort(h.created_at)}</span>
-                                                        <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                                                            {h.user?.name || 'System'}
-                                                        </span>
-                                                    </div>
-                                                    {!h.action_type?.includes('status') && (
-                                                        <div style={{ marginTop: 3, fontSize: '0.72rem', color: '#555' }}>{h.description}</div>
+                                {(() => {
+                                    const statusHistories = (order?.histories || []).filter(h => h.action_type === 'status');
+                                    return statusHistories.length > 0 ? (
+                                        [...statusHistories].reverse().map((h, i, arr) => {
+                                            const newMeta = ORDER_STATUSES_OD.find(s => s.value === h.new_value) || { label: h.new_value || h.action_type, color: '#7239ea' };
+                                            return (
+                                                <div key={h.id ?? i} style={{ display: 'flex', gap: 12, paddingBottom: 20, position: 'relative' }}>
+                                                    {i < arr.length - 1 && (
+                                                        <div style={{ position: 'absolute', top: 20, left: 7, width: 2, height: 'calc(100% - 20px)', background: '#e8e8ee' }} />
                                                     )}
+                                                    <div style={{ width: 16, height: 16, borderRadius: '50%', border: `3px solid ${newMeta.color}30`, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2, zIndex: 1 }}>
+                                                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: newMeta.color }} />
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ marginBottom: 4 }}>
+                                                            <span style={{ fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 12, background: newMeta.color + '18', color: newMeta.color, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                                                <div style={{ width: 4, height: 4, borderRadius: '50%', background: newMeta.color }} />
+                                                                {newMeta.label}
+                                                            </span>
+                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.72rem', color: '#888' }}>
+                                                            <span>{formatDateShort(h.created_at)}</span>
+                                                            <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
+                                                                {h.user?.name || 'System'}
+                                                            </span>
+                                                        </div>
+                                                        {!h.action_type?.includes('status') && (
+                                                            <div style={{ marginTop: 3, fontSize: '0.72rem', color: '#555' }}>{h.description}</div>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <div style={{ fontSize: '0.8rem', color: '#bbb', fontStyle: 'italic' }}>Aucun historique de confirmation.</div>
-                                )}
+                                            );
+                                        })
+                                    ) : (
+                                        <div style={{ fontSize: '0.8rem', color: '#bbb', fontStyle: 'italic' }}>Aucun historique de confirmation.</div>
+                                    )
+                                })()}
                             </div>
                         </div>
 
