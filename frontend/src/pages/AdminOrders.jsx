@@ -19,6 +19,17 @@ const ORDER_STATUSES = [
   { value: "doublon", label: "Doublon", color: "#ffc700", icon: "◈" },
   { value: "wrong_number", label: "Mauvais numéro", color: "#fd7e14", icon: "⚠" },
 ];
+const ORDER_SOURCES = [
+  { value: "Shopify", label: "Shopify", color: "#7239ea", icon: "●" },
+  { value: "Facebook", label: "Facebook", color: "#50cd89", icon: "●" },
+  { value: "Instagram", label: "Instagram", color: "#00a3ff", icon: "◎" },
+  { value: "TikTok", label: "TikTok", color: "#9b6dff", icon: "☎" },
+  { value: "Snapchat", label: "Snapchat", color: "#f1416c", icon: "⊗" },
+  { value: "WhatsApp", label: "WhatsApp", color: "#ffc700", icon: "◈" },
+  { value: "GoogleSheets", label: "Google Sheets", color: "#fd7e14", icon: "⚠" },
+];
+
+
 
 const FULFILLMENT_STATUSES = [
   { value: "unfulfilled", label: "Unfulfilled", color: "#ffc700" },
@@ -569,6 +580,7 @@ export default function AdminOrders() {
   const [startDate, endDate] = dateRange;
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState("all");
 
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
@@ -662,17 +674,17 @@ export default function AdminOrders() {
   // ── Handle order updated ──────────────────────────────────────────────────
   const handleOrderUpdated = (updatedOrder) => {
     setOrders(prev =>
-        prev.map(order =>
-            order.id === updatedOrder.id
-                ? updatedOrder
-                : order
-        )
+      prev.map(order =>
+        order.id === updatedOrder.id
+          ? updatedOrder
+          : order
+      )
     );
 
     setSelectedOrder(prev =>
-        prev?.id === updatedOrder.id
-            ? updatedOrder
-            : prev
+      prev?.id === updatedOrder.id
+        ? updatedOrder
+        : prev
     );
   };
 
@@ -723,6 +735,14 @@ export default function AdminOrders() {
     if (startDate && endDate) {
       const od = new Date(order.created_at);
       if (od < startDate || od > endDate) return false;
+    }
+    if (sourceFilter !== "all") {
+      if (
+        (order.source_channel || "").toLowerCase() !==
+        sourceFilter.toLowerCase()
+      ) {
+        return false;
+      }
     }
     return true;
   });
@@ -819,6 +839,8 @@ export default function AdminOrders() {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search orders..." style={{ width: "100%", padding: "7px 10px 7px 30px", borderRadius: "6px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.75rem", outline: "none", boxSizing: "border-box" }} />
         </div>
+        <CustomSelect id="Sources" value={sourceFilter} onChange={setSourceFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Sources"
+          options={[{ value: "all", label: "All Sources" }, ...ORDER_SOURCES.map(s => ({ value: s.value, label: s.label, dot: s.color }))]} />
         <CustomSelect id="status" value={statusFilter} onChange={setStatusFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Status"
           options={[{ value: "all", label: "All Status" }, ...ORDER_STATUSES.map(s => ({ value: s.value, label: s.label, dot: s.color }))]} />
         <CustomSelect id="fulfillment" value={fulfillmentFilter} onChange={setFulfillmentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Fulfillment"
@@ -842,7 +864,7 @@ export default function AdminOrders() {
           <p style={{ color: "var(--text-muted)", fontWeight: "500" }}>No orders found</p>
         </div>
       ) : (
-        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px",position: "relative", overflow: "visible" }}>
+        <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", position: "relative", overflow: "visible" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
@@ -1024,18 +1046,18 @@ export default function AdminOrders() {
             }}
             onClick={e => e.stopPropagation()}
           >
-<OrderDetails
-    order={selectedOrder}
-    onClose={() => setSelectedOrder(null)}
-    onStatusChange={(newStatus) =>
-        handleUpdateStatus(selectedOrder.id, newStatus)
-    }
-    onAgentChange={(agentId) =>
-        handleAssignAgent(selectedOrder.id, agentId)
-    }
-    onOrderUpdated={handleOrderUpdated}
-    activeAgents={activeAgents}
-/>
+            <OrderDetails
+              order={selectedOrder}
+              onClose={() => setSelectedOrder(null)}
+              onStatusChange={(newStatus) =>
+                handleUpdateStatus(selectedOrder.id, newStatus)
+              }
+              onAgentChange={(agentId) =>
+                handleAssignAgent(selectedOrder.id, agentId)
+              }
+              onOrderUpdated={handleOrderUpdated}
+              activeAgents={activeAgents}
+            />
           </div>
         </div>
       )}
