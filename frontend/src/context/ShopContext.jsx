@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api/axios';
-
+import { AuthContext } from '../auth/AuthContext';
 const ShopContext = createContext(undefined);
 
 export function ShopProvider({ children }) {
@@ -9,7 +9,7 @@ export function ShopProvider({ children }) {
     const [activeShopId, setActiveShopId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const { user, loading: authLoading } = useContext(AuthContext);
     const fetchShops = useCallback(async () => {
         try {
             setLoading(true);
@@ -26,7 +26,6 @@ export function ShopProvider({ children }) {
                         : [];
 
             setShops(loadedShops);
-
             if (loadedShops.length === 0) {
                 setActiveShopState(null);
                 setActiveShopId(null);
@@ -41,12 +40,19 @@ export function ShopProvider({ children }) {
                 } else {
                     const firstShop = loadedShops[0];
                     setActiveShopState(firstShop);
+                    console.log(
+                        '[ShopContext] setting active shop:',
+                        firstShop
+                    );
                     setActiveShopId(firstShop.id);
                     localStorage.setItem('activeShopId', firstShop.id);
                 }
             }
         } catch (err) {
-            console.error('Error loading shops:', err);
+            console.error(
+    '[ShopContext] ERROR',
+    err
+  );
             setError('Failed to load Shopify stores.');
         } finally {
             setLoading(false);
@@ -54,8 +60,10 @@ export function ShopProvider({ children }) {
     }, []);
 
     useEffect(() => {
+        if (authLoading) return;   
+        if (!user) return;        
         fetchShops();
-    }, [fetchShops]);
+    }, [authLoading, user, fetchShops]);
 
     const setActiveShop = (shopOrId) => {
         if (!shopOrId) {

@@ -581,8 +581,11 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
-    console.log('[Products] activeShopId changed:', activeShopId);
-  }, [activeShopId]);
+  console.log(
+    '[Products] activeShopId:',
+    activeShopId
+  );
+}, [activeShopId]);
   // ─── Fetch ────────────────────────────────────────────────────────────────
   const fetchProducts = async (page = 1, force = false) => {
     // Prevent initial fetches while the shop is still loading,
