@@ -44,7 +44,6 @@ export default function AppRoutes() {
           <Route path="/sources/google-sheets" element={<GoogleIntegrationPage />} />
           
           <Route path="/apps/whatsapp" element={<PlaceholderPage title="WhatsApp PRO" />} />
-          <Route path="/apps/tarifs" element={<PlaceholderPage title="Tarifs" />} />
 
           <Route path="/settings" element={<Parametre />} />
           <Route path="/help" element={<Help />} />

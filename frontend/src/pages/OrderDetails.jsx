@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import '../OrderDetails.css';
 import api from "../api/axios";
 import { useShop } from '../context/ShopContext';
@@ -38,10 +38,15 @@ const FinancialBadge = ({ status }) => {
 };
 
 const formatDate = (dateStr) => {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleString([], {
-        year: 'numeric', month: 'short', day: 'numeric',
-        hour: '2-digit', minute: '2-digit',
+    if (!dateStr) return "—";
+
+    return new Date(dateStr).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
     });
 };
 
@@ -79,12 +84,28 @@ const OrderDetails = ({
     }, [order?.status]);
     const [showStatusMenu, setShowStatusMenu] = useState(false);
     const [activeTab, setActiveTab] = useState('details');
+
+    // ── FIX: Only declare isEditingPrice once ──
     const [isEditingPrice, setIsEditingPrice] = useState(false);
-    const [pricing, setPricing] = useState({
-        subtotal: Number(order?.total_price) - Number(order?.shipping_price) + Number(order?.discount) || 0,
-        shipping: Number(order?.shipping_price) || 0,
-        discount: Number(order?.discount) || 0,
-    });
+
+    // ── FIX: Use computed values instead of stored state ──
+    // Use different variable names to avoid conflicts with shipping object below
+    const [shippingCost, setShippingCost] = useState(Number(order?.shipping_price) || 0);
+    const [discountAmount, setDiscountAmount] = useState(Number(order?.discount) || 0);
+
+    // Compute subtotal from items
+    const computeSubtotal = (items) => {
+        if (!items || items.length === 0) return 0;
+        return items.reduce((sum, item) => {
+            const price = Number(item.unit_price) || 0;
+            const qty = Number(item.quantity) || 0;
+            return sum + (price * qty);
+        }, 0);
+    };
+
+    const subtotal = useMemo(() => computeSubtotal(order?.items), [order?.items]);
+    // ────────────────────────────────────────────────────────
+
     const [showCustomerModal, setShowCustomerModal] = useState(false);
     const [showProductModal, setShowProductModal] = useState(false);
     const [productSearch, setProductSearch] = useState('');
@@ -103,12 +124,9 @@ const OrderDetails = ({
     });
 
     const currency = order?.currency || 'MAD';
-    const total = pricing.subtotal + pricing.shipping - pricing.discount;
 
-    const handlePriceChange = (e) => {
-        const { name, value } = e.target;
-        setPricing(prev => ({ ...prev, [name]: Number(value) }));
-    };
+    // ── FIX: Use different variable name to avoid conflict ──
+    const orderTotal = subtotal + shippingCost - discountAmount;
 
     const handleStatusChange = (newVal) => {
         setStatus(newVal);
@@ -201,12 +219,13 @@ const OrderDetails = ({
         province: order?.province || '',
     };
 
-    const shipping = order?.shipping_address || {
+    // ── FIX: Rename to shippingAddress to avoid conflict ──
+    const shippingAddress = order?.shipping_address || {
         name: client.name, phone: client.phone,
         address1: client.address, city: client.city,
         province: client.province, country: client.country, zip: client.zip,
     };
-    const billing = order?.billing_address || shipping;
+    const billing = order?.billing_address || shippingAddress;
 
     const initials = (name) => {
         if (!name) return '?';
@@ -253,6 +272,7 @@ const OrderDetails = ({
             .catch(() => { });
     }, [activeTab, order.id]);
 
+    // ── FIX: Update to use shippingCost and discountAmount ──
     useEffect(() => {
         if (!order) return;
 
@@ -260,10 +280,14 @@ const OrderDetails = ({
             customer_name: order.customer_name || client.name || '',
             customer_phone: order.customer_phone || client.phone || '',
             customer_email: order.customer_email || client.email || '',
-            city: order.city || shipping.city || '',
-            province: order.province || shipping.province || '',
-            street: order.street || shipping.address1 || '',
+            city: order.city || shippingAddress.city || '',
+            province: order.province || shippingAddress.province || '',
+            street: order.street || shippingAddress.address1 || '',
         });
+
+        // Sync shipping and discount with order data
+        setShippingCost(Number(order?.shipping_price) || 0);
+        setDiscountAmount(Number(order?.discount) || 0);
     }, [order]);
 
     useEffect(() => {
@@ -472,9 +496,9 @@ const OrderDetails = ({
                                         </span>
                                     </div>
                                     <div style={{ fontSize: '0.9rem', color: '#444', lineHeight: 1.6 }}>
-                                        {shipping.address1 && <div>{shipping.address1}</div>}
-                                        <div>{[shipping.city, shipping.province, shipping.zip].filter(Boolean).join(', ')}</div>
-                                        {shipping.country && <div>{shipping.country}</div>}
+                                        {shippingAddress.address1 && <div>{shippingAddress.address1}</div>}
+                                        <div>{[shippingAddress.city, shippingAddress.province, shippingAddress.zip].filter(Boolean).join(', ')}</div>
+                                        {shippingAddress.country && <div>{shippingAddress.country}</div>}
                                     </div>
                                 </div>
                                 <div style={{ height: 1, background: '#e8e8ee', margin: '0 -24px 20px' }} />
@@ -589,7 +613,7 @@ const OrderDetails = ({
                         </div>
                     </div>
 
-                    {/* ── PRICING CARD ───────────────────────────────────────── */}
+                    {/* ── PRICING CARD (FIXED) ───────────────────────────────────────── */}
                     <div style={card}>
                         <div style={cardBody}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -604,10 +628,13 @@ const OrderDetails = ({
 
                             {isEditingPrice ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '0.8rem', color: '#666' }}>Subtotal (auto)</span>
+                                        <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#333' }}>{subtotal} {currency}</span>
+                                    </div>
                                     {[
-                                        { label: 'Subtotal', name: 'subtotal', value: pricing.subtotal },
-                                        { label: 'Shipping', name: 'shipping', value: pricing.shipping },
-                                        { label: 'Discount', name: 'discount', value: pricing.discount },
+                                        { label: 'Shipping', name: 'shipping', value: shippingCost },
+                                        { label: 'Discount', name: 'discount', value: discountAmount },
                                     ].map(({ label, name, value }) => (
                                         <div key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <span style={{ fontSize: '0.8rem', color: '#666' }}>{label}</span>
@@ -615,7 +642,11 @@ const OrderDetails = ({
                                                 type="number"
                                                 name={name}
                                                 value={value}
-                                                onChange={handlePriceChange}
+                                                onChange={(e) => {
+                                                    const val = Number(e.target.value);
+                                                    if (name === 'shipping') setShippingCost(val);
+                                                    else setDiscountAmount(val);
+                                                }}
                                                 style={{
                                                     width: 90, padding: '5px 8px', borderRadius: 6,
                                                     border: '1px solid #ddd', textAlign: 'right',
@@ -627,16 +658,22 @@ const OrderDetails = ({
                                 </div>
                             ) : (
                                 <>
-                                    {[
-                                        { label: 'Subtotal', val: pricing.subtotal },
-                                        { label: 'Shipping', val: pricing.shipping },
-                                        ...(pricing.discount > 0 ? [{ label: 'Discount', val: `−${pricing.discount}`, red: true }] : []),
-                                    ].map(({ label, val, red }) => (
-                                        <div key={label} style={{ ...row, color: red ? '#d32f2f' : '#555', marginBottom: 5 }}>
-                                            <span>{label}</span>
-                                            <span>{val} {currency}</span>
+                                    <div style={{ ...row, marginBottom: 5 }}>
+                                        <span>Subtotal</span>
+                                        <span>{subtotal} {currency}</span>
+                                    </div>
+                                    {shippingCost > 0 && (
+                                        <div style={{ ...row, marginBottom: 5 }}>
+                                            <span>Shipping</span>
+                                            <span>{shippingCost} {currency}</span>
                                         </div>
-                                    ))}
+                                    )}
+                                    {discountAmount > 0 && (
+                                        <div style={{ ...row, color: '#d32f2f', marginBottom: 5 }}>
+                                            <span>Discount</span>
+                                            <span>−{discountAmount} {currency}</span>
+                                        </div>
+                                    )}
                                 </>
                             )}
 
@@ -646,10 +683,11 @@ const OrderDetails = ({
                                 fontWeight: 700, fontSize: '0.95rem', color: '#222',
                             }}>
                                 <span>Total</span>
-                                <span>{total} {currency}</span>
+                                <span>{subtotal + shippingCost - discountAmount} {currency}</span>
                             </div>
                         </div>
                     </div>
+                    {/* ─────────────────────────────────────────────────────────── */}
 
                 </>)}
 
@@ -663,7 +701,9 @@ const OrderDetails = ({
                             </div>
                             <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
                                 {(() => {
-                                    const statusHistories = (order?.histories || []).filter(h => h.action_type === 'status');
+                                    const statusHistories = (histories || []).filter(
+                                        h => h.action_type === 'status_changed'
+                                    );
                                     return statusHistories.length > 0 ? (
                                         [...statusHistories].reverse().map((h, i, arr) => {
                                             const newMeta = ORDER_STATUSES_OD.find(s => s.value === h.new_value) || { label: h.new_value || h.action_type, color: '#7239ea' };
@@ -689,9 +729,10 @@ const OrderDetails = ({
                                                                 {h.user?.name || 'System'}
                                                             </span>
                                                         </div>
-                                                        {!h.action_type?.includes('status') && (
-                                                            <div style={{ marginTop: 3, fontSize: '0.72rem', color: '#555' }}>{h.description}</div>
-                                                        )}
+                                                        {h.action_type !== 'status_changed' &&
+                                                            h.action_type !== 'status_changed' && (
+                                                                <div style={{ marginTop: 3, fontSize: '0.72rem', color: '#555' }}>{h.description}</div>
+                                                            )}
                                                     </div>
                                                 </div>
                                             );
@@ -721,9 +762,6 @@ const OrderDetails = ({
                 {/* Bottom Spacer for Safari/Chrome scroll padding bug */}
                 <div style={{ height: 16, flexShrink: 0 }} />
             </div>
-
-
-
 
             {/* ── ADD PRODUCT MODAL ────────────────────────────────────────────── */}
             {showProductModal && (

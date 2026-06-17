@@ -79,12 +79,6 @@ const Icons = {
       <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
     </svg>
   ),
-  tarifs: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="1" x2="12" y2="23"/>
-      <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-    </svg>
-  ),
   logout: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -164,8 +158,7 @@ export default function Sidebar({ user, onLogout }) {
   ];
 
   const appLinks = [
-    { name: "WhatsApp", path: "/apps/whatsapp", icon: Icons.whatsapp, badge: "PRO" },
-    { name: t("tarifs") || "Tarifs", path: "/apps/tarifs", icon: Icons.tarifs },
+    { name: "WhatsApp", path: "/apps/whatsapp", icon: Icons.whatsapp }
   ];
 
   const isAdmin = user?.role === "admin";
@@ -266,7 +259,6 @@ export default function Sidebar({ user, onLogout }) {
                   >
                     <span className="sidebar-link-icon">{link.icon}</span>
                     <span className="sidebar-link-label">{link.name}</span>
-                    {link.badge && <span className="sidebar-badge">{link.badge}</span>}
                   </NavLink>
                 </li>
               ))}

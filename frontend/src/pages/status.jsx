@@ -22,7 +22,7 @@ const COMPANY_STATUSES = [
   { slug: "picked_up",          label: "Picked Up",           color: "#8b5cf6", icon: "🤝"  },
   { slug: "delivered",          label: "Delivered",           color: "#10b981", icon: "🎉"  },
   { slug: "delayed",            label: "Delayed",             color: "#f97316", icon: "⏳"  },
-  { slug: "returned",           label: "Returned",            color: "#dc2626", icon: "↩️"  },
+  { slug: "failure",           label: "failure",            color: "#dc2626", icon: "↩️"  },
 ];
 
 // ── Icons ─────────────────────────────────────────────────────────────────────

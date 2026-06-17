@@ -3,9 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import '../CustomDatePicker.css';
 import OrderDetails from './OrderDetails';
 import { useShop } from '../context/ShopContext';
 const CURRENCY = "MAD";
@@ -29,8 +26,6 @@ const ORDER_SOURCES = [
   { value: "GoogleSheets", label: "Google Sheets", color: "#fd7e14", icon: "⚠" },
 ];
 
-
-
 const FULFILLMENT_STATUSES = [
   { value: "unfulfilled", label: "Unfulfilled", color: "#ffc700" },
   { value: "fulfilled", label: "Fulfilled", color: "#50cd89" },
@@ -40,6 +35,14 @@ const FULFILLMENT_STATUSES = [
 ];
 
 const PER_PAGE_OPTIONS = [10, 25, 50, 100];
+
+const MORE_PRESETS = [
+  { label: "Last 7 days", value: "last_7_days" },
+  { label: "Last 30 days", value: "last_30_days" },
+  { label: "This month", value: "this_month" },
+  { label: "Last month", value: "last_month" },
+  { label: "Last 90 days", value: "last_90_days" },
+];
 
 const getStatusMeta = (val) =>
   ORDER_STATUSES.find(s => s.value === val) || { label: val || "Pending", color: "#ffc700", icon: "●" };
@@ -60,6 +63,142 @@ const Icons = {
   cancelled: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>),
   rate: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>),
 };
+
+// ── CalendarPicker ────────────────────────────────────────────────────────────
+function CalendarPicker({ onApply, onClose }) {
+  const today = new Date();
+  const [fromMonth, setFromMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const [toMonth, setToMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const renderCalendar = (base, selected, onSelect) => {
+    const year = base.getFullYear();
+    const month = base.getMonth();
+    const first = new Date(year, month, 1).getDay();
+    const days = new Date(year, month + 1, 0).getDate();
+    const offset = (first + 6) % 7;
+    const cells = [];
+    for (let i = 0; i < offset; i++) cells.push(null);
+    for (let d = 1; d <= days; d++) cells.push(new Date(year, month, d));
+
+    const isSel = (d) => d && selected && d.toDateString() === selected.toDateString();
+    const isToday = (d) => d && d.toDateString() === today.toDateString();
+
+    return (
+      <div style={{ width: "160px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+          <button onClick={() => onSelect(null, new Date(year, month - 1, 1), true)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted,#888)", fontSize: "14px", padding: "2px 6px" }}>‹</button>
+          <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-main,#1a1a1a)" }}>
+            {monthNames[month]} {year}
+          </span>
+          <button onClick={() => onSelect(null, new Date(year, month + 1, 1), true)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted,#888)", fontSize: "14px", padding: "2px 6px" }}>›</button>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "2px", textAlign: "center" }}>
+          {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(d => (
+            <div key={d} style={{ fontSize: "0.6rem", color: "var(--text-muted,#888)", padding: "2px 0", fontWeight: 600 }}>{d}</div>
+          ))}
+          {cells.map((d, i) => (
+            <button key={i} disabled={!d}
+              onClick={() => d && onSelect(d)}
+              style={{
+                background: isSel(d) ? "#8950fc" : "none",
+                color: isSel(d) ? "#fff" : isToday(d) ? "#8950fc" : d ? "var(--text-main,#1a1a1a)" : "transparent",
+                border: "none", borderRadius: "4px", cursor: d ? "pointer" : "default",
+                fontSize: "0.7rem", padding: "3px 0", fontWeight: isSel(d) ? 700 : 400,
+              }}
+            >
+              {d ? d.getDate() : ""}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const handleFromSelect = (d, newMonth, monthOnly) => {
+    if (monthOnly) { setFromMonth(newMonth); return; }
+    setFromDate(d);
+  };
+  const handleToSelect = (d, newMonth, monthOnly) => {
+    if (monthOnly) { setToMonth(newMonth); return; }
+    setToDate(d);
+  };
+
+  const fmt = (d) => d ? d.toISOString().split("T")[0] : null;
+
+  return (
+    <div style={{
+      position: "absolute", top: "calc(100% + 6px)", right: 0,
+      background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#eee)",
+      borderRadius: "12px", padding: "16px", zIndex: 200, minWidth: "380px",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+    }}>
+      <div style={{ marginBottom: "14px" }}>
+        <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted,#888)", marginBottom: "6px" }}>More</div>
+        {MORE_PRESETS.map(p => (
+          <button key={p.value} onClick={() => { onApply(p.value); onClose(); }}
+            style={{
+              display: "flex", alignItems: "center", gap: "8px", width: "100%",
+              padding: "7px 6px", background: "none", border: "none", cursor: "pointer",
+              fontSize: "0.82rem", color: "var(--text-main,#1a1a1a)", borderRadius: "6px",
+              textAlign: "left",
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "var(--hover-bg,#f5f5f5)"}
+            onMouseLeave={e => e.currentTarget.style.background = "none"}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted,#888)", flexShrink: 0 }}>
+              <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <div style={{ borderTop: "1px solid var(--border-color,#eee)", margin: "10px 0 14px" }} />
+      <div style={{ display: "flex", gap: "24px" }}>
+        <div>
+          <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted,#888)", marginBottom: "8px" }}>From</div>
+          {renderCalendar(fromMonth, fromDate, handleFromSelect)}
+        </div>
+        <div>
+          <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted,#888)", marginBottom: "8px" }}>To</div>
+          {renderCalendar(toMonth, toDate, handleToSelect)}
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: "8px", marginTop: "14px" }}>
+        <button
+          onClick={() => {
+            if (fromDate && toDate) onApply(`custom:${fmt(fromDate)}:${fmt(toDate)}`);
+            onClose();
+          }}
+          disabled={!fromDate || !toDate}
+          style={{
+            flex: 1, padding: "9px", borderRadius: "8px",
+            background: fromDate && toDate ? "#8950fc" : "#d0c0f8",
+            color: "#fff", border: "none", cursor: fromDate && toDate ? "pointer" : "default",
+            fontWeight: 600, fontSize: "0.82rem",
+          }}
+        >
+          Apply
+        </button>
+        <button
+          onClick={() => { onApply("all"); onClose(); }}
+          style={{
+            padding: "9px 18px", borderRadius: "8px",
+            background: "none", border: "1px solid var(--border-color,#eee)",
+            cursor: "pointer", fontSize: "0.82rem", color: "var(--text-main,#1a1a1a)",
+          }}
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function StatusDropdown({ orderId, currentStatus, onChange }) {
   const [open, setOpen] = useState(false);
@@ -576,11 +715,10 @@ export default function AdminOrders() {
   const [productFilter, setProductFilter] = useState("all");
   const [agentFilter, setAgentFilter] = useState("all");
   const [periodFilter, setPeriodFilter] = useState("all");
-  const [dateRange, setDateRange] = useState([null, null]);
-  const [startDate, endDate] = dateRange;
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("all");
+  const [showMore, setShowMore] = useState(false);
+  const moreRef = useRef(null);
 
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
@@ -588,6 +726,19 @@ export default function AdminOrders() {
   // Modals
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // ── More filter derived state ──────────────────────────────────────────────
+  const morePeriods = new Set(MORE_PRESETS.map(p => p.value));
+  const isMoreActive = morePeriods.has(periodFilter) || periodFilter?.startsWith("custom:");
+
+  const activePillLabel = () => {
+    if (periodFilter?.startsWith("custom:")) {
+      const [, from, to] = periodFilter.split(":");
+      return `${from} → ${to}`;
+    }
+    const preset = MORE_PRESETS.find(p => p.value === periodFilter);
+    return preset ? preset.label : "More";
+  };
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
   const fetchOrders = async (page = currentPage) => {
@@ -614,18 +765,14 @@ export default function AdminOrders() {
       setProducts([]);
       return;
     }
-
     try {
-      const res = await api.get(
-        `/shops/${activeShopId}/products`
-      );
-
+      const res = await api.get(`/shops/${activeShopId}/products`);
       setProducts(res.data.data ?? []);
     } catch (err) {
       console.error(err);
       setProducts([]);
     }
-  };[]
+  };
 
   const fetchCompanies = async () => {
     try {
@@ -638,13 +785,12 @@ export default function AdminOrders() {
   useEffect(() => { fetchOrders(currentPage); }, [currentPage]);
   useEffect(() => {
     if (!activeShopId) return;
-
     fetchProducts();
   }, [activeShopId]);
   useEffect(() => {
     const h = (e) => {
       if (!e.target.closest(".custom-select-wrapper")) setOpenDropdown(null);
-      if (!e.target.closest(".more-dd")) setIsMoreOpen(false);
+      if (moreRef.current && !moreRef.current.contains(e.target)) setShowMore(false);
     };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
@@ -675,16 +821,11 @@ export default function AdminOrders() {
   const handleOrderUpdated = (updatedOrder) => {
     setOrders(prev =>
       prev.map(order =>
-        order.id === updatedOrder.id
-          ? updatedOrder
-          : order
+        order.id === updatedOrder.id ? updatedOrder : order
       )
     );
-
     setSelectedOrder(prev =>
-      prev?.id === updatedOrder.id
-        ? updatedOrder
-        : prev
+      prev?.id === updatedOrder.id ? updatedOrder : prev
     );
   };
 
@@ -718,7 +859,7 @@ export default function AdminOrders() {
   const toggleAll = () => setSelectedIds(allChecked ? [] : orders.map(o => o.id));
   const toggleOne = (id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
-  // ── Client-side filters (period, product, agent, fulfillment, source) ─────
+  // ── Client-side filters ───────────────────────────────────────────────────
   const filteredOrders = orders.filter(order => {
     if (productFilter !== "all" && !order.items?.some(i => i.product_id === parseInt(productFilter))) return false;
     if (agentFilter !== "all" && String(order.assigned_to) !== agentFilter) return false;
@@ -727,22 +868,47 @@ export default function AdminOrders() {
       if (s.toLowerCase() !== fulfillmentFilter.toLowerCase()) return false;
     }
     if (periodFilter !== "all") {
-      const d = new Date(order.created_at), today = new Date();
-      if (periodFilter === "today") return d.toDateString() === today.toDateString();
-      if (periodFilter === "yesterday") { const y = new Date(); y.setDate(today.getDate() - 1); return d.toDateString() === y.toDateString(); }
-      if (periodFilter === "this_week") { const w = new Date(); w.setDate(today.getDate() - 7); return d >= w; }
-    }
-    if (startDate && endDate) {
-      const od = new Date(order.created_at);
-      if (od < startDate || od > endDate) return false;
+      const d = new Date(order.created_at);
+      const now = new Date();
+      const startOfDay = (date) => { const x = new Date(date); x.setHours(0, 0, 0, 0); return x; };
+
+      if (periodFilter === "today") {
+        const start = startOfDay(now);
+        const end = new Date(now); end.setHours(23, 59, 59, 999);
+        if (d < start || d > end) return false;
+      } else if (periodFilter === "yesterday") {
+        const y = new Date(); y.setDate(y.getDate() - 1);
+        const start = startOfDay(y);
+        const end = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23, 59, 59, 999);
+        if (d < start || d > end) return false;
+      } else if (periodFilter === "this_week") {
+        const w = new Date(); w.setDate(w.getDate() - 7); w.setHours(0, 0, 0, 0);
+        if (d < w) return false;
+      } else if (periodFilter === "last_7_days") {
+        const w = new Date(); w.setDate(w.getDate() - 7); w.setHours(0, 0, 0, 0);
+        if (d < w) return false;
+      } else if (periodFilter === "last_30_days") {
+        const w = new Date(); w.setDate(w.getDate() - 30); w.setHours(0, 0, 0, 0);
+        if (d < w) return false;
+      } else if (periodFilter === "last_90_days") {
+        const w = new Date(); w.setDate(w.getDate() - 90); w.setHours(0, 0, 0, 0);
+        if (d < w) return false;
+      } else if (periodFilter === "this_month") {
+        const w = new Date(); w.setDate(1); w.setHours(0, 0, 0, 0);
+        if (d < w) return false;
+      } else if (periodFilter === "last_month") {
+        const start = new Date(); start.setDate(1); start.setMonth(start.getMonth() - 1); start.setHours(0, 0, 0, 0);
+        const end = new Date(); end.setDate(0); end.setHours(23, 59, 59, 999);
+        if (d < start || d > end) return false;
+      } else if (periodFilter?.startsWith("custom:")) {
+        const [, from, to] = periodFilter.split(":");
+        const fromD = new Date(from); fromD.setHours(0, 0, 0, 0);
+        const toD = new Date(to); toD.setHours(23, 59, 59, 999);
+        if (d < fromD || d > toD) return false;
+      }
     }
     if (sourceFilter !== "all") {
-      if (
-        (order.source_channel || "").toLowerCase() !==
-        sourceFilter.toLowerCase()
-      ) {
-        return false;
-      }
+      if ((order.source_channel || "").toLowerCase() !== sourceFilter.toLowerCase()) return false;
     }
     return true;
   });
@@ -755,6 +921,7 @@ export default function AdminOrders() {
         .sd-item:hover{background:rgba(255,255,255,0.06)!important}
         .trow-selected{background:rgba(114,57,234,0.06)!important}
         @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes drawerSlideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
       `}</style>
 
       {/* Toast */}
@@ -777,32 +944,42 @@ export default function AdminOrders() {
           {/* Period tabs */}
           <div style={{ display: "flex", background: "var(--border-color)", padding: "2px", borderRadius: "6px", gap: "1px" }}>
             {[["all", "All"], ["today", "Today"], ["yesterday", "Yesterday"], ["this_week", "This week"]].map(([v, l]) => (
-              <button key={v} onClick={() => setPeriodFilter(v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: periodFilter === v ? "var(--bg-card)" : "transparent", color: periodFilter === v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
+              <button key={v} onClick={() => { setPeriodFilter(v); setShowMore(false); }} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: periodFilter === v ? "var(--bg-card)" : "transparent", color: periodFilter === v ? "var(--text-main)" : "var(--text-muted)", border: "none", cursor: "pointer" }}>{l}</button>
             ))}
-            <div className="more-dd" style={{ position: "relative" }}>
-              <button onClick={() => setIsMoreOpen(v => !v)} style={{ padding: "5px 10px", borderRadius: "5px", fontSize: "0.7rem", fontWeight: "700", background: "transparent", color: "var(--text-muted)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "3px" }}>
-                More <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
+            {/* More button — Dashboard style */}
+            <div ref={moreRef} style={{ position: "relative" }}>
+              <button
+                onClick={() => setShowMore(v => !v)}
+                style={{
+                  maxWidth: "220px",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  display: "flex", alignItems: "center", gap: "6px",
+                  padding: "5px 10px", borderRadius: "5px",
+                  border: isMoreActive ? "1px solid var(--text-main)" : "1px solid transparent",
+                  background: isMoreActive ? "var(--bg-card)" : "transparent",
+                  fontWeight: 700,
+                  fontSize: "0.7rem",
+                  color: isMoreActive ? "var(--text-main)" : "var(--text-muted)",
+                  cursor: "pointer",
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                {isMoreActive ? activePillLabel() : "More"}
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </button>
-              {isMoreOpen && (
-                <div className="custom-more-dropdown">
-                  <div className="more-options-section">
-                    <span className="section-title">MORE</span>
-                    {[["last7", "Last 7 days"], ["last30", "Last 30 days"], ["this_month", "This month"]].map(([v, l]) => (
-                      <div key={v} className="option-item" onClick={() => { setPeriodFilter(v); setIsMoreOpen(false); }}>{l}</div>
-                    ))}
-                  </div>
-                  <div className="calendar-headers">
-                    <div className="calendar-header-label">FROM</div>
-                    <div className="calendar-header-label">TO</div>
-                  </div>
-                  <div className="calendar-picker-section">
-                    <DatePicker selectsRange startDate={startDate} endDate={endDate} onChange={setDateRange} monthsShown={2} inline />
-                  </div>
-                  <div className="dropdown-footer">
-                    <button onClick={() => setIsMoreOpen(false)} className="apply-btn">Apply</button>
-                    <button onClick={() => { setDateRange([null, null]); }} className="clear-btn">Clear</button>
-                  </div>
-                </div>
+              {showMore && (
+                <CalendarPicker
+                  onApply={(v) => setPeriodFilter(v)}
+                  onClose={() => setShowMore(false)}
+                />
               )}
             </div>
           </div>
@@ -868,7 +1045,6 @@ export default function AdminOrders() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
-                {/* Checkbox + bulk actions */}
                 <th style={{ padding: "10px 12px", width: "36px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <input type="checkbox" checked={allChecked} onChange={toggleAll}
@@ -903,13 +1079,10 @@ export default function AdminOrders() {
                     style={{ borderBottom: "1px solid var(--border-color)", cursor: "pointer" }}
                     onClick={() => setSelectedOrder(order)}
                   >
-                    {/* Checkbox */}
                     <td style={{ padding: "10px 12px" }} onClick={e => e.stopPropagation()}>
                       <input type="checkbox" checked={isSelected} onChange={() => toggleOne(order.id)}
                         style={{ width: "15px", height: "15px", accentColor: "#7239ea", cursor: "pointer" }} />
                     </td>
-
-                    {/* Order number */}
                     <td style={{ padding: "10px 12px", fontWeight: "700" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                         {order.shop?.favicon_url && (
@@ -918,8 +1091,6 @@ export default function AdminOrders() {
                         <span style={{ color: "var(--purple)", textDecoration: "underline" }}>{order.order_number}</span>
                       </div>
                     </td>
-
-                    {/* Agent */}
                     <td style={{ padding: "10px 12px" }} onClick={e => e.stopPropagation()}>
                       <select
                         value={order.assigned_to || ""}
@@ -930,13 +1101,9 @@ export default function AdminOrders() {
                         {activeAgents.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                       </select>
                     </td>
-
-                    {/* Tracking */}
                     <td style={{ padding: "10px 12px", color: "var(--text-muted)", fontSize: "0.73rem" }}>
                       {trackingNumber || "—"}
                     </td>
-
-                    {/* Client */}
                     <td style={{ padding: "10px 12px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                         {order.client?.phone && (
@@ -951,28 +1118,18 @@ export default function AdminOrders() {
                         </div>
                       </div>
                     </td>
-
-                    {/* City */}
                     <td style={{ padding: "10px 12px", color: "var(--text-muted)", fontSize: "0.75rem", maxWidth: "90px" }}>
                       <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{city}</span>
                     </td>
-
-                    {/* Status inline dropdown */}
                     <td style={{ padding: "10px 12px" }} onClick={e => e.stopPropagation()}>
                       <StatusDropdown orderId={order.id} currentStatus={order.status} onChange={handleUpdateStatus} />
                     </td>
-
-                    {/* Fulfillment badge */}
                     <td style={{ padding: "10px 12px" }}>
                       <FulfillmentBadge status={fulfillmentStatus} />
                     </td>
-
-                    {/* Total */}
                     <td style={{ padding: "10px 12px", fontWeight: "700", whiteSpace: "nowrap" }}>
                       {parseFloat(order.total_price || 0).toFixed(2)} MAD
                     </td>
-
-                    {/* Date */}
                     <td style={{ padding: "10px 12px", color: "var(--text-muted)", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
                       {new Date(order.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
                     </td>
