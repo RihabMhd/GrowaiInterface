@@ -266,12 +266,9 @@ const OrderDetails = ({
     const [histories, setHistories] = useState(order?.histories ?? []);
 
     useEffect(() => {
-        if (activeTab !== 'history') return;
         api.get(`/orders/${order.id}?with=histories`)
             .then(r => setHistories(r.data?.data?.histories ?? r.data?.histories ?? []))
-            .catch(() => { });
-    }, [activeTab, order.id]);
-
+    }, [order.id]);
     // ── FIX: Update to use shippingCost and discountAmount ──
     useEffect(() => {
         if (!order) return;
