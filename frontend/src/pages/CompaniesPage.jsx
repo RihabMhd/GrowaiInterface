@@ -20,11 +20,11 @@ import { companiesService } from '../services/companiesService';
 
 // ─── Static carrier registry (logos/colors) ────────────────────────────────
 const CARRIER_REGISTRY = {
-  ameex:        { logoColor: '#e11d48', textColor: '#fff', initial: 'AX' },
-  cathedis:     { logoColor: '#b91c1c', textColor: '#fff', initial: 'CA' },
-  'chrono-diali':{ logoColor: '#0284c7', textColor: '#fff', initial: 'CD' },
-  sendit:       { logoColor: '#4f46e5', textColor: '#fff', initial: 'SE' },
-  'ozon-express':{ logoColor: '#eab308', textColor: '#000', initial: 'OE' },
+  ameex: { logoColor: '#e11d48', textColor: '#fff', initial: 'AX' },
+  cathedis: { logoColor: '#b91c1c', textColor: '#fff', initial: 'CA' },
+  'chrono-diali': { logoColor: '#0284c7', textColor: '#fff', initial: 'CD' },
+  sendit: { logoColor: '#4f46e5', textColor: '#fff', initial: 'SE' },
+  'ozon-express': { logoColor: '#eab308', textColor: '#000', initial: 'OE' },
 };
 
 // ─── Sub-components ────────────────────────────────────────────────────────
@@ -171,7 +171,7 @@ function CarrierCard({ carrier, onConnect, onConfigure, onDisconnect, onTest }) 
         <StatusDot active={carrier.auto_create_parcel} label="Auto-create parcel" />
         <StatusDot active={carrier.config_health !== 'error'} label={
           carrier.config_health === 'error' ? 'Config error' :
-          carrier.config_health === 'partial' ? 'Partially configured' : 'Configured'
+            carrier.config_health === 'partial' ? 'Partially configured' : 'Configured'
         } />
       </div>
 
@@ -258,15 +258,19 @@ export default function CompaniesPage() {
     try {
       setLoading(true);
       const data = await companiesService.getCompanies();
-      setCarriers(data);
+      // Normalize whatever shape the API returns
+      const list = Array.isArray(data) ? data
+        : Array.isArray(data.data) ? data.data
+          : Array.isArray(data.companies) ? data.companies
+            : [];
+      setCarriers(list);
     } catch {
-      // Fallback to static list if API fails
       setCarriers([
-        { id: 'ameex',         name: 'AMEEX',        is_connected: false },
-        { id: 'cathedis',      name: 'CATHEDIS',     is_connected: false },
-        { id: 'chrono-diali',  name: 'CHRONO DIALI', is_connected: false },
-        { id: 'sendit',        name: 'SENDIT',       is_connected: false },
-        { id: 'ozon-express',  name: 'OZON EXPRESS', is_connected: false },
+        { id: 'ameex', name: 'AMEEX', is_connected: false },
+        { id: 'cathedis', name: 'CATHEDIS', is_connected: false },
+        { id: 'chrono-diali', name: 'CHRONO DIALI', is_connected: false },
+        { id: 'sendit', name: 'SENDIT', is_connected: false },
+        { id: 'ozon-express', name: 'OZON EXPRESS', is_connected: false },
       ]);
     } finally {
       setLoading(false);
@@ -303,10 +307,10 @@ export default function CompaniesPage() {
   const available = filtered.filter(c => !c.is_connected);
 
   // Stats
-  const allConnected    = carriers.filter(c => c.is_connected);
-  const webhookCount    = allConnected.filter(c => c.webhook_enabled).length;
+  const allConnected = carriers.filter(c => c.is_connected);
+  const webhookCount = allConnected.filter(c => c.webhook_enabled).length;
   const autoParcelCount = allConnected.filter(c => c.auto_create_parcel).length;
-  const failedCount     = allConnected.filter(c => c.config_health === 'error').length;
+  const failedCount = allConnected.filter(c => c.config_health === 'error').length;
 
   return (
     <div className="main-content" style={{ padding: '28px 32px', background: 'var(--bg-app)' }}>
@@ -334,10 +338,10 @@ export default function CompaniesPage() {
         gap: '12px',
         marginBottom: '28px'
       }}>
-        <StatCard icon={CheckCircle2} label="Connected Carriers"     value={allConnected.length}  color="#10b981" />
-        <StatCard icon={Wifi}         label="Active Webhooks"         value={webhookCount}          color="#6366f1" />
-        <StatCard icon={Zap}          label="Auto-Create Parcel"      value={autoParcelCount}       color="#f59e0b" />
-        <StatCard icon={AlertTriangle} label="Failed Connections"     value={failedCount}           color="#ef4444" />
+        <StatCard icon={CheckCircle2} label="Connected Carriers" value={allConnected.length} color="#10b981" />
+        <StatCard icon={Wifi} label="Active Webhooks" value={webhookCount} color="#6366f1" />
+        <StatCard icon={Zap} label="Auto-Create Parcel" value={autoParcelCount} color="#f59e0b" />
+        <StatCard icon={AlertTriangle} label="Failed Connections" value={failedCount} color="#ef4444" />
       </div>
 
       {/* Controls row */}
