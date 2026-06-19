@@ -18,6 +18,7 @@ import AffiliatesPage from "../pages/AffiliatesPage";
 import ShopifyIntegrationPage from "../pages/ShopifyIntegrationPage";
 import GoogleIntegrationPage from "../pages/GoogleIntegrationPage.";
 import Parametre from "../pages/Parametre";
+import CompanyDetailsPage from "../pages/CompanyDetailsPage";
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -39,10 +40,14 @@ export default function AppRoutes() {
           <Route path="/status" element={<Status />} />
           <Route path="/team" element={<Team />} />
           <Route path="/affilies" element={<AffiliatesPage />} />
-          
+          <Route
+            path="/companies/:id"
+            element={<CompanyDetailsPage />}
+          />
+
           <Route path="/integrations/shopify" element={<ShopifyIntegrationPage />} />
           <Route path="/sources/google-sheets" element={<GoogleIntegrationPage />} />
-          
+
           <Route path="/apps/whatsapp" element={<PlaceholderPage title="WhatsApp PRO" />} />
 
           <Route path="/settings" element={<Parametre />} />
