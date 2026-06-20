@@ -1,41 +1,37 @@
-// src/components/integration-builder/ApiCredentialsBlock.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import PasswordField from './fields/PasswordField';
+import TextField from './fields/TextField';
 
-export default function ApiCredentialsBlock({ action, onSaveCredentials }) {
-  const [draft, setDraft] = useState({});
-  const [open, setOpen] = useState(true);
-
-  const handleChange = (key, value) => setDraft((d) => ({ ...d, [key]: value }));
-
-  const handleBlurSave = () => {
-    const nonEmpty = Object.fromEntries(Object.entries(draft).filter(([, v]) => v));
-    if (Object.keys(nonEmpty).length > 0) {
-      onSaveCredentials(nonEmpty);
-    }
-  };
-
-  if (!action.credentials || action.credentials.length === 0) return null;
+export default function ApiCredentialsBlock({ credentials = [], values = {}, onChange }) {
+  if (credentials.length === 0) return null;
 
   return (
-    <div className="credentials-block">
-      <button type="button" className="section-header" onClick={() => setOpen((o) => !o)}>
-        🔒 API Credentials
-      </button>
-      {open && (
-        <div className="credentials-fields" onBlur={handleBlurSave}>
-          {action.credentials.map((cred) => (
-            <div key={cred.key} className="credential-row">
-              <label>{cred.label}</label>
-              <PasswordField
-                field={cred}
-                value={draft[cred.key] ?? (action.saved_credentials?.[cred.key] ? '' : '')}
-                onChange={(v) => handleChange(cred.key, v)}
+    <div style={{ marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+        <span style={{ fontSize: '13px' }}>🔒</span>
+        <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-main)' }}>API Credentials</span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {credentials.map(cred => {
+          const Input = cred.type === 'password' ? PasswordField : TextField;
+          return (
+            <div key={cred.key} style={{
+              display: 'grid', gridTemplateColumns: '140px 1fr',
+              alignItems: 'center', gap: '12px'
+            }}>
+              <label style={{ fontSize: '12px', color: 'var(--text-main)', fontWeight: '500' }}>
+                {cred.label}
+                {cred.required && <span style={{ color: '#ef4444', marginLeft: '2px' }}>*</span>}
+              </label>
+              <Input
+                value={values[cred.key]}
+                onChange={v => onChange({ ...values, [cred.key]: v })}
+                placeholder={`Enter ${cred.label}`}
               />
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </div>
   );
 }
