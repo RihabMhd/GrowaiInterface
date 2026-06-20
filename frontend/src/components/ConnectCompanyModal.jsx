@@ -1,48 +1,78 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Loader2, AlertCircle } from 'lucide-react';
 import { companiesService } from '../services/companiesService';
+
+// Carrier logo registry
+const CARRIER_REGISTRY = {
+  ameex:         { logo: '../assets/images/ameex.png' },
+  cathedis:      { logo: '../assets/images/CATHEDIS.png' },
+  'chrono-diali':{ logo: '../assets/images/chrono.png' },
+  sendit:        { logo: '../assets/images/Sendit.png' },
+  'ozon-express':{ logo: '../assets/images/ozon.png' }
+};
+
+function CarrierLogo({ company, size = 32 }) {
+  const reg = CARRIER_REGISTRY[company.id] || {};
+  const [imgErr, setImgErr] = useState(false);
+
+  if (reg.logo && !imgErr) {
+    return (
+      <img
+        src={reg.logo}
+        alt={company.name}
+        onError={() => setImgErr(true)}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '6px',
+          objectFit: 'contain',
+          backgroundColor: '#fff',
+          border: '1px solid var(--border-color)'
+        }}
+      />
+    );
+  }
+
+  return (
+    <div style={{
+      width: size,
+      height: size,
+      borderRadius: '6px',
+      backgroundColor: '#f3f4f6',
+      color: '#6b7280',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '11px',
+      fontWeight: '700',
+      border: '1px solid var(--border-color)'
+    }}>
+      {company.name.slice(0, 2).toUpperCase()}
+    </div>
+  );
+}
 
 export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
-      api_key: '',
-      api_secret: '',
-      username: '',
-      password: ''
+      c_api_id: '',
+      c_api_key: '',
+      secret_key: ''
     }
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isTesting, setIsTesting] = useState(false);
-  const [testResult, setTestResult] = useState(null);
   const [error, setError] = useState(null);
-
-  const handleTestConnection = async (credentials) => {
-    setIsTesting(true);
-    setTestResult(null);
-    try {
-      await companiesService.testConnection(company.id);
-      setTestResult({ success: true, message: 'Connection successful' });
-    } catch (err) {
-      setTestResult({ 
-        success: false, 
-        message: err.response?.data?.message || 'Connection failed' 
-      });
-    } finally {
-      setIsTesting(false);
-    }
-  };
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     setError(null);
     try {
       const credentials = {
-        api_key: data.api_key,
-        ...(data.api_secret && { api_secret: data.api_secret }),
-        ...(data.username && { username: data.username }),
-        ...(data.password && { password: data.password })
+        c_api_id: data.c_api_id,
+        c_api_key: data.c_api_key,
+        ...(data.secret_key && { secret_key: data.secret_key })
       };
 
       await companiesService.connectCompany(company.id, credentials);
@@ -72,226 +102,172 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
         backgroundColor: 'var(--bg-card)',
         borderRadius: '12px',
         width: '100%',
-        maxWidth: '500px',
-        padding: '32px',
+        maxWidth: '420px',
         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-        border: '1px solid var(--border-color)'
+        border: '1px solid var(--border-color)',
+        overflow: 'hidden'
       }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <div>
-            <h2 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-main)', margin: 0 }}>
-              Connect {company.name}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '16px 20px',
+          borderBottom: '1px solid var(--border-color)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <CarrierLogo company={company} size={32} />
+            <h2 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              color: 'var(--text-main)',
+              margin: 0
+            }}>
+              Connect to {company.name}
             </h2>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-              Enter your carrier API credentials
-            </p>
           </div>
           <button
             onClick={onClose}
             style={{
               background: 'none',
-              border: 'none',
+              border: '1px solid var(--border-color)',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
               cursor: 'pointer',
-              padding: '4px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              flexShrink: 0,
+              padding: 0
             }}
           >
-            <X size={20} style={{ color: 'var(--text-muted)' }} />
+            <X size={16} style={{ color: 'var(--text-muted)' }} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* API Key (Required) */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '13px',
-              fontWeight: '600',
-              marginBottom: '6px',
-              color: 'var(--text-main)'
-            }}>
-              API Key <span style={{ color: '#ef4444' }}>*</span>
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your carrier API key"
-              {...register('api_key', { required: 'API Key is required' })}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
+          <div style={{ padding: '20px' }}>
+            {/* C Api Id (Required) */}
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{
+                display: 'block',
                 fontSize: '13px',
-                backgroundColor: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                boxSizing: 'border-box',
-                borderColor: errors.api_key ? '#ef4444' : 'var(--border-color)'
-              }}
-            />
-            {errors.api_key && (
-              <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px' }}>
-                {errors.api_key.message}
-              </p>
+                fontWeight: '600',
+                marginBottom: '5px',
+                color: 'var(--text-main)'
+              }}>
+                C Api Id <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Enter C Api Id"
+                {...register('c_api_id', { required: 'C Api Id is required' })}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: `1px solid ${errors.c_api_id ? '#ef4444' : 'var(--border-color)'}`,
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  backgroundColor: 'var(--bg-app)',
+                  color: 'var(--text-main)',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {errors.c_api_id && (
+                <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px' }}>
+                  {errors.c_api_id.message}
+                </p>
+              )}
+            </div>
+
+            {/* C Api Key (Required) */}
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: '600',
+                marginBottom: '5px',
+                color: 'var(--text-main)'
+              }}>
+                C Api Key <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <input
+                type="password"
+                placeholder="Enter C Api Key"
+                {...register('c_api_key', { required: 'C Api Key is required' })}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: `1px solid ${errors.c_api_key ? '#ef4444' : 'var(--border-color)'}`,
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  backgroundColor: 'var(--bg-app)',
+                  color: 'var(--text-main)',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {errors.c_api_key && (
+                <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px' }}>
+                  {errors.c_api_key.message}
+                </p>
+              )}
+            </div>
+
+            {/* Secret Key / Token (Optional) */}
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: '600',
+                marginBottom: '5px',
+                color: 'var(--text-main)'
+              }}>
+                Secret Key / Token <span style={{ color: 'var(--text-muted)' }}>(Optional)</span>
+              </label>
+              <input
+                type="password"
+                placeholder="Enter Secret Key / Token"
+                {...register('secret_key')}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  backgroundColor: 'var(--bg-app)',
+                  color: 'var(--text-main)',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div style={{
+                marginBottom: '14px',
+                padding: '10px 12px',
+                borderRadius: '8px',
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fee2e2',
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'flex-start'
+              }}>
+                <AlertCircle size={14} style={{ color: '#ef4444', flexShrink: 0, marginTop: '2px' }} />
+                <span style={{ fontSize: '12px', color: '#7f1d1d' }}>{error}</span>
+              </div>
             )}
           </div>
 
-          {/* API Secret (Optional) */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '13px',
-              fontWeight: '600',
-              marginBottom: '6px',
-              color: 'var(--text-main)'
-            }}>
-              API Secret (Optional)
-            </label>
-            <input
-              type="password"
-              placeholder="Enter API secret (if applicable)"
-              {...register('api_secret')}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                fontSize: '13px',
-                backgroundColor: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          {/* Username (Optional) */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '13px',
-              fontWeight: '600',
-              marginBottom: '6px',
-              color: 'var(--text-main)'
-            }}>
-              Username (Optional)
-            </label>
-            <input
-              type="text"
-              placeholder="Carrier dashboard username"
-              {...register('username')}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                fontSize: '13px',
-                backgroundColor: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          {/* Password (Optional) */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '13px',
-              fontWeight: '600',
-              marginBottom: '6px',
-              color: 'var(--text-main)'
-            }}>
-              Password (Optional)
-            </label>
-            <input
-              type="password"
-              placeholder="Carrier dashboard password"
-              {...register('password')}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                fontSize: '13px',
-                backgroundColor: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                boxSizing: 'border-box'
-              }}
-            />
-          </div>
-
-          {/* Test Result */}
-          {testResult && (
-            <div style={{
-              marginBottom: '16px',
-              padding: '12px',
-              borderRadius: '8px',
-              backgroundColor: testResult.success ? '#ecfdf5' : '#fef2f2',
-              border: `1px solid ${testResult.success ? '#d1fae5' : '#fee2e2'}`,
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'flex-start'
-            }}>
-              {testResult.success ? (
-                <CheckCircle2 size={16} style={{ color: '#10b981', flexShrink: 0, marginTop: '2px' }} />
-              ) : (
-                <AlertCircle size={16} style={{ color: '#ef4444', flexShrink: 0, marginTop: '2px' }} />
-              )}
-              <span style={{
-                fontSize: '13px',
-                color: testResult.success ? '#065f46' : '#7f1d1d'
-              }}>
-                {testResult.message}
-              </span>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div style={{
-              marginBottom: '16px',
-              padding: '12px',
-              borderRadius: '8px',
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fee2e2',
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'flex-start'
-            }}>
-              <AlertCircle size={16} style={{ color: '#ef4444', flexShrink: 0, marginTop: '2px' }} />
-              <span style={{ fontSize: '13px', color: '#7f1d1d' }}>{error}</span>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-            <button
-              type="button"
-              onClick={() => handleSubmit(() => handleTestConnection({}))({})}
-              disabled={isTesting || isLoading}
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                backgroundColor: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: isTesting || isLoading ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                opacity: isTesting || isLoading ? 0.6 : 1
-              }}
-            >
-              {isTesting ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : null}
-              Test Connection
-            </button>
-
+          {/* Footer buttons */}
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            padding: '16px 20px',
+            borderTop: '1px solid var(--border-color)',
+            backgroundColor: 'var(--bg-app)'
+          }}>
             <button
               type="button"
               onClick={onClose}
@@ -304,7 +280,8 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
                 borderRadius: '8px',
                 fontSize: '13px',
                 fontWeight: '600',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                height: '40px'
               }}
             >
               Cancel
@@ -316,7 +293,7 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
               style={{
                 flex: 1,
                 padding: '10px 14px',
-                backgroundColor: '#18181b',
+                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '8px',
@@ -327,7 +304,8 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '6px',
-                opacity: isLoading ? 0.8 : 1
+                opacity: isLoading ? 0.8 : 1,
+                height: '40px'
               }}
             >
               {isLoading ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : null}

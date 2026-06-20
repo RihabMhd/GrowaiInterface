@@ -21,7 +21,7 @@ export const companiesService = {
         api.post(`/companies/${id}/test`).then(r => r.data),
 
     disconnectCompany: (id) =>
-        api.delete(`/companies/${id}/disconnect`).then(r => r.data),
+        api.post(`/companies/${id}/disconnect`).then(r => r.data),
 
     enableUpdates: (id) =>
         api.post(`/companies/${id}/webhook/enable`).then(r => r.data),
