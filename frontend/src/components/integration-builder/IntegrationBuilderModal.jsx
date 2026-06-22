@@ -92,12 +92,13 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
 
       const compData = await companiesService.getCompany(carrierId);
       const actionsData = await companiesService.getCarrierActions(carrierId);
-
+      console.log('COMPANY', carrierId);
+      console.log('ACTIONS', actionsData);
       const c = compData.company || compData;
       const acts = Array.isArray(actionsData) ? actionsData
         : Array.isArray(actionsData?.actions) ? actionsData.actions
-        : Array.isArray(actionsData?.data) ? actionsData.data
-        : [];
+          : Array.isArray(actionsData?.data) ? actionsData.data
+            : [];
 
       setCompany(c);
       setActions(acts);
@@ -111,7 +112,7 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
           auto_create: a.auto_create_enabled ?? false,
           test_state: a.test_status === 'passed' ? 'passed'
             : a.test_status === 'failed' ? 'failed'
-            : 'idle',
+              : 'idle',
         };
       });
       setConfigs(initialConfigs);
