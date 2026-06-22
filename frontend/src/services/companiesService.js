@@ -43,6 +43,9 @@ export const companiesService = {
                 throw err;
             });
     },
+    connectCompany: (companyId, credentials) =>
+        api.post(`/companies/${companyId}/connect`, credentials)
+            .then(r => r.data),
     // ── NEW ─────────────────────────────────────────────────────────────────────
 
     /**
@@ -57,14 +60,14 @@ export const companiesService = {
      *       group: "MAIN ACTION",
      *       is_auto_create: true,
      *       credentials: [
-     *         { key: "c_api_id", label: "C-Api-Id", type: "password", required: true }
+     *         { key: "api_id", label: "C-Api-Id", type: "password", required: true }
      *       ],
      *       fields: [
      *         { key: "ref",            label: "ref",              type: "text",    required: true },
      *         { key: "type_livraison", label: "Type de livraison",type: "select",  required: true, options: ["SIMPLE","EXPRESS"] },
      *         { key: "ouverture",      label: "Ouverture ?",      type: "boolean", required: true }
      *       ],
-     *       saved_credentials: { c_api_id: "••••", c_api_key: "••••" },
+     *       saved_credentials: { api_id: "••••", api_key: "••••" },
      *       saved_prefilled:   { ref: null },
      *       saved_hidden:      { ref: false },
      *       auto_create_enabled: false,
@@ -77,7 +80,7 @@ export const companiesService = {
      *   ]
      * }
      */
-    
+
 
     /**
      * Persist config for a single action.

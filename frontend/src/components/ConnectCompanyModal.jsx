@@ -19,8 +19,8 @@ const CARRIER_REGISTRY = {
 // required   → drives validation
 const CARRIER_FIELDS = {
   ameex: [
-    { key: 'c_api_id', label: 'C Api Id', type: 'text', required: true },
-    { key: 'c_api_key', label: 'C Api Key', type: 'password', required: true },
+    { key: 'api_id', label: 'C Api Id', type: 'text', required: true },
+    { key: 'api_key', label: 'C Api Key', type: 'password', required: true },
     { key: 'secret_key', label: 'Secret Key / Token', type: 'password', required: false },
   ],
   cathedis: [
@@ -116,23 +116,51 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
   const [error, setError] = useState(null);
 
   const onSubmit = async (data) => {
+    console.log('STEP 1 - SUBMIT START', data);
+
     setIsLoading(true);
     setError(null);
+
     try {
-      // Build credentials from only the defined fields; drop optional empties
       const credentials = {};
+
       for (const f of fields) {
         if (f.required || data[f.key]) {
           credentials[f.key] = data[f.key];
         }
       }
 
-      await companiesService.connectCompany(company.id, credentials);
+      console.log('STEP 2 - CREDENTIALS', credentials);
+      console.log('STEP 3 - BEFORE API CALL');
+
+      const result = await companiesService.connectCompany(
+        company.id,
+        credentials
+      );
+
+      console.log('STEP 4 - API SUCCESS', result);
+
       onSuccess?.();
       onClose?.();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to connect company');
+      console.error('STEP 5 - ERROR OBJECT', err);
+      console.error('STEP 5 - RESPONSE', err?.response);
+      console.log(
+        'VALIDATION ERRORS',
+        JSON.stringify(err?.response?.data, null, 2)
+      );
+      console.error('STEP 5 - MESSAGE', err?.message);
+
+      setError(
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to connect company'
+      );
+      setError(
+        JSON.stringify(err.response?.data?.errors ?? err.response?.data)
+      );
     } finally {
+      console.log('STEP 6 - FINALLY');
       setIsLoading(false);
     }
   };
