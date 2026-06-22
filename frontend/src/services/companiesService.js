@@ -67,7 +67,7 @@ export const companiesService = {
      *         { key: "type_livraison", label: "Type de livraison",type: "select",  required: true, options: ["SIMPLE","EXPRESS"] },
      *         { key: "ouverture",      label: "Ouverture ?",      type: "boolean", required: true }
      *       ],
-     *       saved_credentials: { api_id: "••••", api_key: "••••" },
+     *       saved_credentials: { api_id: "26185", api_key: "07eCd0..." },
      *       saved_prefilled:   { ref: null },
      *       saved_hidden:      { ref: false },
      *       auto_create_enabled: false,

@@ -10,14 +10,25 @@ export default function TestPanel({ carrierId, actionKey, initialState, onResult
 
   const handleTest = async () => {
     setState('loading');
+
     try {
       const result = await companiesService.testAction(carrierId, actionKey);
-      setState('passed');
-      setResponse({ success: true, data: result });
-      onResult?.({ state: 'passed' });
+
+      if (result.ok === true) {
+        setState('passed');
+        setResponse({ success: true, data: result });
+        onResult?.({ state: 'passed' });
+      } else {
+        setState('failed');
+        setResponse({ success: false, data: result });
+        onResult?.({ state: 'failed' });
+      }
     } catch (err) {
       setState('failed');
-      setResponse({ success: false, data: err.response?.data || { message: 'Test failed' } });
+      setResponse({
+        success: false,
+        data: err.response?.data || { message: 'Test failed' }
+      });
       onResult?.({ state: 'failed' });
     }
   };

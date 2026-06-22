@@ -20,12 +20,17 @@ export default function ActionSidebar({ groups, selectedKey, configs, onSelect }
           </p>
           {group.actions.map(action => {
             const isSelected = selectedKey === action.key;
-            const testState = configs[action.key]?.test_state;
-            const stateIcon = testState === 'passed'
-              ? <CheckCircle2 size={11} style={{ color: '#10b981', flexShrink: 0 }} />
-              : testState === 'failed'
-                ? <AlertCircle size={11} style={{ color: '#ef4444', flexShrink: 0 }} />
-                : <span style={{ width: '11px', height: '11px', borderRadius: '50%', backgroundColor: '#e5e7eb', display: 'inline-block', flexShrink: 0 }} />;
+            const isMainAction = action.category === 'main_action';
+
+            let stateIcon;
+            if (action.category !== 'main_action') {
+              const testState = configs[action.key]?.test_state;
+              stateIcon = testState === 'passed'
+                ? <CheckCircle2 size={11} style={{ color: '#10b981', flexShrink: 0 }} />
+                : testState === 'failed'
+                  ? <AlertCircle size={11} style={{ color: '#ef4444', flexShrink: 0 }} />
+                  : <span style={{ width: '11px', height: '11px', borderRadius: '50%', backgroundColor: '#e5e7eb', display: 'inline-block', flexShrink: 0 }} />;
+            }
 
             return (
               <button
@@ -33,9 +38,9 @@ export default function ActionSidebar({ groups, selectedKey, configs, onSelect }
                 onClick={() => onSelect(action.key)}
                 style={{
                   width: '100%', textAlign: 'left', padding: '8px 14px',
-                  border: isSelected ? '2px solid #111827' : '2px solid transparent',
+                  border: isSelected ? '2px solid var(--border-color)' : '2px solid transparent',
                   cursor: 'pointer', display: 'block',
-                  backgroundColor: isSelected ? '#fff' : 'transparent',
+                  backgroundColor: isSelected ? '#f9fafb' : 'transparent',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>

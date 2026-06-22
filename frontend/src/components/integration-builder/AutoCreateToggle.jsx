@@ -2,7 +2,7 @@ import React from 'react';
 import { Zap } from 'lucide-react';
 import BooleanSwitch from './fields/BooleanSwitch';
 
-export default function AutoCreateToggle({ checked, onChange }) {
+export default function AutoCreateToggle({ checked, onChange, disabled }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -24,7 +24,7 @@ export default function AutoCreateToggle({ checked, onChange }) {
           </p>
         </div>
       </div>
-      <BooleanSwitch value={!!checked} onChange={onChange} />
+      <BooleanSwitch value={!!checked} onChange={onChange} disabled={disabled} />
     </div>
   );
 }

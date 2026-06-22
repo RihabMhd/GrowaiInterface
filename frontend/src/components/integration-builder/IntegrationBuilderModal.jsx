@@ -7,6 +7,7 @@ import ActionSidebar from './ActionSidebar';
 import ActionFieldsTable from './ActionFieldsTable';
 import ApiCredentialsBlock from './ApiCredentialsBlock';
 import AutoCreateToggle from './AutoCreateToggle';
+import AutoCreateReadinessCard from './AutoCreateReadinessCard';
 import WebhookConfigPanel from './WebhookConfigPanel';
 import TestPanel from './TestPanel';
 import ResponsePayload from './ResponsePayload';
@@ -34,7 +35,37 @@ function ActionConfigPanel({ carrierId, action, config, onConfigChange }) {
     );
   }
 
-  // Backend marks createParcel-style actions via auto_create_enabled !== null (DTO contract).
+  const isMainAction = action.category === 'main_action';
+
+  if (isMainAction) {
+    return (
+      <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1 }}>
+        <AutoCreateReadinessCard
+          fields={action.fields || []}
+          prefilled={values}
+          hidden={hidden}
+          autoCreate={config.auto_create}
+          onAutoCreateChange={v => onConfigChange({ ...config, auto_create: v })}
+        />
+
+        <ApiCredentialsBlock
+          credentials={action.credentials || []}
+          values={creds}
+          onChange={v => onConfigChange({ ...config, credentials: v })}
+        />
+
+        <ActionFieldsTable
+          fields={action.fields || []}
+          values={values}
+          hiddenFields={hidden}
+          onChangeValues={v => onConfigChange({ ...config, prefilled: v })}
+          onChangeHidden={v => onConfigChange({ ...config, hidden: v })}
+        />
+      </div>
+    );
+  }
+
+  // Lookup / province_city / non-main actions
   const supportsAutoCreate = action.auto_create_enabled !== null && action.auto_create_enabled !== undefined;
 
   return (
@@ -92,8 +123,6 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
 
       const compData = await companiesService.getCompany(carrierId);
       const actionsData = await companiesService.getCarrierActions(carrierId);
-      console.log('COMPANY', carrierId);
-      console.log('ACTIONS', actionsData);
       const c = compData.company || compData;
       const acts = Array.isArray(actionsData) ? actionsData
         : Array.isArray(actionsData?.actions) ? actionsData.actions
@@ -117,7 +146,9 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
       });
       setConfigs(initialConfigs);
       if (acts.length > 0) {
-        setSelectedKey(acts.find(a => a.key === 'createProductCopy')?.key || acts[0].key);
+        setSelectedKey(
+          acts.find(a => a.key === 'createParcel')?.key || acts[0].key
+        );
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load carrier configuration');
@@ -147,8 +178,6 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
     }
   };
 
-  // Group by backend-provided `category`, in fixed display order — no carrier-
-  // specific logic here; new carriers just need their actions to carry a valid category.
   const groups = React.useMemo(() => {
     return CATEGORY_ORDER
       .map(cat => ({
