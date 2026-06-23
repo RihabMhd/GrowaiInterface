@@ -79,7 +79,7 @@ export default function WebhookConfigPanel({ carrierId, action, config, onConfig
           )}
         </div>
 
-        {/* URL input row — read-only input look */}
+        {/* URL input row */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: '8px',
           padding: '0 0 0 12px', borderRadius: '8px',
