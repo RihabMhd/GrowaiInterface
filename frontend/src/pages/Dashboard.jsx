@@ -10,6 +10,10 @@ const EMPTY_STATS = {
   revenue: 0, revenue_growth: 0, confirmation_rate: 0, delivery_rate: 0,
   avg_confirmation_time: null,
   products: 0, clients: 0, team_members: 0,
+  abandoned_analytics: {
+    abandoned_orders: 0, recovered_orders: 0, recovery_rate: 0,
+    lost_revenue: 0, recovered_revenue: 0,
+  },
 };
 
 const fmt = (v) =>
@@ -360,8 +364,8 @@ export default function Dashboard() {
         params.to = to;
       }
       const { data } = await api.get("/dashboard", { params });
-      setGlobal(data.global ?? { ...EMPTY_STATS });
-      setShops(data.shops ?? []);
+      setGlobal({ ...EMPTY_STATS, ...data.global, abandoned_analytics: { ...EMPTY_STATS.abandoned_analytics, ...(data.global?.abandoned_analytics ?? {}) } });
+      setShops((data.shops ?? []).map(s => ({ ...EMPTY_STATS, ...s, abandoned_analytics: { ...EMPTY_STATS.abandoned_analytics, ...(s.abandoned_analytics ?? {}) } })));
     } catch (err) {
       setError(err?.response?.data?.message ?? "Erreur de chargement");
     } finally {
@@ -377,9 +381,9 @@ export default function Dashboard() {
       : shops.find((s) => s.id === activeShop) ?? { ...EMPTY_STATS };
 
   // derived
-  const deliveryRate = activeStats.total > 0
+  const deliveryRate = activeStats.delivery_rate ?? (activeStats.total > 0
     ? Math.round((activeStats.delivered / activeStats.total) * 100)
-    : 0;
+    : 0);
 
   const confirmationRate = activeStats.confirmation_rate ?? 0;
 
@@ -675,11 +679,11 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
-          {/* Legend: Delivered · In Transit (pending orders not yet delivered) */}
+          {/* Legend: Delivered · Not Delivered */}
           {!loading && (
             <DonutLegend items={[
               { color: "#4285f4", label: "Delivered", value: activeStats.delivered },
-              { color: "var(--border-color,#e0e0e0)", label: "In Transit", value: activeStats.pending },
+              { color: "var(--border-color,#e0e0e0)", label: "Not Delivered", value: activeStats.total - activeStats.delivered },
             ]} />
           )}
         </div>
