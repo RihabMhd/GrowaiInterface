@@ -38,7 +38,8 @@ export default function ActionSidebar({ groups, selectedKey, configs, onSelect }
                 onClick={() => onSelect(action.key)}
                 style={{
                   width: '100%', textAlign: 'left', padding: '8px 14px',
-                  border: isSelected ? '2px solid var(--border-color)' : '2px solid transparent',
+                  border: 'none',
+                  borderLeft: isSelected ? '3px solid #7c3aed' : '3px solid transparent',
                   cursor: 'pointer', display: 'block',
                   backgroundColor: isSelected ? '#f9fafb' : 'transparent',
                 }}

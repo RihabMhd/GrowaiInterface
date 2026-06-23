@@ -6,7 +6,6 @@ import CarrierLogo from './CarrierLogo';
 import ActionSidebar from './ActionSidebar';
 import ActionFieldsTable from './ActionFieldsTable';
 import ApiCredentialsBlock from './ApiCredentialsBlock';
-import AutoCreateToggle from './AutoCreateToggle';
 import AutoCreateReadinessCard from './AutoCreateReadinessCard';
 import WebhookConfigPanel from './WebhookConfigPanel';
 import TestPanel from './TestPanel';
@@ -21,88 +20,110 @@ function ActionConfigPanel({ carrierId, action, config, onConfigChange }) {
     onConfigChange({ ...config, test_state: state });
   }, [config, onConfigChange]);
 
-  // WEBHOOK action — own dedicated panel
-  if (action.category === 'webhook' || action.method === 'WEBHOOK') {
-    return (
-      <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1 }}>
-        <WebhookConfigPanel
-          carrierId={carrierId}
-          action={action}
-          config={config}
-          onConfigChange={onConfigChange}
-        />
-      </div>
-    );
+  switch (action.key) {
+
+    case 'createParcel':
+      return (
+        <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1 }}>
+          <AutoCreateReadinessCard
+            fields={action.fields || []}
+            prefilled={values}
+            hidden={hidden}
+            autoCreate={config.auto_create}
+            onAutoCreateChange={v => onConfigChange({ ...config, auto_create: v })}
+          />
+          <ApiCredentialsBlock
+            credentials={action.credentials || []}
+            values={creds}
+            onChange={v => onConfigChange({ ...config, credentials: v })}
+          />
+          <ActionFieldsTable
+            fields={action.fields || []}
+            values={values}
+            hiddenFields={hidden}
+            onChangeValues={v => onConfigChange({ ...config, prefilled: v })}
+            onChangeHidden={v => onConfigChange({ ...config, hidden: v })}
+          />
+        </div>
+      );
+
+    case 'getCities':
+      return (
+        <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1 }}>
+          <div style={{ marginBottom: '18px' }}>
+            <TestPanel
+              carrierId={carrierId}
+              actionKey={action.key}
+              initialState={config.test_state}
+              initialResponse={config.last_response}
+              initialError={config.last_error}
+              onResult={handleTestResult}
+            />
+          </div>
+          {config.last_response && <ResponsePayload data={config.last_response} />}
+        </div>
+      );
+
+    case 'createProductCopy':
+      return (
+        <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1 }}>
+          <div style={{ marginBottom: '18px' }}>
+            <TestPanel
+              carrierId={carrierId}
+              actionKey={action.key}
+              initialState={config.test_state}
+              initialResponse={config.last_response}
+              initialError={config.last_error}
+              onResult={handleTestResult}
+            />
+          </div>
+          <ActionFieldsTable
+            fields={action.fields || []}
+            values={values}
+            hiddenFields={hidden}
+            onChangeValues={v => onConfigChange({ ...config, prefilled: v })}
+            onChangeHidden={v => onConfigChange({ ...config, hidden: v })}
+          />
+          {config.last_response && <ResponsePayload data={config.last_response} />}
+        </div>
+      );
+
+    case 'status':
+      return (
+        <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1 }}>
+          <div style={{ marginBottom: '18px' }}>
+            <TestPanel
+              carrierId={carrierId}
+              actionKey={action.key}
+              initialState={config.test_state}
+              initialResponse={config.last_response}
+              initialError={config.last_error}
+              onResult={handleTestResult}
+            />
+          </div>
+          {config.last_response && <ResponsePayload data={config.last_response} />}
+        </div>
+      );
+
+    case 'webhook_ameex':
+      return (
+        <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1 }}>
+          <WebhookConfigPanel
+            carrierId={carrierId}
+            action={action}
+            config={config}
+            onConfigChange={onConfigChange}
+          />
+        </div>
+      );
+
+    default:
+      return (
+        <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1, textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+          Unknown action: {action.key}
+        </div>
+      );
   }
-
-  const isMainAction = action.category === 'main_action';
-
-  if (isMainAction) {
-    return (
-      <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1 }}>
-        <AutoCreateReadinessCard
-          fields={action.fields || []}
-          prefilled={values}
-          hidden={hidden}
-          autoCreate={config.auto_create}
-          onAutoCreateChange={v => onConfigChange({ ...config, auto_create: v })}
-        />
-
-        <ApiCredentialsBlock
-          credentials={action.credentials || []}
-          values={creds}
-          onChange={v => onConfigChange({ ...config, credentials: v })}
-        />
-
-        <ActionFieldsTable
-          fields={action.fields || []}
-          values={values}
-          hiddenFields={hidden}
-          onChangeValues={v => onConfigChange({ ...config, prefilled: v })}
-          onChangeHidden={v => onConfigChange({ ...config, hidden: v })}
-        />
-      </div>
-    );
-  }
-
-  // Lookup / province_city / non-main actions
-  const supportsAutoCreate = action.auto_create_enabled !== null && action.auto_create_enabled !== undefined;
-
-  return (
-    <div style={{ padding: '18px 22px', overflowY: 'auto', flex: 1 }}>
-      {supportsAutoCreate ? (
-        <AutoCreateToggle
-          checked={config.auto_create}
-          onChange={v => onConfigChange({ ...config, auto_create: v })}
-        />
-      ) : null}
-
-      <ApiCredentialsBlock
-        credentials={action.credentials || []}
-        values={creds}
-        onChange={v => onConfigChange({ ...config, credentials: v })}
-      />
-
-      <div style={{ marginBottom: '18px' }}>
-        <TestPanel
-          carrierId={carrierId}
-          actionKey={action.key}
-          initialState={config.test_state}
-          onResult={handleTestResult}
-        />
-      </div>
-
-      <ActionFieldsTable
-        fields={action.fields || []}
-        values={values}
-        hiddenFields={hidden}
-        onChangeValues={v => onConfigChange({ ...config, prefilled: v })}
-        onChangeHidden={v => onConfigChange({ ...config, hidden: v })}
-      />
-
-      <ResponsePayload data={null} />
-    </div>
-  );
 }
 
 export default function IntegrationBuilderModal({ carrierId, onClose }) {
@@ -142,6 +163,8 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
           test_state: a.test_status === 'passed' ? 'passed'
             : a.test_status === 'failed' ? 'failed'
               : 'idle',
+          last_response: a.last_response || null,
+          last_error: a.last_error || null,
         };
       });
       setConfigs(initialConfigs);
@@ -197,7 +220,7 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
       padding: '22px'
     }}>
       <div style={{
-        width: '100%', maxWidth: '768px', height: '90vh', maxHeight: '540px',
+        width: '100%', maxWidth: '860px', height: '90vh', maxHeight: '580px',
         backgroundColor: 'var(--bg-card)',
         borderRadius: '16px', overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
@@ -253,6 +276,7 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
             <div style={{ flex: 1, overflowY: 'auto', minWidth: 0 }}>
               {selectedAction ? (
                 <ActionConfigPanel
+                  key={selectedKey}
                   carrierId={carrierId}
                   action={selectedAction}
                   config={configs[selectedKey] || {}}
