@@ -42,10 +42,10 @@ export default function TestPanel({ carrierId, actionKey, initialState, initialR
   };
 
   const stateMap = {
-    idle: { color: 'var(--text-muted)', label: 'Pending test', icon: <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#e5e7eb', display: 'inline-block' }} /> },
+    idle: { color: 'var(--text-muted)', label: 'Pending test', icon: <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--border-color)', display: 'inline-block' }} /> },
     loading: { color: '#f59e0b', label: 'Testing…', icon: <Loader2 size={12} style={{ animation: 'spin 1s linear infinite', color: '#f59e0b' }} /> },
-    passed: { color: '#10b981', label: '✓ Test passed', icon: <CheckCircle2 size={12} style={{ color: '#10b981' }} /> },
-    failed: { color: '#ef4444', label: '✗ Test failed', icon: <AlertCircle size={12} style={{ color: '#ef4444' }} /> },
+    passed: { color: 'var(--success)', label: '✓ Test passed', icon: <CheckCircle2 size={12} style={{ color: 'var(--success)' }} /> },
+    failed: { color: 'var(--danger)', label: '✗ Test failed', icon: <AlertCircle size={12} style={{ color: 'var(--danger)' }} /> },
   };
   const s = stateMap[state] || stateMap.idle;
 
@@ -79,7 +79,7 @@ export default function TestPanel({ carrierId, actionKey, initialState, initialR
               display: 'flex', alignItems: 'center', gap: '5px',
               padding: '7px 14px', borderRadius: '8px',
               background: state === 'loading' ? '#ede9fe' : '#f3e8ff',
-              border: 'none', color: '#7c3aed', fontSize: '12px',
+              border: 'none', color: 'var(--purple)', fontSize: '12px',
               fontWeight: '600', cursor: state === 'loading' ? 'not-allowed' : 'pointer'
             }}
           >
@@ -95,7 +95,7 @@ export default function TestPanel({ carrierId, actionKey, initialState, initialR
       {state === 'failed' && errorMessage && (
         <div style={{
           padding: '10px 14px', marginBottom: '10px', borderRadius: '8px',
-          backgroundColor: '#fef2f2', border: '1px solid #fecaca',
+          backgroundColor: 'var(--danger-light)', border: '1px solid var(--danger-light)',
           fontSize: '12px', color: '#dc2626', fontFamily: 'monospace'
         }}>
           {errorMessage}

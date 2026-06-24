@@ -25,11 +25,11 @@ export default function ActionSidebar({ groups, selectedKey, configs, onSelect }
             let stateIcon;
             if (action.category !== 'main_action') {
               const testState = configs[action.key]?.test_state;
-              stateIcon = testState === 'passed'
-                ? <CheckCircle2 size={11} style={{ color: '#10b981', flexShrink: 0 }} />
-                : testState === 'failed'
-                  ? <AlertCircle size={11} style={{ color: '#ef4444', flexShrink: 0 }} />
-                  : <span style={{ width: '11px', height: '11px', borderRadius: '50%', backgroundColor: '#e5e7eb', display: 'inline-block', flexShrink: 0 }} />;
+stateIcon = testState === 'passed'
+    ? <CheckCircle2 size={11} style={{ color: 'var(--success)', flexShrink: 0 }} />
+    : testState === 'failed'
+      ? <AlertCircle size={11} style={{ color: 'var(--danger)', flexShrink: 0 }} />
+      : <span style={{ width: '11px', height: '11px', borderRadius: '50%', backgroundColor: 'var(--border-color)', display: 'inline-block', flexShrink: 0 }} />;
             }
 
             return (
@@ -39,16 +39,16 @@ export default function ActionSidebar({ groups, selectedKey, configs, onSelect }
                 style={{
                   width: '100%', textAlign: 'left', padding: '8px 14px',
                   border: 'none',
-                  borderLeft: isSelected ? '3px solid #7c3aed' : '3px solid transparent',
+                  borderLeft: isSelected ? '3px solid var(--purple)' : '3px solid transparent',
                   cursor: 'pointer', display: 'block',
-                  backgroundColor: isSelected ? '#f9fafb' : 'transparent',
+                  backgroundColor: isSelected ? 'var(--bg-app)' : 'transparent',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                   <MethodBadge method={action.method} />
                   <span style={{
                     fontSize: '12px', fontWeight: isSelected ? '700' : '500',
-                    color: isSelected ? '#7c3aed' : 'var(--text-main)',
+                    color: isSelected ? 'var(--purple)' : 'var(--text-main)',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1
                   }}>
                     {action.label}

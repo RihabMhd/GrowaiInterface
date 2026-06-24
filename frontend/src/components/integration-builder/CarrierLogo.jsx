@@ -18,7 +18,7 @@ export default function CarrierLogo({ carrierId, size = 40, radius = 8 }) {
         src={reg.logo}
         alt={carrierId}
         onError={() => setImgErr(true)}
-        style={{ width: size, height: size, borderRadius: radius, objectFit: 'contain', backgroundColor: '#fff', border: '1px solid #e5e7eb' }}
+        style={{ width: size, height: size, borderRadius: radius, objectFit: 'contain', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)' }}
       />
     );
   }

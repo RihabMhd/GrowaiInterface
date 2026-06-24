@@ -248,12 +248,12 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
             onClick={onClose}
             style={{
               width: '22px', height: '22px', borderRadius: '50%',
-              backgroundColor: '#a3a3a3', border: 'none',
+              backgroundColor: 'var(--text-muted)', border: 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', flexShrink: 0
             }}
           >
-            <X size={13} style={{ color: '#fff' }} />
+            <X size={13} style={{ color: 'var(--bg-card)' }} />
           </button>
         </div>
 
@@ -299,7 +299,7 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
         }}>
           <div style={{ minWidth: 0 }}>
             {error && (
-              <span style={{ fontSize: '12px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <AlertCircle size={13} /> {error}
               </span>
             )}
@@ -321,7 +321,7 @@ export default function IntegrationBuilderModal({ carrierId, onClose }) {
               style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
                 padding: '11px 24px', borderRadius: '10px',
-                background: saving ? '#ede9fe' : 'linear-gradient(135deg, #a855f7, #4c1d95)',
+                background: saving ? '#ede9fe' : 'linear-gradient(135deg, var(--purple), #4c1d95)',
                 border: 'none', color: '#fff', fontSize: '13px',
                 fontWeight: '600', cursor: saving ? 'not-allowed' : 'pointer'
               }}

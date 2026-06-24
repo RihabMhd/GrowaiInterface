@@ -158,7 +158,7 @@ function DonutLegend({ items }) {
             width: "8px", height: "8px", borderRadius: "50%",
             background: color, flexShrink: 0, display: "inline-block",
           }} />
-          <span style={{ fontSize: "0.72rem", color: "var(--text-muted,#888)", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
             {label}
           </span>
           <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-main,#1a1a1a)" }}>
@@ -199,23 +199,23 @@ function CalendarPicker({ onApply, onClose }) {
       <div style={{ width: "160px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
           <button onClick={() => onSelect(null, new Date(year, month - 1, 1), true)}
-            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted,#888)", fontSize: "14px", padding: "2px 6px" }}>‹</button>
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: "14px", padding: "2px 6px" }}>‹</button>
           <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-main,#1a1a1a)" }}>
             {monthNames[month]} {year}
           </span>
           <button onClick={() => onSelect(null, new Date(year, month + 1, 1), true)}
-            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted,#888)", fontSize: "14px", padding: "2px 6px" }}>›</button>
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: "14px", padding: "2px 6px" }}>›</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "2px", textAlign: "center" }}>
           {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(d => (
-            <div key={d} style={{ fontSize: "0.6rem", color: "var(--text-muted,#888)", padding: "2px 0", fontWeight: 600 }}>{d}</div>
+            <div key={d} style={{ fontSize: "0.6rem", color: "var(--text-muted)", padding: "2px 0", fontWeight: 600 }}>{d}</div>
           ))}
           {cells.map((d, i) => (
             <button key={i} disabled={!d}
               onClick={() => d && onSelect(d)}
               style={{
-                background: isSel(d) ? "#8950fc" : "none",
-                color: isSel(d) ? "#fff" : isToday(d) ? "#8950fc" : d ? "var(--text-main,#1a1a1a)" : "transparent",
+                background: isSel(d) ? "var(--purple)" : "none",
+                color: isSel(d) ? "#fff" : isToday(d) ? "var(--purple)" : d ? "var(--text-main,#1a1a1a)" : "transparent",
                 border: "none", borderRadius: "4px", cursor: d ? "pointer" : "default",
                 fontSize: "0.7rem", padding: "3px 0", fontWeight: isSel(d) ? 700 : 400,
               }}
@@ -248,7 +248,7 @@ function CalendarPicker({ onApply, onClose }) {
     }}>
       {/* Presets */}
       <div style={{ marginBottom: "14px" }}>
-        <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted,#888)", marginBottom: "6px" }}>More</div>
+        <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)", marginBottom: "6px" }}>More</div>
         {MORE_PRESETS.map(p => (
           <button key={p.value} onClick={() => { onApply(p.value); onClose(); }}
             style={{
@@ -260,7 +260,7 @@ function CalendarPicker({ onApply, onClose }) {
             onMouseEnter={e => e.currentTarget.style.background = "var(--hover-bg,#f5f5f5)"}
             onMouseLeave={e => e.currentTarget.style.background = "none"}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted,#888)", flexShrink: 0 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-muted)", flexShrink: 0 }}>
               <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
             </svg>
             {p.label}
@@ -274,11 +274,11 @@ function CalendarPicker({ onApply, onClose }) {
       {/* Dual calendar */}
       <div style={{ display: "flex", gap: "24px" }}>
         <div>
-          <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted,#888)", marginBottom: "8px" }}>From</div>
+          <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)", marginBottom: "8px" }}>From</div>
           {renderCalendar(fromMonth, fromDate, handleFromSelect)}
         </div>
         <div>
-          <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted,#888)", marginBottom: "8px" }}>To</div>
+          <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)", marginBottom: "8px" }}>To</div>
           {renderCalendar(toMonth, toDate, handleToSelect)}
         </div>
       </div>
@@ -293,7 +293,7 @@ function CalendarPicker({ onApply, onClose }) {
           disabled={!fromDate || !toDate}
           style={{
             flex: 1, padding: "9px", borderRadius: "8px",
-            background: fromDate && toDate ? "#8950fc" : "#d0c0f8",
+            background: fromDate && toDate ? "var(--purple)" : "var(--purple-light)",
             color: "#fff", border: "none", cursor: fromDate && toDate ? "pointer" : "default",
             fontWeight: 600, fontSize: "0.82rem",
           }}
@@ -412,7 +412,7 @@ export default function Dashboard() {
         {/* Title */}
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#8950fc">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--purple)">
               <rect x="3" y="3" width="7" height="7" rx="1.5" />
               <rect x="14" y="3" width="7" height="7" rx="1.5" />
               <rect x="14" y="14" width="7" height="7" rx="1.5" />
@@ -422,7 +422,7 @@ export default function Dashboard() {
               Dashboard
             </h2>
           </div>
-          <p style={{ margin: "2px 0 0 30px", fontSize: "0.75rem", color: "var(--text-muted,#888)" }}>
+          <p style={{ margin: "2px 0 0 30px", fontSize: "0.75rem", color: "var(--text-muted)" }}>
             Monitor key metrics and performance
           </p>
         </div>
@@ -450,14 +450,14 @@ export default function Dashboard() {
               </select>
               {/* Shopify bag icon */}
               <span style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#96bf48" strokeWidth="2.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5">
                   <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                   <line x1="3" y1="6" x2="21" y2="6" />
                   <path d="M16 10a4 4 0 0 1-8 0" />
                 </svg>
               </span>
               {/* Chevron */}
-              <span style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "var(--text-muted,#888)" }}>
+              <span style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "var(--text-muted)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9" /></svg>
               </span>
             </div>
@@ -476,7 +476,7 @@ export default function Dashboard() {
                     background: isActive ? "var(--card-bg,#fff)" : "none",
                     fontWeight: isActive ? 700 : 500,
                     fontSize: "0.78rem",
-                    color: isActive ? "var(--text-main,#1a1a1a)" : "var(--text-muted,#888)",
+                    color: isActive ? "var(--text-main,#1a1a1a)" : "var(--text-muted)",
                     cursor: "pointer",
                   }}
                 >
@@ -500,7 +500,7 @@ export default function Dashboard() {
                   background: "var(--card-bg,#fff)",
                   fontWeight: isMoreActive ? 700 : 500,
                   fontSize: "0.78rem",
-                  color: isMoreActive ? "var(--text-main,#1a1a1a)" : "var(--text-muted,#888)",
+                  color: isMoreActive ? "var(--text-main,#1a1a1a)" : "var(--text-muted)",
                   cursor: "pointer",
                 }}
               >
@@ -526,7 +526,7 @@ export default function Dashboard() {
 
           {/* Error */}
           {error && (
-            <span style={{ fontSize: "0.72rem", color: "var(--danger,#e74c3c)", display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ fontSize: "0.72rem", color: "var(--danger)", display: "flex", alignItems: "center", gap: "4px" }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
               {error}
             </span>
@@ -542,11 +542,11 @@ export default function Dashboard() {
         marginBottom: "16px",
       }}>
         <KpiCard loading={loading}
-          bgColor="#e8f0fe"
+          bgColor="var(--primary-light)"
           title="Total orders"
           value={activeStats.total}
           icon={
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4285f4" strokeWidth="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
@@ -554,44 +554,44 @@ export default function Dashboard() {
           }
         />
         <KpiCard loading={loading}
-          bgColor="#e6f9f0"
+          bgColor="var(--success-light)"
           title="Confirmed"
           value={activeStats.confirmed}
           icon={
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1db954" strokeWidth="2.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           }
         />
         <KpiCard loading={loading}
-          bgColor="#fff8e6"
+          bgColor="var(--warning-light)"
           title="Pending"
           value={activeStats.pending}
           icon={
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0a500" strokeWidth="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
           }
         />
         <KpiCard loading={loading}
-          bgColor="#fdecea"
+          bgColor="var(--danger-light)"
           title="Cancelled"
           value={activeStats.cancelled}
           icon={
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
               <line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
             </svg>
           }
         />
         <KpiCard loading={loading}
-          bgColor="#f3f3f3"
+          bgColor="var(--bg-app)"
           title="Avg confirm time"
           value={fmtTime(activeStats.avg_confirmation_time) ?? "—"}
           sub={fmtTime(activeStats.avg_confirmation_time) === null ? "No data" : null}
           icon={
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
           }
@@ -615,22 +615,22 @@ export default function Dashboard() {
           {/* Header row: icon + title/subtitle + growth badge */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "16px" }}>
             <div style={{
-              width: "34px", height: "34px", borderRadius: "10px", background: "#ede7f6",
+              width: "34px", height: "34px", borderRadius: "10px", background: "var(--purple-light)",
               display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8950fc" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2">
                 <rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" />
               </svg>
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-main,#1a1a1a)", lineHeight: 1.2 }}>Revenue</div>
-              <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)", marginTop: "2px" }}>From confirmed orders</div>
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "2px" }}>From confirmed orders</div>
             </div>
             {/* Growth badge — top-right */}
             <span style={{
               fontSize: "0.72rem", fontWeight: 700, padding: "3px 8px", borderRadius: "20px",
-              background: activeStats.revenue_growth >= 0 ? "#e6f9f0" : "#fdecea",
-              color: activeStats.revenue_growth >= 0 ? "#1db954" : "#e53935",
+              background: activeStats.revenue_growth >= 0 ? "var(--success-light)" : "var(--danger-light)",
+              color: activeStats.revenue_growth >= 0 ? "var(--success)" : "var(--danger)",
               flexShrink: 0,
             }}>
               {loading ? "…" : fmtGrowth(activeStats.revenue_growth)}
@@ -653,10 +653,10 @@ export default function Dashboard() {
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
             <div style={{
-              width: "34px", height: "34px", borderRadius: "10px", background: "#e8f0fe",
+              width: "34px", height: "34px", borderRadius: "10px", background: "var(--primary-light)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4285f4" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
                 <rect x="1" y="3" width="15" height="13" rx="1" />
                 <path d="M16 8h4l3 5v3h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
               </svg>
@@ -668,7 +668,7 @@ export default function Dashboard() {
             <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
               {loading
                 ? <div style={{ width: "120px", height: "120px", borderRadius: "50%", border: "10px solid var(--border-color,#eee)" }} />
-                : <DonutChart percent={deliveryRate} color="#4285f4" />
+                : <DonutChart percent={deliveryRate} color="var(--primary)" />
               }
               {/* Centered percentage label */}
               <span style={{
@@ -682,7 +682,7 @@ export default function Dashboard() {
           {/* Legend: Delivered · Not Delivered */}
           {!loading && (
             <DonutLegend items={[
-              { color: "#4285f4", label: "Delivered", value: activeStats.delivered },
+              { color: "var(--primary)", label: "Delivered", value: activeStats.delivered },
               { color: "var(--border-color,#e0e0e0)", label: "Not Delivered", value: activeStats.total - activeStats.delivered },
             ]} />
           )}
@@ -697,10 +697,10 @@ export default function Dashboard() {
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
             <div style={{
-              width: "34px", height: "34px", borderRadius: "10px", background: "#e6f9f0",
+              width: "34px", height: "34px", borderRadius: "10px", background: "var(--success-light)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1db954" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
@@ -711,7 +711,7 @@ export default function Dashboard() {
             <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
               {loading
                 ? <div style={{ width: "120px", height: "120px", borderRadius: "50%", border: "10px solid var(--border-color,#eee)" }} />
-                : <DonutChart percent={confirmationRate} color="#1db954" />
+                : <DonutChart percent={confirmationRate} color="var(--success)" />
               }
               {/* Centered percentage label */}
               <span style={{
@@ -725,7 +725,7 @@ export default function Dashboard() {
           {/* Legend: Confirmed · Other (pending + cancelled = not yet confirmed) */}
           {!loading && (
             <DonutLegend items={[
-              { color: "#1db954", label: "Confirmed", value: activeStats.confirmed },
+              { color: "var(--success)", label: "Confirmed", value: activeStats.confirmed },
               { color: "var(--border-color,#e0e0e0)", label: "Other", value: activeStats.total - activeStats.confirmed },
             ]} />
           )}

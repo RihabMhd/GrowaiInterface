@@ -11,7 +11,7 @@ export default function Help() {
       <div className="page-header" style={{ marginBottom: "30px" }}>
         <div>
           <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "35px", height: "35px", borderRadius: "8px", background: "rgba(137, 80, 252, 0.1)", color: "var(--purple)" }}>
+            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "35px", height: "35px", borderRadius: "8px", background: "var(--purple-light)", color: "var(--purple)" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -28,7 +28,7 @@ export default function Help() {
         {/* Quotas Card */}
         <div className="card" style={{ padding: "25px", display: "flex", flexDirection: "column", gap: "15px", border: "1px solid var(--border-color)", borderRadius: "12px", background: "var(--card-bg)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "45px", height: "45px", borderRadius: "10px", background: "rgba(137, 80, 252, 0.08)", color: "var(--purple)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "45px", height: "45px", borderRadius: "10px", background: "var(--purple-light)", color: "var(--purple)" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                 <line x1="9" y1="3" x2="9" y2="21" />
@@ -50,7 +50,7 @@ export default function Help() {
         {/* Commissions Card */}
         <div className="card" style={{ padding: "25px", display: "flex", flexDirection: "column", gap: "15px", border: "1px solid var(--border-color)", borderRadius: "12px", background: "var(--card-bg)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "45px", height: "45px", borderRadius: "10px", background: "rgba(27, 197, 189, 0.08)", color: "#1bc5bd" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "45px", height: "45px", borderRadius: "10px", background: "var(--success-light)", color: "var(--success)" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="1" x2="12" y2="23" />
                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -92,7 +92,7 @@ export default function Help() {
           onClick={() => navigate("/team")}
           style={{
             backgroundColor: "var(--purple)",
-            color: "white",
+            color: "#fff",
             padding: "12px 24px",
             borderRadius: "8px",
             fontWeight: 600,

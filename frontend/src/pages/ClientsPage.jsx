@@ -98,7 +98,7 @@ export default function ClientsPage() {
       <div className="page-header" style={{ marginBottom: '12px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-            <Users size={16} style={{ color: '#2d2d2d' }} />
+            <Users size={16} style={{ color: 'var(--text-main)' }} />
             <h1 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '700' }}>Clients</h1>
           </div>
           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -112,7 +112,7 @@ export default function ClientsPage() {
           className="btn-primary-action"
           style={{
             backgroundColor: 'var(--purple)', borderRadius: '6px',
-            padding: '6px 12px', fontSize: '12px', border: 'none', color: 'white',
+            padding: '6px 12px', fontSize: '12px', border: 'none', color: '#fff',
             opacity: syncing || loading ? 0.7 : 1,
             cursor: syncing || loading ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center', gap: '6px',
@@ -128,9 +128,9 @@ export default function ClientsPage() {
       {/* Metric Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '10px', marginBottom: '12px' }}>
         {[
-          { label: 'TOTAL CLIENTS', value: metrics.total_clients, bg: '#e1e9ff', border: '#6993ff' },
-          { label: 'TOTAL ORDERS',  value: metrics.total_orders,  bg: '#c9f7f5', border: '#1bc5bd' },
-          { label: 'TOTAL REVENUE', value: metrics.total_revenue, bg: '#fff4de', border: '#ffa800' },
+          { label: 'TOTAL CLIENTS', value: metrics.total_clients, bg: 'var(--primary-light)', border: 'var(--primary)' },
+          { label: 'TOTAL ORDERS',  value: metrics.total_orders,  bg: 'var(--success-light)', border: 'var(--success)' },
+          { label: 'TOTAL REVENUE', value: metrics.total_revenue, bg: 'var(--warning-light)', border: 'var(--warning)' },
         ].map((card) => (
           <div className="card" key={card.label}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
@@ -190,14 +190,14 @@ export default function ClientsPage() {
           </div>
 
         ) : error ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', color: '#f1416c', fontSize: '0.85rem', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', color: 'var(--danger)', fontSize: '0.85rem', gap: '12px' }}>
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             <span>{error}</span>
             <button onClick={() => fetchClients(activeTab, searchQuery)} style={{
-              padding: '6px 16px', borderRadius: '6px', background: 'rgba(241,65,108,0.1)',
-              border: '1px solid rgba(241,65,108,0.3)', color: '#f1416c', fontSize: '0.8rem', cursor: 'pointer',
+              padding: '6px 16px', borderRadius: '6px', background: 'var(--danger-light)',
+              border: '1px solid var(--danger)', color: 'var(--danger)', fontSize: '0.8rem', cursor: 'pointer',
             }}>
               Retry
             </button>
@@ -248,7 +248,7 @@ export default function ClientsPage() {
                       </span>
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <span style={{ backgroundColor: 'rgba(105,147,255,0.1)', color: 'var(--primary)', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600' }}>
+                      <span style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600' }}>
                         {client.orders}
                       </span>
                     </td>

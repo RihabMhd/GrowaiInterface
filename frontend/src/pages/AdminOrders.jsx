@@ -8,30 +8,30 @@ import { useShop } from '../context/ShopContext';
 const CURRENCY = "MAD";
 
 const ORDER_STATUSES = [
-  { value: "nouveau", label: "Nouveau", color: "#7239ea", icon: "●" },
-  { value: "confirmed", label: "Confirmé", color: "#50cd89", icon: "●" },
-  { value: "no_response", label: "Pas de réponse", color: "#00a3ff", icon: "◎" },
-  { value: "rappel", label: "Rappel", color: "#9b6dff", icon: "☎" },
-  { value: "cancelled", label: "Annulé", color: "#f1416c", icon: "⊗" },
-  { value: "doublon", label: "Doublon", color: "#ffc700", icon: "◈" },
-  { value: "wrong_number", label: "Mauvais numéro", color: "#fd7e14", icon: "⚠" },
+  { value: "nouveau", label: "Nouveau", color: "var(--purple)", icon: "●" },
+  { value: "confirmed", label: "Confirmé", color: "var(--success)", icon: "●" },
+  { value: "no_response", label: "Pas de réponse", color: "var(--primary)", icon: "◎" },
+  { value: "rappel", label: "Rappel", color: "var(--purple)", icon: "☎" },
+  { value: "cancelled", label: "Annulé", color: "var(--danger)", icon: "⊗" },
+  { value: "doublon", label: "Doublon", color: "var(--warning)", icon: "◈" },
+  { value: "wrong_number", label: "Mauvais numéro", color: "var(--warning)", icon: "⚠" },
 ];
 const ORDER_SOURCES = [
-  { value: "Shopify", label: "Shopify", color: "#7239ea", icon: "●" },
-  { value: "Facebook", label: "Facebook", color: "#50cd89", icon: "●" },
-  { value: "Instagram", label: "Instagram", color: "#00a3ff", icon: "◎" },
-  { value: "TikTok", label: "TikTok", color: "#9b6dff", icon: "☎" },
-  { value: "Snapchat", label: "Snapchat", color: "#f1416c", icon: "⊗" },
-  { value: "WhatsApp", label: "WhatsApp", color: "#ffc700", icon: "◈" },
-  { value: "GoogleSheets", label: "Google Sheets", color: "#fd7e14", icon: "⚠" },
+  { value: "Shopify", label: "Shopify", color: "var(--purple)", icon: "●" },
+  { value: "Facebook", label: "Facebook", color: "var(--success)", icon: "●" },
+  { value: "Instagram", label: "Instagram", color: "var(--primary)", icon: "◎" },
+  { value: "TikTok", label: "TikTok", color: "var(--purple)", icon: "☎" },
+  { value: "Snapchat", label: "Snapchat", color: "var(--danger)", icon: "⊗" },
+  { value: "WhatsApp", label: "WhatsApp", color: "var(--warning)", icon: "◈" },
+  { value: "GoogleSheets", label: "Google Sheets", color: "var(--warning)", icon: "⚠" },
 ];
 
 const FULFILLMENT_STATUSES = [
-  { value: "unfulfilled", label: "Unfulfilled", color: "#ffc700" },
-  { value: "fulfilled", label: "Fulfilled", color: "#50cd89" },
-  { value: "in_transit", label: "In Transit", color: "#00a3ff" },
-  { value: "delivered", label: "Delivered", color: "#50cd89" },
-  { value: "delivery_failed", label: "Failed", color: "#f1416c" },
+  { value: "unfulfilled", label: "Unfulfilled", color: "var(--warning)" },
+  { value: "fulfilled", label: "Fulfilled", color: "var(--success)" },
+  { value: "in_transit", label: "In Transit", color: "var(--primary)" },
+  { value: "delivered", label: "Delivered", color: "var(--success)" },
+  { value: "delivery_failed", label: "Failed", color: "var(--danger)" },
 ];
 
 const PER_PAGE_OPTIONS = [10, 25, 50, 100];
@@ -45,14 +45,14 @@ const MORE_PRESETS = [
 ];
 
 const getStatusMeta = (val) =>
-  ORDER_STATUSES.find(s => s.value === val) || { label: val || "Pending", color: "#ffc700", icon: "●" };
+  ORDER_STATUSES.find(s => s.value === val) || { label: val || "Pending", color: "var(--warning)", icon: "●" };
 
 const getFulfillmentMeta = (val) =>
-  FULFILLMENT_STATUSES.find(s => s.value === val) || { label: val || "Unfulfilled", color: "#ffc700" };
+  FULFILLMENT_STATUSES.find(s => s.value === val) || { label: val || "Unfulfilled", color: "var(--warning)" };
 
 const inputStyle = {
   width: "100%", padding: "11px 14px", borderRadius: "8px",
-  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+  background: "var(--bg-app)", border: "1px solid var(--border-color)",
   color: "var(--text-main)", fontSize: "0.85rem", outline: "none",
   transition: "border-color 0.2s", boxSizing: "border-box",
 };
@@ -106,8 +106,8 @@ function CalendarPicker({ onApply, onClose }) {
             <button key={i} disabled={!d}
               onClick={() => d && onSelect(d)}
               style={{
-                background: isSel(d) ? "#8950fc" : "none",
-                color: isSel(d) ? "#fff" : isToday(d) ? "#8950fc" : d ? "var(--text-main,#1a1a1a)" : "transparent",
+                background: isSel(d) ? "var(--purple)" : "none",
+                color: isSel(d) ? "#fff" : isToday(d) ? "var(--purple)" : d ? "var(--text-main,#1a1a1a)" : "transparent",
                 border: "none", borderRadius: "4px", cursor: d ? "pointer" : "default",
                 fontSize: "0.7rem", padding: "3px 0", fontWeight: isSel(d) ? 700 : 400,
               }}
@@ -178,7 +178,7 @@ function CalendarPicker({ onApply, onClose }) {
           disabled={!fromDate || !toDate}
           style={{
             flex: 1, padding: "9px", borderRadius: "8px",
-            background: fromDate && toDate ? "#8950fc" : "#d0c0f8",
+            background: fromDate && toDate ? "var(--purple)" : "var(--purple-light)",
             color: "#fff", border: "none", cursor: fromDate && toDate ? "pointer" : "default",
             fontWeight: 600, fontSize: "0.82rem",
           }}
@@ -216,8 +216,8 @@ function StatusDropdown({ orderId, currentStatus, onChange }) {
         onClick={(e) => { e.stopPropagation(); setOpen(v => !v); }}
         style={{
           display: "flex", alignItems: "center", gap: "6px", padding: "4px 10px",
-          borderRadius: "20px", border: `1px solid ${meta.color}33`,
-          background: `${meta.color}18`, color: meta.color,
+          borderRadius: "20px", border: `1px solid color-mix(in srgb, ${meta.color} 20%, transparent)`,
+          background: `color-mix(in srgb, ${meta.color} 10%, transparent)`, color: meta.color,
           fontSize: "0.72rem", fontWeight: "700", cursor: "pointer", whiteSpace: "nowrap",
         }}
       >
@@ -231,7 +231,7 @@ function StatusDropdown({ orderId, currentStatus, onChange }) {
       {open && (
         <div onClick={e => e.stopPropagation()} style={{
           position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 9999,
-          background: "#1a1a1f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
+          background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "10px",
           padding: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.7)", minWidth: "180px",
         }}>
           {ORDER_STATUSES.map(s => (
@@ -241,7 +241,7 @@ function StatusDropdown({ orderId, currentStatus, onChange }) {
               style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "8px 12px", borderRadius: "7px", cursor: "pointer",
-                background: s.value === currentStatus ? `${s.color}18` : "transparent",
+                background: s.value === currentStatus ? `color-mix(in srgb, ${s.color} 10%, transparent)` : "transparent",
                 transition: "background 0.12s",
               }}
               className="sd-item"
@@ -270,7 +270,7 @@ function FulfillmentBadge({ status }) {
     <span style={{
       display: "inline-flex", alignItems: "center", gap: "5px",
       padding: "3px 9px", borderRadius: "20px",
-      background: `${meta.color}15`, border: `1px solid ${meta.color}33`,
+      background: `color-mix(in srgb, ${meta.color} 8%, transparent)`, border: `1px solid color-mix(in srgb, ${meta.color} 20%, transparent)`,
       fontSize: "0.7rem", fontWeight: "700", color: meta.color,
     }}>
       <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: meta.color }} />
@@ -319,7 +319,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
         {open && (
           <div style={{
             position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 9999,
-            background: "#1a1a1f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
+            background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "10px",
             padding: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.7)", minWidth: "190px",
           }}>
             {/* Create Parcel */}
@@ -328,7 +328,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
               className="sd-item"
               style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 12px", borderRadius: "7px", cursor: "pointer" }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8l4 1 3 3v4h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2"><rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8l4 1 3 3v4h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
               <span style={{ fontSize: "0.82rem", fontWeight: "600" }}>Create Parcel</span>
             </div>
 
@@ -340,7 +340,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: "7px", cursor: "pointer" }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#50cd89" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                   <span style={{ fontSize: "0.82rem", fontWeight: "600" }}>Update Status</span>
                 </div>
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 6l6 6-6 6" /></svg>
@@ -348,7 +348,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
               {showStatusSub && (
                 <div style={{
                   position: "absolute", left: "calc(100% + 4px)", top: 0, zIndex: 10000,
-                  background: "#1a1a1f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
+                  background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "10px",
                   padding: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.7)", minWidth: "175px",
                 }}>
                   {ORDER_STATUSES.map(s => (
@@ -374,7 +374,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: "7px", cursor: "pointer" }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00a3ff" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>
                   <span style={{ fontSize: "0.82rem", fontWeight: "600" }}>Assign to</span>
                 </div>
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 6l6 6-6 6" /></svg>
@@ -382,7 +382,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
               {showAgentSub && (
                 <div style={{
                   position: "absolute", left: "calc(100% + 4px)", top: 0, zIndex: 10000,
-                  background: "#1a1a1f", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
+                  background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "10px",
                   padding: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.7)", minWidth: "175px",
                 }}>
                   <div
@@ -399,7 +399,7 @@ function BulkActionsMenu({ selectedIds, agents, onUpdateStatus, onAssign, onCrea
                       className="sd-item"
                       style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", borderRadius: "7px", cursor: "pointer" }}
                     >
-                      <div style={{ width: "22px", height: "22px", borderRadius: "50%", background: "rgba(114,57,234,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", fontWeight: "700", color: "#9b6dff" }}>
+                      <div style={{ width: "22px", height: "22px", borderRadius: "50%", background: "var(--purple-light)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", fontWeight: "700", color: "var(--purple)" }}>
                         {a.name?.[0]?.toUpperCase()}
                       </div>
                       <span style={{ fontSize: "0.8rem", fontWeight: "600" }}>{a.name}</span>
@@ -426,7 +426,7 @@ function CustomSelect({ id, value, onChange, options, placeholder, openDropdown,
     <div className="custom-select-wrapper" style={{ position: "relative" }}>
       <div onClick={() => setOpenDropdown(isOpen ? null : id)} style={{
         display: "flex", alignItems: "center", gap: "8px", padding: "7px 12px", borderRadius: "8px",
-        background: "var(--bg-app)", border: isOpen ? "1px solid #7239ea" : "1px solid var(--border-color)",
+        background: "var(--bg-app)", border: isOpen ? "1px solid var(--purple)" : "1px solid var(--border-color)",
         color: "var(--text-main)", fontSize: "0.78rem", cursor: "pointer", userSelect: "none",
         transition: "border-color 0.2s", minWidth: "120px",
       }}>
@@ -440,7 +440,7 @@ function CustomSelect({ id, value, onChange, options, placeholder, openDropdown,
       {isOpen && (
         <div style={{
           position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "200px",
-          background: "#18181b", border: "1px solid rgba(114,57,234,0.4)", borderRadius: "10px",
+          background: "var(--bg-card)", border: "1px solid var(--purple)", borderRadius: "10px",
           padding: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.6)", zIndex: 9000, maxHeight: "280px", overflowY: "auto",
         }}>
           {options.map(opt => (
@@ -450,8 +450,8 @@ function CustomSelect({ id, value, onChange, options, placeholder, openDropdown,
                 display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "7px",
                 cursor: "pointer", fontSize: "0.8rem",
                 fontWeight: opt.value === value ? "700" : "500",
-                background: opt.value === value ? "rgba(114,57,234,0.25)" : "transparent",
-                color: opt.value === value ? "#c4a7ff" : "var(--text-main)",
+                background: opt.value === value ? "var(--purple-light)" : "transparent",
+                color: opt.value === value ? "var(--purple)" : "var(--text-main)",
               }}>
               {opt.dot && <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: opt.dot, flexShrink: 0 }} />}
               <span>{opt.label}</span>
@@ -479,11 +479,11 @@ function ProductPicker({ products, onSelect, onClose }) {
   return (
     <div ref={ref} style={{
       position: "absolute", top: "calc(100% + 6px)", right: 0, width: "280px",
-      background: "#1c1c1f", border: "1px solid rgba(114,57,234,0.35)", borderRadius: "10px",
+      background: "var(--bg-card)", border: "1px solid var(--purple)", borderRadius: "10px",
       padding: "10px", boxShadow: "0 16px 40px rgba(0,0,0,0.7)", zIndex: 9999,
     }}>
       <input autoFocus placeholder="Search products..." value={q} onChange={e => setQ(e.target.value)}
-        style={{ ...inputStyle, marginBottom: "8px", padding: "8px 12px", background: "rgba(255,255,255,0.06)" }} />
+        style={{ ...inputStyle, marginBottom: "8px", padding: "8px 12px", background: "var(--bg-popup-header)" }} />
       <div style={{ maxHeight: "200px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "2px" }}>
         {filtered.length === 0
           ? <p style={{ color: "var(--text-muted)", fontSize: "0.8rem", textAlign: "center", padding: "12px" }}>No products found</p>
@@ -497,7 +497,7 @@ function ProductPicker({ products, onSelect, onClose }) {
                   <div style={{ fontSize: "0.83rem", fontWeight: "600", color: "var(--text-main)" }}>{p.title || p.name}</div>
                   <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "2px" }}>{price} MAD</div>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
               </div>
             );
           })}
@@ -559,22 +559,22 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10000, padding: "20px" }}>
-      <div style={{ background: "#18181b", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", width: "100%", maxWidth: "900px", maxHeight: "92vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 60px rgba(0,0,0,0.7)", animation: "modalIn 0.2s ease-out", overflow: "hidden" }}>
-        <style>{`@keyframes modalIn{from{opacity:0;transform:scale(0.97) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}} .modal-input:focus{border-color:rgba(114,57,234,0.6)!important} .rm-btn:hover{background:rgba(241,65,108,0.12)!important;color:#f1416c!important} .qty-btn:hover{background:rgba(255,255,255,0.1)!important}`}</style>
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "16px", width: "100%", maxWidth: "900px", maxHeight: "92vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 60px rgba(0,0,0,0.7)", animation: "modalIn 0.2s ease-out", overflow: "hidden" }}>
+        <style>{`@keyframes modalIn{from{opacity:0;transform:scale(0.97) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}} .modal-input:focus{border-color:var(--purple)!important} .rm-btn:hover{background:var(--danger-light)!important;color:var(--danger)!important} .qty-btn:hover{background:var(--border-color)!important}`}</style>
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: "32px", height: "32px", background: "rgba(114,57,234,0.15)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7239ea" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
+            <div style={{ width: "32px", height: "32px", background: "var(--purple-light)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
             </div>
             <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-main)" }}>New Manual Order</h3>
           </div>
-          <button onClick={onClose} style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>×</button>
+          <button onClick={onClose} style={{ width: "28px", height: "28px", borderRadius: "50%", background: "var(--bg-popup-header)", border: "1px solid var(--border-color)", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>×</button>
         </div>
         {/* Body */}
         <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
           {/* LEFT */}
-          <div style={{ flex: 1, padding: "24px", overflowY: "auto", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ flex: 1, padding: "24px", overflowY: "auto", borderRight: "1px solid var(--border-color)" }}>
             <div style={{ marginBottom: "22px" }}>
               <label style={lbl}>Customer</label>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -616,18 +616,18 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
               <label style={{ ...lbl, marginBottom: 0 }}>Products *</label>
               <div style={{ position: "relative" }}>
-                <button onClick={() => setShowPicker(v => !v)} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "5px 10px", borderRadius: "6px", background: "rgba(114,57,234,0.12)", border: "1px solid rgba(114,57,234,0.25)", color: "#9b6dff", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
+                <button onClick={() => setShowPicker(v => !v)} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "5px 10px", borderRadius: "6px", background: "var(--purple-light)", border: "1px solid var(--purple)", color: "var(--purple)", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                   Add product
                 </button>
                 {showPicker && <ProductPicker products={products} onSelect={addProduct} onClose={() => setShowPicker(false)} />}
               </div>
             </div>
-            <div style={{ flex: 1, border: "1.5px dashed rgba(255,255,255,0.1)", borderRadius: "10px", background: "rgba(255,255,255,0.02)", overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "200px" }}>
+            <div style={{ flex: 1, border: "1.5px dashed var(--border-color)", borderRadius: "10px", background: "var(--bg-card)", overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "200px" }}>
               {form.items.length === 0 ? (
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", padding: "20px" }}>
-                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
-                  <button onClick={() => setShowPicker(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 18px", borderRadius: "8px", background: "#7239ea", color: "white", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" strokeWidth="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
+                  <button onClick={() => setShowPicker(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 18px", borderRadius: "8px", background: "var(--purple)", color: "white", fontSize: "0.8rem", fontWeight: "700", border: "none", cursor: "pointer" }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     Add product
                   </button>
@@ -635,18 +635,18 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
               ) : (
                 <div style={{ overflowY: "auto", flex: 1 }}>
                   {form.items.map(item => (
-                    <div key={item.product_id} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                      <div style={{ width: "30px", height: "30px", borderRadius: "7px", background: "rgba(114,57,234,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9b6dff" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
+                    <div key={item.product_id} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderBottom: "1px solid var(--border-color)" }}>
+                      <div style={{ width: "30px", height: "30px", borderRadius: "7px", background: "var(--purple-light)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.product_name}</div>
                         <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "1px" }}>{item.price} MAD</div>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "3px", flexShrink: 0 }}>
-                        <button className="qty-btn" onClick={() => updateQty(item.product_id, item.quantity - 1)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                        <button className="qty-btn" onClick={() => updateQty(item.product_id, item.quantity - 1)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
                         <span style={{ width: "22px", textAlign: "center", fontSize: "0.8rem", fontWeight: "700" }}>{item.quantity}</span>
-                        <button className="qty-btn" onClick={() => updateQty(item.product_id, item.quantity + 1)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                        <button className="qty-btn" onClick={() => updateQty(item.product_id, item.quantity + 1)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
                       </div>
                       <div style={{ fontSize: "0.78rem", fontWeight: "700", minWidth: "46px", textAlign: "right", flexShrink: 0 }}>{(item.price * item.quantity).toFixed(2)}</div>
                       <button className="rm-btn" onClick={() => removeItem(item.product_id)} style={{ width: "20px", height: "20px", borderRadius: "4px", background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -660,13 +660,13 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
             <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
                 <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>Shipping</span>
-                <div style={{ display: "flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "7px", overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--border-color)", borderRadius: "7px", overflow: "hidden" }}>
                   <input type="number" min="0" step="0.01" value={form.shipping_price} onChange={e => set("shipping_price", e.target.value)}
-                    style={{ width: "70px", padding: "6px 10px", background: "rgba(255,255,255,0.04)", border: "none", color: "var(--text-main)", fontSize: "0.82rem", outline: "none", textAlign: "right" }} />
-                  <span style={{ padding: "6px 10px", background: "rgba(255,255,255,0.06)", fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", borderLeft: "1px solid rgba(255,255,255,0.08)" }}>MAD</span>
+                    style={{ width: "70px", padding: "6px 10px", background: "var(--bg-app)", border: "none", color: "var(--text-main)", fontSize: "0.82rem", outline: "none", textAlign: "right" }} />
+                  <span style={{ padding: "6px 10px", background: "var(--bg-app)", fontSize: "0.75rem", fontWeight: "700", color: "var(--text-muted)", borderLeft: "1px solid var(--border-color)" }}>MAD</span>
                 </div>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: "1px solid var(--border-color)" }}>
                 <span style={{ fontSize: "0.85rem", fontWeight: "600", color: "var(--text-muted)" }}>Total</span>
                 <span style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-main)" }}>{total.toFixed(2)} MAD</span>
               </div>
@@ -674,9 +674,9 @@ function NewOrderModal({ products, isAbandonedPage, onClose, onSuccess }) {
           </div>
         </div>
         {/* Footer */}
-        <div style={{ display: "flex", gap: "10px", padding: "16px 24px", borderTop: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
-          <button onClick={onClose} style={{ flex: 1, padding: "11px", borderRadius: "8px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-main)", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>Cancel</button>
-          <button onClick={handleSubmit} disabled={saving} style={{ flex: 2, padding: "11px", borderRadius: "8px", background: "#7239ea", border: "none", color: "white", fontSize: "0.85rem", fontWeight: "700", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+        <div style={{ display: "flex", gap: "10px", padding: "16px 24px", borderTop: "1px solid var(--border-color)", flexShrink: 0 }}>
+          <button onClick={onClose} style={{ flex: 1, padding: "11px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>Cancel</button>
+          <button onClick={handleSubmit} disabled={saving} style={{ flex: 2, padding: "11px", borderRadius: "8px", background: "var(--purple)", border: "none", color: "white", fontSize: "0.85rem", fontWeight: "700", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
             {saving ? "Creating..." : "Create Order"}
           </button>
         </div>
@@ -916,17 +916,17 @@ export default function AdminOrders() {
   return (
     <div style={{ color: "var(--text-main)", minHeight: "100%", paddingBottom: "40px" }}>
       <style>{`
-        .cs-item-hover:hover{background:rgba(114,57,234,0.15)!important}
-        .trow:hover{background:rgba(255,255,255,0.015)!important}
-        .sd-item:hover{background:rgba(255,255,255,0.06)!important}
-        .trow-selected{background:rgba(114,57,234,0.06)!important}
+        .cs-item-hover:hover{background:var(--purple-light)!important}
+        .trow:hover{background:var(--bg-card)!important}
+        .sd-item:hover{background:var(--bg-app)!important}
+        .trow-selected{background:var(--purple-light)!important}
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes drawerSlideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
       `}</style>
 
       {/* Toast */}
       {message && (
-        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 10001, background: message.type === "error" ? "#f1416c" : message.type === "info" ? "#00a3ff" : "#50cd89", color: "white", padding: "12px 20px", borderRadius: "8px", boxShadow: "0 4px 16px rgba(0,0,0,0.3)", fontWeight: "600", fontSize: "0.85rem" }}>
+        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 10001, background: message.type === "error" ? "var(--danger)" : message.type === "info" ? "var(--primary)" : "var(--success)", color: "white", padding: "12px 20px", borderRadius: "8px", boxShadow: "0 4px 16px rgba(0,0,0,0.3)", fontWeight: "600", fontSize: "0.85rem" }}>
           {message.text}
         </div>
       )}
@@ -993,11 +993,11 @@ export default function AdminOrders() {
       {/* Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px", marginBottom: "12px" }}>
         {[
-          { label: "TOTAL ORDERS", value: metrics.total_orders, icon: Icons.total, bg: "#e1e9ff", ic: "#6993ff", sub: `${metrics.today_orders || 0} today` },
-          { label: "CONFIRMED", value: metrics.confirmed, icon: Icons.confirmed, bg: "#c9f7f5", ic: "#1bc5bd", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed / metrics.total_orders) * 100) : 0}% rate` },
-          { label: "CANCELLED", value: metrics.cancelled, icon: Icons.cancelled, bg: "#ffe2e5", ic: "#f64e60", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled / metrics.total_orders) * 100) : 0}% rate` },
-          { label: "FAILED DELIVERY", value: metrics.failed_delivery || 0, icon: Icons.cancelled, bg: "#ffe2e5", ic: "#f64e60", sub: "failed" },
-          { label: "DELIVERY RATE", value: metrics.delivery_rate || "0%", icon: Icons.rate, bg: "#e1e9ff", ic: "#6993ff", sub: "rate" },
+          { label: "TOTAL ORDERS", value: metrics.total_orders, icon: Icons.total, bg: "var(--primary-light)", ic: "var(--primary)", sub: `${metrics.today_orders || 0} today` },
+          { label: "CONFIRMED", value: metrics.confirmed, icon: Icons.confirmed, bg: "var(--success-light)", ic: "var(--success)", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed / metrics.total_orders) * 100) : 0}% rate` },
+          { label: "CANCELLED", value: metrics.cancelled, icon: Icons.cancelled, bg: "var(--danger-light)", ic: "var(--danger)", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled / metrics.total_orders) * 100) : 0}% rate` },
+          { label: "FAILED DELIVERY", value: metrics.failed_delivery || 0, icon: Icons.cancelled, bg: "var(--danger-light)", ic: "var(--danger)", sub: "failed" },
+          { label: "DELIVERY RATE", value: metrics.delivery_rate || "0%", icon: Icons.rate, bg: "var(--primary-light)", ic: "var(--primary)", sub: "rate" },
         ].map((c, i) => (
           <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
@@ -1044,11 +1044,11 @@ export default function AdminOrders() {
         <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "8px", position: "relative", overflow: "visible" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.02)" }}>
+              <tr style={{ borderBottom: "1px solid var(--border-color)", background: "var(--bg-card)" }}>
                 <th style={{ padding: "10px 12px", width: "36px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <input type="checkbox" checked={allChecked} onChange={toggleAll}
-                      style={{ width: "15px", height: "15px", accentColor: "#7239ea", cursor: "pointer" }} />
+                      style={{ width: "15px", height: "15px", accentColor: "var(--purple)", cursor: "pointer" }} />
                     {selectedIds.length > 0 && (
                       <BulkActionsMenu
                         selectedIds={selectedIds}
@@ -1081,7 +1081,7 @@ export default function AdminOrders() {
                   >
                     <td style={{ padding: "10px 12px" }} onClick={e => e.stopPropagation()}>
                       <input type="checkbox" checked={isSelected} onChange={() => toggleOne(order.id)}
-                        style={{ width: "15px", height: "15px", accentColor: "#7239ea", cursor: "pointer" }} />
+                        style={{ width: "15px", height: "15px", accentColor: "var(--purple)", cursor: "pointer" }} />
                     </td>
                     <td style={{ padding: "10px 12px", fontWeight: "700" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -1140,7 +1140,7 @@ export default function AdminOrders() {
           </table>
 
           {/* Pagination */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderTop: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderTop: "1px solid var(--border-color)", background: "var(--bg-card)" }}>
             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
               Page {currentPage} of {totalPages} ({totalOrders} orders)
               <span style={{ marginLeft: "16px" }}>Per page:</span>
@@ -1196,7 +1196,7 @@ export default function AdminOrders() {
             style={{
               position: "absolute", top: 0, right: 0, bottom: 0,
               width: "min(520px, 100vw)",
-              background: "#fff",
+              background: "var(--bg-card)",
               overflowY: "auto",
               boxShadow: "-8px 0 40px rgba(0,0,0,0.25)",
               animation: "drawerSlideIn 0.22s ease-out",

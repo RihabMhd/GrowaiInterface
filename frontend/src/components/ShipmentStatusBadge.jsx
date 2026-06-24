@@ -11,49 +11,49 @@ import {
 const STATUS_CONFIG = {
   pending: {
     label: 'En attente',
-    color: '#6b7280',
-    bgColor: '#f3f4f6',
+    color: 'var(--text-muted)',
+    bgColor: 'var(--bg-app)',
     icon: Clock,
-    textColor: '#374151'
+    textColor: 'var(--text-main)'
   },
   picked_up: {
     label: 'Collecté',
-    color: '#3b82f6',
-    bgColor: '#eff6ff',
+    color: 'var(--primary)',
+    bgColor: 'var(--primary-light)',
     icon: Truck,
-    textColor: '#1e40af'
+    textColor: 'var(--primary)'
   },
   in_transit: {
     label: 'En transit',
-    color: '#06b6d4',
-    bgColor: '#ecf9ff',
+    color: 'var(--primary)',
+    bgColor: 'var(--primary-light)',
     icon: MapPin,
-    textColor: '#0c4a6e'
+    textColor: 'var(--primary)'
   },
   out_for_delivery: {
     label: 'En livraison',
-    color: '#f59e0b',
-    bgColor: '#fffbeb',
+    color: 'var(--warning)',
+    bgColor: 'var(--warning-light)',
     icon: Truck,
-    textColor: '#92400e'
+    textColor: 'var(--warning)'
   },
   delivered: {
     label: 'Livré',
-    color: '#10b981',
-    bgColor: '#ecfdf5',
+    color: 'var(--success)',
+    bgColor: 'var(--success-light)',
     icon: CheckCircle2,
-    textColor: '#065f46'
+    textColor: 'var(--success)'
   },
   returned: {
     label: 'Retourné',
-    color: '#f97316',
+    color: 'var(--danger)',
     bgColor: '#fff7ed',
     icon: RotateCcw,
     textColor: '#7c2d12'
   },
   failed: {
     label: 'Échoué',
-    color: '#ef4444',
+    color: 'var(--danger)',
     bgColor: '#fef2f2',
     icon: AlertCircle,
     textColor: '#7f1d1d'

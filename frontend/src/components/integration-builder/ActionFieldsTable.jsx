@@ -23,7 +23,7 @@ export default function ActionFieldsTable({ fields = [], values = {}, hiddenFiel
   if (fields.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: '13px' }}>
-        <CheckCircle2 size={24} style={{ color: '#10b981', display: 'block', margin: '0 auto 8px' }} />
+        <CheckCircle2 size={24} style={{ color: 'var(--success)', display: 'block', margin: '0 auto 8px' }} />
         No configurable fields for this method
       </div>
     );
@@ -33,7 +33,7 @@ export default function ActionFieldsTable({ fields = [], values = {}, hiddenFiel
     <div style={{ marginBottom: '18px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <ClipboardList size={13} style={{ color: '#a855f7' }} />
+          <ClipboardList size={13} style={{ color: 'var(--purple)' }} />
           <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-main)' }}>Pre-filled Values</span>
         </div>
         <button
@@ -74,7 +74,7 @@ export default function ActionFieldsTable({ fields = [], values = {}, hiddenFiel
           >
             <div>
               <span style={{ fontSize: '12px', color: 'var(--text-main)', fontWeight: '500' }}>{field.label}</span>
-              {field.required && <span style={{ color: '#ef4444', fontSize: '12px', marginLeft: '2px' }}>*</span>}
+              {field.required && <span style={{ color: 'var(--danger)', fontSize: '12px', marginLeft: '2px' }}>*</span>}
             </div>
             <div style={{ paddingRight: '8px' }}>
               <FieldCell
@@ -88,9 +88,9 @@ export default function ActionFieldsTable({ fields = [], values = {}, hiddenFiel
                 onClick={() => onChangeHidden({ ...hiddenFields, [field.key]: !hiddenFields[field.key] })}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
               >
-                {hiddenFields[field.key]
-                  ? <EyeOff size={13} style={{ color: '#7c3aed' }} />
-                  : <Eye size={13} style={{ color: '#d1d5db' }} />
+{hiddenFields[field.key]
+                    ? <EyeOff size={13} style={{ color: 'var(--purple)' }} />
+                    : <Eye size={13} style={{ color: 'var(--border-color)' }} />
                 }
               </button>
             </div>

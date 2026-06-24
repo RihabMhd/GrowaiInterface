@@ -172,8 +172,8 @@ const ProductForm = ({
 
   const IS = {
     width: '100%', padding: '9px 12px', fontSize: 13,
-    border: '1px solid #e5e7eb', borderRadius: 8,
-    background: '#fff', color: '#111827', outline: 'none',
+    border: '1px solid var(--border-color)', borderRadius: 8,
+    background: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none',
     boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.15s',
   };
   const LS = { fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 5, display: 'block' };
@@ -183,17 +183,17 @@ const ProductForm = ({
   const SH = {
     fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase',
     letterSpacing: '0.07em', marginBottom: 12, paddingBottom: 8,
-    borderBottom: '1px solid #f3f4f6',
+    borderBottom: '1px solid var(--border-color)',
   };
-  const focusPurple = e => e.target.style.borderColor = '#7c3aed';
-  const blurGray = e => e.target.style.borderColor = '#e5e7eb';
+  const focusPurple = e => e.target.style.borderColor = 'var(--purple)';
+  const blurGray = e => e.target.style.borderColor = 'var(--border-color)';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
       {/* ── Shopify notice ── */}
       {isShopify && (
-        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '10px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        <div style={{ background: 'var(--primary-light)', border: '1px solid var(--border-color)', borderRadius: 8, padding: '10px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
           <span style={{ color: '#3b82f6', flexShrink: 0, marginTop: 1 }}>ℹ️</span>
           <p style={{ margin: 0, fontSize: 12, color: '#1e40af', lineHeight: 1.5 }}>
             Edits here are stored locally in FlashManager and override Shopify's values for your team. The image is locked because Shopify is the source of truth for media.
@@ -208,7 +208,7 @@ const ProductForm = ({
 
           {/* Title */}
           <div>
-            <label style={LS}>Title <span style={{ color: '#ef4444' }}>*</span></label>
+            <label style={LS}>Title <span style={{ color: 'var(--danger)' }}>*</span></label>
             <input style={IS} placeholder="e.g., Premium black T-shirt"
               value={form.title} onChange={e => handleTitleChange(e.target.value)}
               onFocus={focusPurple} onBlur={blurGray} />
@@ -289,7 +289,7 @@ const ProductForm = ({
           imagePreview
             ? (
               <div style={{ position: 'relative', display: 'inline-block' }}>
-                <img src={imagePreview} alt="product" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb', display: 'block' }} />
+                <img src={imagePreview} alt="product" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border-color)', display: 'block' }} />
                 <div style={{ position: 'absolute', inset: 0, borderRadius: 8, background: 'rgba(0,0,0,0.38)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Lock size={20} color="#fff" />
                 </div>
@@ -303,7 +303,7 @@ const ProductForm = ({
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 style={{
-                  background: '#7c3aed',
+                  background: 'var(--purple)',
                   color: '#fff',
                   border: 'none',
                   borderRadius: 6,
@@ -323,7 +323,7 @@ const ProductForm = ({
                 }}
                 style={{
                   background: 'none',
-                  color: '#ef4444',
+                  color: 'var(--danger)',
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 12,
@@ -334,9 +334,9 @@ const ProductForm = ({
             </div>
           ) : (
             <div onClick={() => fileRef.current?.click()} onDrop={handleDrop} onDragOver={e => e.preventDefault()}
-              style={{ border: '2px dashed #e5e7eb', borderRadius: 10, padding: '28px 20px', textAlign: 'center', cursor: 'pointer', transition: 'border-color 0.15s' }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = '#7c3aed'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = '#e5e7eb'}>
+              style={{ border: '2px dashed var(--border-color)', borderRadius: 10, padding: '28px 20px', textAlign: 'center', cursor: 'pointer', transition: 'border-color 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--purple)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-color)'}>
               <div style={{ fontSize: 30, marginBottom: 8 }}>☁️</div>
               <div style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>Drop an image here or click to upload</div>
               <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>PNG · JPG · WEBP · GIF · AVIF — up to 10 MB</div>
@@ -358,8 +358,8 @@ const ProductForm = ({
           <span>Pricing &amp; Variants</span>
           {!isShopify && (
             <button onClick={addVariant} style={{
-              fontSize: 11, fontWeight: 600, color: '#7c3aed',
-              background: '#f5f3ff', border: '1px solid #ddd6fe',
+              fontSize: 11, fontWeight: 600, color: 'var(--purple)',
+              background: 'var(--purple-light)', border: '1px solid var(--border-color)',
               borderRadius: 6, padding: '3px 10px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
@@ -370,7 +370,7 @@ const ProductForm = ({
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {variants.map((v, idx) => (
-            <div key={idx} style={{ background: '#f9fafb', border: '1px solid #f3f4f6', borderRadius: 10, padding: '14px 16px' }}>
+            <div key={idx} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 10, padding: '14px 16px' }}>
               {/* Variant header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -379,7 +379,7 @@ const ProductForm = ({
                   </span>
                   {variants.length > 1 && (
                     <input
-                      style={{ ...IS, width: 160, padding: '5px 9px', fontSize: 12, background: '#fff' }}
+                      style={{ ...IS, width: 160, padding: '5px 9px', fontSize: 12, background: 'var(--bg-card)' }}
                       placeholder="e.g., Red / Large"
                       value={v.title}
                       onChange={e => setVariantField(idx, 'title', e.target.value)}
@@ -389,7 +389,7 @@ const ProductForm = ({
                 </div>
                 {variants.length > 1 && !isShopify && (
                   <button onClick={() => removeVariant(idx)}
-                    style={{ fontSize: 11, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>
+                    style={{ fontSize: 11, color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer' }}>
                     Remove
                   </button>
                 )}
@@ -458,7 +458,7 @@ const ProductForm = ({
       </div>
 
       {/* ── Actions ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid #f3f4f6', marginTop: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid var(--border-color)', marginTop: 24 }}>
         <div>
           {product && (
             <button
@@ -488,7 +488,7 @@ const ProductForm = ({
                 }
               }}
               style={{
-                background: '#ef4444',
+                background: 'var(--danger)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: 8,
@@ -513,7 +513,7 @@ const ProductForm = ({
             type="button"
             onClick={onCancel}
             style={{
-              background: '#fff',
+              background: 'var(--bg-card)',
               color: '#374151',
               border: '1px solid #d1d5db',
               borderRadius: 8,
@@ -531,7 +531,7 @@ const ProductForm = ({
             onClick={handleSubmit}
             disabled={saving}
             style={{
-              background: '#7c3aed',
+              background: 'var(--purple)',
               color: '#fff',
               border: 'none',
               borderRadius: 8,
@@ -783,8 +783,8 @@ const Products = () => {
           gap: 14px;
         }
         .pcv2 {
-          background: #fff;
-          border: 1px solid #e5e7eb;
+          background: var(--bg-card);
+          border: 1px solid var(--border-color);
           border-radius: 14px;
           overflow: hidden;
           cursor: pointer;
@@ -793,12 +793,12 @@ const Products = () => {
         .pcv2:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.10); transform: translateY(-2px); }
         .pcv2-img-wrap {
           position: relative; width: 100%; aspect-ratio: 1/1;
-          background: #f3f4f6; overflow: hidden;
+          background: var(--border-color); overflow: hidden;
         }
         .pcv2-img { width:100%; height:100%; object-fit:cover; display:block; }
         .pcv2-img-ph {
           width:100%; height:100%;
-          display:flex; align-items:center; justify-content:center; background:#f9fafb;
+          display:flex; align-items:center; justify-content:center; background:var(--bg-card);
         }
         .pcv2-src {
           position:absolute; top:9px; left:9px;
@@ -806,7 +806,7 @@ const Products = () => {
           display:flex; align-items:center; justify-content:center; z-index:2;
         }
         .pcv2-src-shopify { background:#95bf47; }
-        .pcv2-src-manual  { background:#7c3aed; }
+        .pcv2-src-manual  { background:var(--purple); }
         .pcv2-badge {
           position:absolute; top:9px; right:9px;
           font-size:10px; font-weight:700; letter-spacing:0.04em;
@@ -814,7 +814,7 @@ const Products = () => {
         }
         .pcv2-badge-active   { background:#dcfce7; color:#166534; }
         .pcv2-badge-draft    { background:#fef3c7; color:#92400e; }
-        .pcv2-badge-archived { background:#f3f4f6; color:#6b7280; }
+        .pcv2-badge-archived { background:var(--border-color); color:#6b7280; }
         .pcv2-overlay {
           position:absolute; inset:0;
           display:flex; align-items:flex-end; justify-content:flex-end;
@@ -823,17 +823,17 @@ const Products = () => {
         .pcv2:hover .pcv2-overlay { opacity:1; }
         .pcv2-edit-btn {
           width:30px; height:30px; border-radius:50%;
-          background:rgba(255,255,255,0.92); border:1px solid #e5e7eb;
+          background:var(--bg-popup); border:1px solid var(--border-color);
           display:flex; align-items:center; justify-content:center;
           cursor:pointer; color:#374151;
           box-shadow:0 2px 8px rgba(0,0,0,0.12); transition:background 0.15s;
         }
-        .pcv2-edit-btn:hover { background:#fff; }
+        .pcv2-edit-btn:hover { background:var(--bg-card); }
         .pcv2-info { padding:10px 12px 12px; }
         .pcv2-vendor { font-size:11px; color:#6b7280; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .pcv2-title  { font-size:13px; font-weight:700; color:#111827; margin-bottom:6px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .pcv2-title  { font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:6px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
         .pcv2-price-row { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; margin-bottom:4px; }
-        .pcv2-price   { font-size:14px; font-weight:700; color:#111827; }
+        .pcv2-price   { font-size:14px; font-weight:700; color:var(--text-main); }
         .pcv2-compare { font-size:12px; color:#9ca3af; text-decoration:line-through; }
         .pcv2-stock   { font-size:11px; color:#16a34a; font-weight:600; margin-left:auto; }
         .pcv2-cost-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
@@ -851,7 +851,7 @@ const Products = () => {
           z-index:1000; padding:16px;
         }
         .pf-modal {
-          background:#fff; border-radius:18px;
+          background:var(--bg-card); border-radius:18px;
           width:100%; max-width:560px;
           max-height:92vh; display:flex; flex-direction:column;
           box-shadow:0 20px 60px rgba(0,0,0,0.20);
@@ -860,30 +860,30 @@ const Products = () => {
         .pf-header {
           display:flex; align-items:center; justify-content:space-between;
           padding:16px 20px 14px;
-          border-bottom:1px solid #f3f4f6; flex-shrink:0;
+          border-bottom:1px solid var(--border-color); flex-shrink:0;
         }
         .pf-header-left { display:flex; align-items:center; gap:10px; }
         .pf-icon {
           width:28px; height:28px; border-radius:50%;
-          background:#7c3aed;
+          background:var(--purple);
           display:flex; align-items:center; justify-content:center; color:#fff;
         }
-        .pf-title { font-size:15px; font-weight:700; color:#111827; }
+        .pf-title { font-size:15px; font-weight:700; color:var(--text-main); }
         .pf-source-chip {
           display:inline-flex; align-items:center; gap:5px;
           font-size:11px; font-weight:600;
           padding:3px 9px; border-radius:20px;
         }
         .pf-source-shopify { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
-        .pf-source-manual  { background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; }
+        .pf-source-manual  { background:var(--purple-light); color:#5b21b6; border:1px solid var(--border-color); }
         .pf-close {
           width:28px; height:28px; border-radius:50%;
-          border:1px solid #e5e7eb; background:#f9fafb;
+          border:1px solid var(--border-color); background:var(--bg-card);
           font-size:18px; line-height:1;
           display:flex; align-items:center; justify-content:center;
           cursor:pointer; color:#6b7280; transition:background 0.15s;
         }
-        .pf-close:hover { background:#f3f4f6; }
+        .pf-close:hover { background:var(--border-color); }
         .pf-body { overflow-y:auto; padding:20px; flex:1; }
       `}</style>
 

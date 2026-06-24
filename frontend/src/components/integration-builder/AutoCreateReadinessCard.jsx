@@ -35,11 +35,11 @@ export default function AutoCreateReadinessCard({ fields = [], prefilled = {}, h
       <div style={{
         borderRadius: '14px',
         border: isOn
-          ? '2px solid rgba(251, 146, 60, 0.4)'
-          : '1px solid #e5e7eb',
+          ? '2px solid var(--warning)'
+          : '1px solid var(--border-color)',
         overflow: 'hidden',
         marginBottom: '10px',
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--bg-card)',
         boxShadow: isOn
           ? '0 0 20px rgba(251, 146, 60, 0.12), 0 1px 4px rgba(0,0,0,0.05)'
           : '0 1px 3px rgba(0,0,0,0.06)',
@@ -57,7 +57,7 @@ export default function AutoCreateReadinessCard({ fields = [], prefilled = {}, h
               background: isOn
                 ? 'linear-gradient(135deg, #60a5fa, #3b82f6)'
                 : 'transparent',
-              border: isOn ? 'none' : '1.5px solid #d1d5db',
+              border: isOn ? 'none' : '1.5px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0
             }}>
@@ -79,7 +79,7 @@ export default function AutoCreateReadinessCard({ fields = [], prefilled = {}, h
             {/* Progress bar */}
             <div style={{
               width: '100%', height: '5px', borderRadius: '3px',
-              backgroundColor: '#f3f4f6', overflow: 'hidden'
+              backgroundColor: 'var(--bg-app)', overflow: 'hidden'
             }}>
               <div style={{
                 width: `${pct}%`, height: '100%', borderRadius: '3px',
@@ -119,7 +119,7 @@ export default function AutoCreateReadinessCard({ fields = [], prefilled = {}, h
                   <span key={f.key} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '3px',
                     padding: '4px 12px', borderRadius: '6px',
-                    backgroundColor: '#fff7ed', border: '1px solid #fed7aa',
+                    backgroundColor: 'var(--warning-light)', border: '1px solid var(--warning-light)',
                     color: '#c2410c', fontSize: '11px', fontWeight: '600'
                   }}>
                     {f.label || f.key} *

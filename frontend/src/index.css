@@ -4,13 +4,13 @@
   /* Colors - Light Theme Default */
   --bg-app: #f5f6fa;
   --bg-card: #ffffff;
+  --card-bg: #ffffff;       /* alias used in some components */
   --bg-sidebar: #ffffff;
   --bg-navbar: #1a1a1a;
-  /* Dark navbar from screenshot */
 
   --bg-popup: #ffffff;
   --bg-popup-header: #f3f6f9;
-  --bg-popup-hover: #f3f6f9;
+  --bg-popup-hover: #f0f0f4;
   --border-popup: #ebedf3;
   --text-popup-strong: #1e1e2d;
   --text-popup-span: #b5b5c3;
@@ -30,13 +30,19 @@
   --purple: #8950fc;
   --purple-light: #eee5ff;
 
+  --bg-input: #f5f6fa;
+  --text-on-primary: #ffffff;
+  --text-on-purple: #ffffff;
+  --text-on-success: #ffffff;
+  --text-on-danger: #ffffff;
+  --text-on-warning: #ffffff;
+
   --border-color: #ebedf3;
+  --hover-bg: #f0f0f5;      /* generic hover background for light mode */
 
   /* Dimensions */
   --sidebar-width: 220px;
-  /* Even narrower */
   --navbar-height: 56px;
-  /* Shorter navbar */
 }
 
 /* Custom Scrollbar */
@@ -67,23 +73,39 @@ body.dark-theme ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Dark Theme Overrides (if toggled by adding class 'dark-theme' to body) */
+/* Dark Theme Overrides */
 body.dark-theme {
   --bg-app: #0c0c0e;
-  /* Darker as seen in screenshot */
   --bg-card: #18181b;
+  --card-bg: #18181b;
   --bg-sidebar: #18181b;
   --bg-navbar: #18181b;
-  --text-main: #ffffff;
+  --text-main: #f4f4f5;
   --text-muted: #71717a;
   --border-color: #27272a;
 
-  --bg-popup: #18181b;
-  --bg-popup-header: #404041;
-  --bg-popup-hover: #3d3d3d;
-  --border-popup: #444444;
-  --text-popup-strong: #ffffff;
-  --text-popup-span: #aaaaaa;
+  --bg-popup: #1f1f23;
+  --bg-popup-header: #2a2a2e;
+  --bg-popup-hover: #2d2d32;
+  --border-popup: #3f3f46;
+  --text-popup-strong: #f4f4f5;
+  --text-popup-span: #a1a1aa;
+
+  --hover-bg: #2a2a2e;
+
+  /* Additional theme variables */
+  --bg-input: #1f1f23;
+  --text-on-primary: #ffffff;
+  --text-on-purple: #ffffff;
+  --text-on-success: #ffffff;
+  --text-on-danger: #ffffff;
+  --text-on-warning: #ffffff;
+
+  --primary-light: rgba(105, 147, 255, 0.15);
+  --success-light: rgba(27, 197, 189, 0.15);
+  --warning-light: rgba(255, 168, 0, 0.15);
+  --danger-light: rgba(246, 78, 96, 0.15);
+  --purple-light: rgba(137, 80, 252, 0.15);
 }
 
 * {
@@ -216,19 +238,20 @@ body.dark-theme .sidebar-link:hover {
   transform: translateY(-50%);
   width: 4px;
   height: 18px;
-  background: #8b5cf6;
+  background: var(--purple);
   border-radius: 0 8px 8px 0;
 }
 
 /* Active state: purple left bar + purple text + light bg tint */
 .sidebar-link.active {
   font-weight: 600;
-  background-color: #f3f0ff; /* A lighter, cleaner purple-tinted background */
-  color: #6d28d9; /* A stronger purple text color */
+  background-color: var(--purple-light);
+  color: var(--purple);
 }
 
 body.dark-theme .sidebar-link.active {
-  background-color: rgba(137, 80, 252, 0.12);
+  background-color: rgba(137, 80, 252, 0.14);
+  color: #a78bfa;
 }
 
 /* Parent (commandes open) */
@@ -243,8 +266,8 @@ body.dark-theme .sidebar-link.active {
   align-items: center;
   justify-content: center;
   width: 20px;
-  color: #2d2d2d;
-  opacity: 0.85;
+  color: var(--text-muted);
+  opacity: 0.9;
 }
 
 .sidebar-link.active .sidebar-link-icon,
@@ -300,7 +323,7 @@ body.dark-theme .sidebar-link.active {
   transform: translateY(-50%);
   width: 4px;
   height: 18px;
-  background: #8b5cf6;
+  background: var(--purple);
   border-radius: 0 8px 8px 0;
 }
 
@@ -315,13 +338,14 @@ body.dark-theme .sidebar-sublink:hover {
 }
 
 .sidebar-sublink.active {
-  background: #ece8f7;
-  color: #111;
+  background: var(--purple-light);
+  color: var(--purple);
   font-weight: 600;
 }
 
 body.dark-theme .sidebar-sublink.active {
-  background-color: rgba(137, 80, 252, 0.12);
+  background-color: rgba(137, 80, 252, 0.14);
+  color: #a78bfa;
 }
 
 /* PRO badge */
@@ -363,7 +387,7 @@ body.dark-theme .sidebar-sublink.active {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background-color: #e8490f;
+  background-color: var(--danger);
   color: white;
   display: flex;
   align-items: center;
@@ -894,8 +918,13 @@ body.dark-theme .popup-icon-wrapper {
   font-size: 0.95rem;
 }
 
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
 .form-input:focus {
   border-color: var(--primary);
+  outline: none;
 }
 
 .form-error {
@@ -1023,22 +1052,22 @@ body.dark-theme .popup-icon-wrapper {
 }
 
 .btn-action-hover:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: var(--hover-bg) !important;
   color: var(--purple) !important;
   border-color: var(--purple) !important;
 }
 
 .currency-item-hover:hover {
-  background-color: rgba(255, 255, 255, 0.04) !important;
+  background-color: var(--hover-bg) !important;
 }
 
 .product-item-hover:hover {
-  background-color: rgba(255, 255, 255, 0.03) !important;
+  background-color: var(--hover-bg) !important;
 }
 
 .lang-option-hover:hover {
-  background-color: rgba(255, 255, 255, 0.04) !important;
-  color: var(--text-main) !important;
+  background-color: var(--bg-popup-hover) !important;
+  color: var(--text-popup-strong) !important;
 }
 
 /* =========================================
@@ -1116,14 +1145,14 @@ body.dark-theme .popup-icon-wrapper {
 }
 
 .btn-primary-action:hover {
-  background: #7c3aed;
+  background: var(--purple);
 }
 
 .btn-secondary-action {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #65a30d;
+  background: var(--success);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -1219,6 +1248,17 @@ body.dark-theme .popup-icon-wrapper {
   color: var(--text-main);
   outline: none;
   cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  border-color: var(--primary);
+}
+
+/* Theme-aware select option */
+select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
 }
 
 .filter-button {
@@ -1328,8 +1368,8 @@ body.dark-theme .products-table tbody tr:hover {
 }
 
 .status-archived {
-  background: rgba(156, 163, 175, 0.15);
-  color: #9ca3af;
+  background: var(--bg-app);
+  color: var(--text-muted);
 }
 
 .cell-text {
@@ -1378,8 +1418,8 @@ body.dark-theme .products-table tbody tr:hover {
 
 .btn-delete {
   padding: 5px 10px;
-  background: rgba(246, 78, 96, 0.12);
-  color: #f87171;
+  background: var(--danger-light);
+  color: var(--danger);
   border: none;
   border-radius: 5px;
   font-size: 12px;
@@ -1650,8 +1690,8 @@ body.dark-theme .product-card:hover {
 }
 
 .product-card-actions .btn-delete {
-  background: rgba(246, 78, 96, 0.12);
-  color: #f87171;
+  background: var(--danger-light);
+  color: var(--danger);
   margin: 0;
   padding: 6px 8px;
 }

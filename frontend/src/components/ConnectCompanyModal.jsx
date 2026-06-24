@@ -61,7 +61,7 @@ function CarrierLogo({ company, size = 32 }) {
           height: size,
           borderRadius: '6px',
           objectFit: 'contain',
-          backgroundColor: '#fff',
+          backgroundColor: 'var(--bg-card)',
           border: '1px solid var(--border-color)',
         }}
       />
@@ -73,8 +73,8 @@ function CarrierLogo({ company, size = 32 }) {
       width: size,
       height: size,
       borderRadius: '6px',
-      backgroundColor: '#f3f4f6',
-      color: '#6b7280',
+      backgroundColor: 'var(--bg-app)',
+      color: 'var(--text-muted)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -218,7 +218,7 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
                 }}>
                   {field.label}{' '}
                   {field.required
-                    ? <span style={{ color: '#ef4444' }}>*</span>
+                    ? <span style={{ color: 'var(--danger)' }}>*</span>
                     : <span style={{ color: 'var(--text-muted)' }}>(Optional)</span>
                   }
                 </label>
@@ -229,7 +229,7 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
                   style={{
                     width: '100%',
                     padding: '10px 12px',
-                    border: `1px solid ${errors[field.key] ? '#ef4444' : 'var(--border-color)'}`,
+                    border: `1px solid ${errors[field.key] ? 'var(--danger)' : 'var(--border-color)'}`,
                     borderRadius: '8px',
                     fontSize: '13px',
                     backgroundColor: 'var(--bg-app)',
@@ -238,7 +238,7 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
                   }}
                 />
                 {errors[field.key] && (
-                  <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px' }}>
+                  <p style={{ fontSize: '12px', color: 'var(--danger)', marginTop: '4px' }}>
                     {errors[field.key].message}
                   </p>
                 )}
@@ -249,11 +249,11 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
             {error && (
               <div style={{
                 marginBottom: '14px', padding: '10px 12px', borderRadius: '8px',
-                backgroundColor: '#fef2f2', border: '1px solid #fee2e2',
+                backgroundColor: 'var(--danger-light)', border: '1px solid var(--danger-light)',
                 display: 'flex', gap: '8px', alignItems: 'flex-start',
               }}>
-                <AlertCircle size={14} style={{ color: '#ef4444', flexShrink: 0, marginTop: '2px' }} />
-                <span style={{ fontSize: '12px', color: '#7f1d1d' }}>{error}</span>
+                <AlertCircle size={14} style={{ color: 'var(--danger)', flexShrink: 0, marginTop: '2px' }} />
+                <span style={{ fontSize: '12px', color: 'var(--danger)' }}>{error}</span>
               </div>
             )}
           </div>
@@ -280,8 +280,8 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
               disabled={isLoading}
               style={{
                 flex: 1, padding: '10px 14px',
-                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
-                color: '#ffffff', border: 'none', borderRadius: '8px',
+                background: 'linear-gradient(135deg, var(--purple), #6d28d9)',
+                color: '#fff', border: 'none', borderRadius: '8px',
                 fontSize: '13px', fontWeight: '600',
                 cursor: isLoading ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',

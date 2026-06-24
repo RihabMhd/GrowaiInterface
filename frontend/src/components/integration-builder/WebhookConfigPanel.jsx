@@ -73,8 +73,8 @@ export default function WebhookConfigPanel({ carrierId, action, config, onConfig
           </p>
           {(registerStatus === 'ok' || savedPrefilled.registered) && (
             <>
-              <CheckCircle2 size={12} style={{ color: '#10b981' }} />
-              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '600' }}>ok</span>
+              <CheckCircle2 size={12} style={{ color: 'var(--success)' }} />
+              <span style={{ fontSize: '11px', color: 'var(--success)', fontWeight: '600' }}>ok</span>
             </>
           )}
         </div>
@@ -103,7 +103,7 @@ export default function WebhookConfigPanel({ carrierId, action, config, onConfig
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: '34px', height: '34px', marginRight: '4px', borderRadius: '6px',
-              backgroundColor: copied ? '#ecfdf5' : 'transparent',
+              backgroundColor: copied ? 'var(--success-light)' : 'transparent',
               border: copied ? '1px solid #a7f3d0' : '1px solid transparent',
               cursor: 'pointer', color: copied ? '#059669' : 'var(--text-muted)',
               flexShrink: 0, transition: 'all 0.15s'
@@ -130,7 +130,7 @@ export default function WebhookConfigPanel({ carrierId, action, config, onConfig
             style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '9px 18px', borderRadius: '8px',
-              background: registering ? '#ede9fe' : 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+              background: registering ? '#ede9fe' : 'linear-gradient(135deg, var(--purple), #6d28d9)',
               border: 'none', color: '#fff', fontSize: '13px', fontWeight: '600',
               cursor: registering ? 'not-allowed' : 'pointer'
             }}
@@ -142,12 +142,12 @@ export default function WebhookConfigPanel({ carrierId, action, config, onConfig
             Register with carrier
           </button>
           {registerStatus === 'ok' && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#10b981', fontWeight: '600' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--success)', fontWeight: '600' }}>
               <CheckCircle2 size={13} /> registered
             </span>
           )}
           {registerStatus === 'failed' && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#ef4444', fontWeight: '600' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--danger)', fontWeight: '600' }}>
               <AlertCircle size={13} /> fetch failed
             </span>
           )}
@@ -163,7 +163,7 @@ export default function WebhookConfigPanel({ carrierId, action, config, onConfig
             </p>
             <pre style={{
               margin: 0, padding: '12px 14px', fontSize: '11px', lineHeight: '1.6',
-              backgroundColor: '#f9fafb', border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--bg-app)', border: '1px solid var(--border-color)',
               borderRadius: '7px', overflow: 'auto', fontFamily: 'monospace',
               color: 'var(--text-main)'
             }}>

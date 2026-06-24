@@ -36,10 +36,10 @@ const Icons = {
 
 const getStatusStyle = (s) => {
   switch (s) {
-    case "confirmed": case "delivered": return { bg: "rgba(80,205,137,0.1)",  text: "#50cd89" };
-    case "cancelled": case "returned":  return { bg: "rgba(241,65,108,0.1)",  text: "#f1416c" };
-    case "processing": case "shipped":  return { bg: "rgba(0,163,255,0.1)",   text: "#00a3ff" };
-    default:                            return { bg: "rgba(255,199,0,0.1)",    text: "#ffc700" };
+    case "confirmed": case "delivered": return { bg: "var(--success-light)", text: "var(--success)" };
+    case "cancelled": case "returned":  return { bg: "var(--danger-light)",  text: "var(--danger)" };
+    case "processing": case "shipped":  return { bg: "var(--primary-light)", text: "var(--primary)" };
+    default:                            return { bg: "var(--warning-light)", text: "var(--warning)" };
   }
 };
 
@@ -219,8 +219,8 @@ export default function AgentOrders() {
       {message && (
         <div style={{
           position: "fixed", top: "20px", right: "20px", zIndex: 10000,
-          background: message.type === "success" ? "var(--success)" : "var(--danger)",
-          color: "white", padding: "12px 24px", borderRadius: "8px",
+            background: message.type === "success" ? "var(--success)" : "var(--danger)",
+          color: "#fff", padding: "12px 24px", borderRadius: "8px",
           boxShadow: "0 4px 12px rgba(0,0,0,0.2)", fontWeight: "600"
         }}>{message.text}</div>
       )}
@@ -239,7 +239,7 @@ export default function AgentOrders() {
 
         <button onClick={() => setIsCreateModalOpen(true)} style={{
           display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px",
-          background: "var(--purple)", color: "white", borderRadius: "8px",
+          background: "var(--purple)", color: "#fff", borderRadius: "8px",
           fontSize: "0.82rem", fontWeight: "700", border: "none", cursor: "pointer"
         }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -250,11 +250,11 @@ export default function AgentOrders() {
       {/* ── Metrics Cards ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px", marginBottom: "24px" }}>
         {[
-          { label: "TOTAL ASSIGNÉES", value: metrics.total_orders, icon: Icons.total, color: "#7239ea", sub: "toutes périodes" },
-          { label: "CONFIRMÉES", value: metrics.confirmed, icon: Icons.confirmed, color: "#50cd89", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% taux` },
-          { label: "ANNULÉES", value: metrics.cancelled, icon: Icons.cancelled, color: "#f1416c", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% taux` },
-          { label: "EN ATTENTE", value: metrics.pending, icon: Icons.pending, color: "#ffc700", sub: "action requise" },
-          { label: "TAUX VALIDATION", value: metrics.confirmation_rate, icon: Icons.rate, color: "#00a3ff", sub: "votre objectif" },
+          { label: "TOTAL ASSIGNÉES", value: metrics.total_orders, icon: Icons.total, color: "var(--purple)", sub: "toutes périodes" },
+          { label: "CONFIRMÉES", value: metrics.confirmed, icon: Icons.confirmed, color: "var(--success)", sub: `${metrics.total_orders > 0 ? Math.round((metrics.confirmed/metrics.total_orders)*100) : 0}% taux` },
+          { label: "ANNULÉES", value: metrics.cancelled, icon: Icons.cancelled, color: "var(--danger)", sub: `${metrics.total_orders > 0 ? Math.round((metrics.cancelled/metrics.total_orders)*100) : 0}% taux` },
+          { label: "EN ATTENTE", value: metrics.pending, icon: Icons.pending, color: "var(--warning)", sub: "action requise" },
+          { label: "TAUX VALIDATION", value: metrics.confirmation_rate, icon: Icons.rate, color: "var(--primary)", sub: "votre objectif" },
         ].map((card, i) => (
           <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "6px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -308,7 +308,7 @@ export default function AgentOrders() {
         <div style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", borderRadius: "12px", overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", textAlign: "left" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
+              <tr style={{ borderBottom: "1px solid var(--border-color)", background: "var(--bg-card)" }}>
                 {["COMMANDE", "CLIENT / CODE", "PRODUIT / QTE", "TOTAL", "STATUT", "DATE"].map(h => (
                   <th key={h} style={{ padding: "12px 16px", fontWeight: "600", color: "var(--text-muted)", fontSize: "0.68rem", letterSpacing: "0.3px" }}>{h}</th>
                 ))}
@@ -364,7 +364,7 @@ export default function AgentOrders() {
             <style>{`@keyframes modalAppear { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
             
             {/* Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid var(--border-color)", background: "var(--bg-card)" }}>
               <div>
                 <h3 style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-main)", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
@@ -505,13 +505,13 @@ export default function AgentOrders() {
 
               {/* Actions Footer Container */}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px", borderTop: "1px solid var(--border-color)", paddingTop: "14px" }}>
-                <button type="button" onClick={() => setIsCreateModalOpen(false)} style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", fontWeight: "600", cursor: "pointer" }}>
+                <button type="button" onClick={() => setIsCreateModalOpen(false)} style={{ padding: "8px 16px", borderRadius: "8px", background: "var(--bg-card)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.82rem", fontWeight: "600", cursor: "pointer" }}>
                   Cancel
                 </button>
-                <button type="submit" disabled={isCreating} style={{ padding: "8px 18px", borderRadius: "8px", background: "var(--purple)", border: "none", color: "white", fontSize: "0.82rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                <button type="submit" disabled={isCreating} style={{ padding: "8px 18px", borderRadius: "8px", background: "var(--purple)", border: "none", color: "#fff", fontSize: "0.82rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
                   {isCreating ? (
                     <>
-                      <div style={{ width: "12px", height: "12px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
+                      <div style={{ width: "12px", height: "12px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.6s linear infinite" }} />
                       Saving...
                     </>
                   ) : "Save Order"}
@@ -548,7 +548,7 @@ export default function AgentOrders() {
               <strong style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Articles</strong>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                 {selectedOrder.items?.map((item, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", background: "rgba(255,255,255,0.01)", padding: "6px 10px", borderRadius: "6px" }}>
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", background: "var(--bg-card)", padding: "6px 10px", borderRadius: "6px" }}>
                     <span>{item.product_name} <span style={{ color: "var(--purple)", fontWeight: "700" }}>x{item.quantity}</span></span>
                     <strong style={{ color: "var(--purple)" }}>{selectedOrder.total_price} {selectedOrder.currency || currencySymbol}</strong>
                   </div>
@@ -562,7 +562,7 @@ export default function AgentOrders() {
               <textarea value={editNote} onChange={e => setEditNote(e.target.value)} rows="3" placeholder="Ajouter des détails sur l'appel ou la livraison..."
                 style={{ width: "100%", padding: "8px 10px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.78rem", outline: "none", resize: "none" }} />
               <button onClick={() => handleUpdateNotes(selectedOrder.id)} disabled={isUpdating}
-                style={{ marginTop: "6px", width: "100%", padding: "6px", background: "rgba(114,57,234,0.15)", border: "1px solid var(--purple)", color: "#c4a7ff", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
+                style={{ marginTop: "6px", width: "100%", padding: "6px", background: "var(--purple-light)", border: "1px solid var(--purple)", color: "var(--purple)", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
                 {isUpdating ? "Mise à jour..." : "Sauvegarder les Notes"}
               </button>
             </div>
@@ -573,16 +573,16 @@ export default function AgentOrders() {
               {selectedOrder.status === "pending" ? (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
                   <button onClick={() => handleAgentStatusUpdate(selectedOrder.id, "confirmed")} disabled={isUpdating}
-                    style={{ padding: "8px", background: "#50cd89", border: "none", color: "white", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
+                    style={{ padding: "8px", background: "var(--success)", border: "none", color: "#fff", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
                     Confirmer
                   </button>
                   <button onClick={() => handleAgentStatusUpdate(selectedOrder.id, "cancelled")} disabled={isUpdating}
-                    style={{ padding: "8px", background: "#f1416c", border: "none", color: "white", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
+                    style={{ padding: "8px", background: "var(--danger)", border: "none", color: "#fff", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}>
                     Annuler
                   </button>
                 </div>
               ) : (
-                <div style={{ background: "rgba(255,255,255,0.02)", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.75rem", color: "var(--text-muted)", textCenter: "center" }}>
+                <div style={{ background: "var(--bg-app)", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.75rem", color: "var(--text-muted)", textCenter: "center" }}>
                   Statut figé sur <strong style={{ color: getStatusStyle(selectedOrder.status).text }}>{selectedOrder.status.toUpperCase()}</strong> — only pending orders can be updated.
                 </div>
               )}

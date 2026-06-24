@@ -19,7 +19,7 @@ export default function ApiCredentialsBlock({ credentials = [], values = {}, onC
           }}>
             <label style={{ fontSize: '12px', color: 'var(--text-main)', fontWeight: '500' }}>
               {cred.label}
-              {cred.required && <span style={{ color: '#ef4444', marginLeft: '2px' }}>*</span>}
+              {cred.required && <span style={{ color: 'var(--danger)', marginLeft: '2px' }}>*</span>}
             </label>
             <PasswordField
               value={values[cred.key]}

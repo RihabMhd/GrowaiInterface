@@ -13,9 +13,9 @@ export default function AutoCreateToggle({ checked, onChange, disabled }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div style={{
           width: '36px', height: '36px', borderRadius: '8px',
-          backgroundColor: '#f3f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center'
+          backgroundColor: 'var(--purple-light)', display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <Zap size={16} style={{ color: '#7c3aed' }} />
+          <Zap size={16} style={{ color: 'var(--purple)' }} />
         </div>
         <div>
           <p style={{ margin: 0, fontSize: '13px', fontWeight: '600', color: 'var(--text-main)' }}>Auto-Create Parcel</p>

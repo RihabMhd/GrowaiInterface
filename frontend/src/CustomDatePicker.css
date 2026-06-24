@@ -3,21 +3,25 @@
   position: absolute;
   top: 110%;
   right: 0;
-  background-color: #1a1a1c; /* Deep dark background matching your app theme */
-  border: 1px solid #2d2d30;
+  background-color: var(--bg-popup);
+  border: 1px solid var(--border-popup);
   border-radius: 14px;
   padding: 20px;
-  width: 460px; /* Perfect width to hold two calendar panes side-by-side */
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  width: 460px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   z-index: 2000;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+body.dark-theme .custom-more-dropdown {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
 /* Titles (MORE, FROM, TO) */
 .section-title {
-  color: #52525b;
+  color: var(--text-muted);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -32,17 +36,19 @@
 }
 
 .option-item {
-  background-color: #222225; /* Slightly lighter dark for buttons */
-  color: #e4e4e7;
+  background-color: var(--bg-app);
+  color: var(--text-main);
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 0.8rem;
   cursor: pointer;
   transition: background 0.2s;
+  border: 1px solid transparent;
 }
 
 .option-item:hover {
-  background-color: #2c2c30;
+  background-color: var(--hover-bg);
+  border-color: var(--border-color);
 }
 
 /* Calendar Column Headers Alignment */
@@ -52,20 +58,21 @@
 }
 
 .calendar-header-label {
-  color: #52525b;
+  color: var(--text-muted);
   font-size: 0.7rem;
   font-weight: 700;
   width: 50%;
   text-align: center;
 }
 
-/* react-datepicker overrides to match dark mode */
+/* react-datepicker overrides — theme-aware */
 .react-datepicker {
   background: transparent !important;
   border: none !important;
   display: flex !important;
   width: 100% !important;
   justify-content: space-between;
+  font-family: 'Inter', sans-serif;
 }
 
 .react-datepicker__month-container {
@@ -80,25 +87,25 @@
 }
 
 .react-datepicker__current-month {
-  color: #ffffff !important;
+  color: var(--text-main) !important;
   font-size: 0.85rem !important;
   margin-bottom: 10px;
 }
 
-.react-datepicker__day-name, 
+.react-datepicker__day-name,
 .react-datepicker__day {
-  color: #a1a1aa !important;
+  color: var(--text-muted) !important;
 }
 
 /* Selection Range Styling */
 .react-datepicker__day--in-range {
-  background-color: rgba(114, 57, 234, 0.15) !important;
-  color: #ffffff !important;
+  background-color: var(--purple-light) !important;
+  color: var(--text-main) !important;
 }
 
 .react-datepicker__day--range-start,
 .react-datepicker__day--range-end {
-  background-color: #7239ea !important;
+  background-color: var(--purple) !important;
   color: #ffffff !important;
   border-radius: 6px !important;
 }
@@ -106,14 +113,14 @@
 /* Footer layout */
 .dropdown-footer {
   display: flex;
-  flex-direction: row-reverse; /* Put Apply on the left, Clear on the right */
+  flex-direction: row-reverse;
   gap: 10px;
   margin-top: 4px;
 }
 
 .apply-btn {
-  flex: 1; /* Makes the apply button stretch beautifully across the card width */
-  background-color: #7239ea;
+  flex: 1;
+  background-color: var(--purple);
   color: white;
   border: none;
   padding: 12px;
@@ -125,13 +132,13 @@
 }
 
 .apply-btn:hover {
-  background-color: #6029cf;
+  background-color: var(--purple);
 }
 
 .clear-btn {
   background: transparent;
-  color: #a1a1aa;
-  border: 1px solid #3f3f46;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -140,6 +147,6 @@
 }
 
 .clear-btn:hover {
-  background: #222225;
-  color: white;
+  background: var(--hover-bg);
+  color: var(--text-main);
 }

@@ -8,15 +8,15 @@ export default function CompanyConnectionStatus({ isConnected, webhookEnabled })
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {isConnected ? (
           <>
-            <CheckCircle2 size={18} style={{ color: '#10b981' }} />
-            <span style={{ fontSize: '13px', fontWeight: '500', color: '#065f46' }}>
+            <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
+            <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--success)' }}>
               Connected
             </span>
           </>
         ) : (
           <>
-            <XCircle size={18} style={{ color: '#ef4444' }} />
-            <span style={{ fontSize: '13px', fontWeight: '500', color: '#7f1d1d' }}>
+            <XCircle size={18} style={{ color: 'var(--danger)' }} />
+            <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--danger)' }}>
               Disconnected
             </span>
           </>
@@ -27,15 +27,15 @@ export default function CompanyConnectionStatus({ isConnected, webhookEnabled })
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {webhookEnabled ? (
           <>
-            <CheckCircle2 size={18} style={{ color: '#10b981' }} />
-            <span style={{ fontSize: '13px', fontWeight: '500', color: '#065f46' }}>
+            <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
+            <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--success)' }}>
               Webhook Enabled
             </span>
           </>
         ) : (
           <>
-            <XCircle size={18} style={{ color: '#ef4444' }} />
-            <span style={{ fontSize: '13px', fontWeight: '500', color: '#7f1d1d' }}>
+            <XCircle size={18} style={{ color: 'var(--danger)' }} />
+            <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--danger)' }}>
               Webhook Disabled
             </span>
           </>

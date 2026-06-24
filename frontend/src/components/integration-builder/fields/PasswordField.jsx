@@ -18,7 +18,7 @@ export default function PasswordField({ value, onChange, disabled }) {
           padding: '6px 36px 6px 10px',
           fontSize: '12px',
           boxSizing: 'border-box',
-          backgroundColor: '#fff',
+          backgroundColor: 'var(--bg-card)',
           border: '1px solid var(--border-color)',
           borderRadius: '8px',
           color: 'var(--text-main)',

@@ -9,7 +9,7 @@ export default function TextField({ value, onChange }) {
       placeholder="-"
       style={{
         width: '100%', height: '30px', padding: '6px 10px', fontSize: '12px', boxSizing: 'border-box',
-        backgroundColor: '#fff', border: '1px solid var(--border-color)',
+        backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)',
         borderRadius: '8px', color: 'var(--text-main)'
       }}
     />

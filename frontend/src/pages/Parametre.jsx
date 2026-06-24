@@ -199,18 +199,18 @@ const SettingsPage = () => {
     wrapper: {
       padding: '28px 32px',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      backgroundColor: '#f9fafb',
+      backgroundColor: 'var(--bg-app)',
       minHeight: '100vh',
     },
     pageTitle: {
       fontSize: '22px',
       fontWeight: '700',
-      color: '#111827',
+      color: 'var(--text-main)',
       margin: '0 0 4px 0',
     },
     pageSubtitle: {
       fontSize: '13px',
-      color: '#6b7280',
+      color: 'var(--text-muted)',
       margin: '0 0 24px 0',
     },
     layout: {
@@ -221,9 +221,9 @@ const SettingsPage = () => {
     leftPanel: {
       width: '200px',
       minWidth: '200px',
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--bg-card)',
       borderRadius: '12px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       padding: '16px',
       flexShrink: 0,
     },
@@ -233,13 +233,13 @@ const SettingsPage = () => {
       gap: '10px',
       marginBottom: '16px',
       paddingBottom: '16px',
-      borderBottom: '1px solid #f3f4f6',
+      borderBottom: '1px solid var(--border-color)',
     },
     avatar: {
       width: '38px',
       height: '38px',
       borderRadius: '50%',
-      backgroundColor: '#f97316',
+      backgroundColor: 'var(--warning)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -252,7 +252,7 @@ const SettingsPage = () => {
     userName: {
       fontSize: '13px',
       fontWeight: '600',
-      color: '#111827',
+      color: 'var(--text-main)',
       margin: 0,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
@@ -261,7 +261,7 @@ const SettingsPage = () => {
     },
     userRole: {
       fontSize: '11px',
-      color: '#9ca3af',
+      color: 'var(--text-muted)',
       margin: '2px 0 0 0',
       textTransform: 'capitalize',
     },
@@ -279,10 +279,10 @@ const SettingsPage = () => {
       borderRadius: '8px',
       fontSize: '13px',
       fontWeight: isActive ? '600' : '500',
-      color: isActive ? '#7c3aed' : '#374151',
-      backgroundColor: isActive ? '#f5f3ff' : 'transparent',
+      color: isActive ? 'var(--purple)' : 'var(--text-main)',
+      backgroundColor: isActive ? 'var(--purple-light)' : 'transparent',
       cursor: 'pointer',
-      border: isActive ? '1.5px solid #ede9fe' : '1.5px solid transparent',
+      border: isActive ? '1.5px solid var(--purple-light)' : '1.5px solid transparent',
       transition: 'all 0.15s',
     }),
     contentArea: {
@@ -290,9 +290,9 @@ const SettingsPage = () => {
       minWidth: 0,
     },
     card: {
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--bg-card)',
       borderRadius: '12px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       padding: '28px',
       marginBottom: '20px',
     },
@@ -302,13 +302,13 @@ const SettingsPage = () => {
       gap: '14px',
       marginBottom: '24px',
       paddingBottom: '20px',
-      borderBottom: '1px solid #f3f4f6',
+      borderBottom: '1px solid var(--border-color)',
     },
     cardIconWrap: {
       width: '36px',
       height: '36px',
       borderRadius: '8px',
-      backgroundColor: '#f5f3ff',
+      backgroundColor: 'var(--purple-light)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -317,12 +317,12 @@ const SettingsPage = () => {
     cardTitle: {
       fontSize: '15px',
       fontWeight: '600',
-      color: '#111827',
+      color: 'var(--text-main)',
       margin: '0 0 3px 0',
     },
     cardSubtitle: {
       fontSize: '13px',
-      color: '#6b7280',
+      color: 'var(--text-muted)',
       margin: 0,
     },
     profileImageSection: {
@@ -336,7 +336,7 @@ const SettingsPage = () => {
       width: '72px',
       height: '72px',
       borderRadius: '14px',
-      backgroundColor: '#f97316',
+      backgroundColor: 'var(--warning)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -351,7 +351,7 @@ const SettingsPage = () => {
       right: '-6px',
       width: '20px',
       height: '20px',
-      backgroundColor: '#ef4444',
+      backgroundColor: 'var(--danger)',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
@@ -365,18 +365,18 @@ const SettingsPage = () => {
       alignItems: 'center',
       gap: '8px',
       padding: '8px 14px',
-      backgroundColor: '#f9fafb',
-      border: '1px solid #e5e7eb',
+      backgroundColor: 'var(--bg-app)',
+      border: '1px solid var(--border-color)',
       borderRadius: '8px',
       fontSize: '13px',
       fontWeight: '500',
-      color: '#374151',
+      color: 'var(--text-main)',
       cursor: 'pointer',
       marginBottom: '6px',
     },
     imageSizeNote: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--text-muted)',
       margin: 0,
     },
     formGrid: {
@@ -391,17 +391,17 @@ const SettingsPage = () => {
       gap: '6px',
       fontSize: '13px',
       fontWeight: '500',
-      color: '#374151',
+      color: 'var(--text-main)',
       marginBottom: '8px',
     },
     formInput: {
       width: '100%',
       padding: '10px 14px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRadius: '8px',
       fontSize: '14px',
-      color: '#111827',
-      backgroundColor: '#f9fafb',
+      color: 'var(--text-main)',
+      backgroundColor: 'var(--bg-app)',
       outline: 'none',
       boxSizing: 'border-box',
     },
@@ -409,8 +409,8 @@ const SettingsPage = () => {
     badge: {
       display: 'inline-block',
       padding: '2px 8px',
-      backgroundColor: '#f5f3ff',
-      color: '#7c3aed',
+      backgroundColor: 'var(--purple-light)',
+      color: 'var(--purple)',
       borderRadius: '4px',
       fontSize: '11px',
       fontWeight: '600',
@@ -418,19 +418,19 @@ const SettingsPage = () => {
     inactiveBadge: {
       display: 'inline-block',
       padding: '2px 8px',
-      backgroundColor: '#f3f4f6',
-      color: '#6b7280',
+      backgroundColor: 'var(--bg-app)',
+      color: 'var(--text-muted)',
       borderRadius: '4px',
       fontSize: '11px',
       fontWeight: '600',
     },
     emailNote: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--text-muted)',
       marginTop: '6px',
     },
     emailLink: {
-      color: '#7c3aed',
+      color: 'var(--purple)',
       textDecoration: 'underline',
       cursor: 'pointer',
     },
@@ -439,7 +439,7 @@ const SettingsPage = () => {
       alignItems: 'center',
       gap: '8px',
       padding: '10px 22px',
-      backgroundColor: '#111827',
+      backgroundColor: 'var(--text-main)',
       color: '#ffffff',
       border: 'none',
       borderRadius: '24px',
@@ -452,7 +452,7 @@ const SettingsPage = () => {
       alignItems: 'center',
       gap: '8px',
       padding: '10px 22px',
-      backgroundColor: '#111827',
+      backgroundColor: 'var(--text-main)',
       color: '#ffffff',
       border: 'none',
       borderRadius: '8px',
@@ -466,7 +466,7 @@ const SettingsPage = () => {
       alignItems: 'center',
       gap: '8px',
       padding: '10px 20px',
-      backgroundColor: '#111827',
+      backgroundColor: 'var(--text-main)',
       color: '#ffffff',
       border: 'none',
       borderRadius: '8px',
@@ -487,9 +487,9 @@ const SettingsPage = () => {
       gap: '10px',
       marginTop: '20px',
       padding: '14px',
-      backgroundColor: '#fffbeb',
+      backgroundColor: 'var(--warning-light)',
       borderRadius: '8px',
-      border: '1px solid #fde68a',
+      border: '1px solid var(--warning-light)',
     },
     warningBoxGreen: {
       display: 'flex',
@@ -497,30 +497,30 @@ const SettingsPage = () => {
       gap: '10px',
       marginTop: '20px',
       padding: '14px',
-      backgroundColor: '#ecfdf5',
+      backgroundColor: 'var(--success-light)',
       borderRadius: '8px',
-      border: '1px solid #a7f3d0',
+      border: '1px solid var(--success-light)',
     },
     warningText: {
       fontSize: '13px',
       fontWeight: '600',
-      color: '#92400e',
+      color: 'var(--warning)',
       margin: '0 0 4px 0',
     },
     warningTextGreen: {
       fontSize: '13px',
       fontWeight: '600',
-      color: '#065f46',
+      color: 'var(--success)',
       margin: '0 0 4px 0',
     },
     warningSubtext: {
       fontSize: '12px',
-      color: '#b45309',
+      color: 'var(--warning)',
       margin: 0,
     },
     warningSubtextGreen: {
       fontSize: '12px',
-      color: '#047857',
+      color: 'var(--success)',
       margin: 0,
     },
     prefixRow: {
@@ -529,52 +529,52 @@ const SettingsPage = () => {
     },
     prefixLabel: {
       padding: '10px 14px',
-      backgroundColor: '#f3f4f6',
-      border: '1px solid #e5e7eb',
+      backgroundColor: 'var(--bg-app)',
+      border: '1px solid var(--border-color)',
       borderRight: 'none',
       borderRadius: '8px 0 0 8px',
       fontSize: '12px',
       fontWeight: '700',
-      color: '#6b7280',
+      color: 'var(--text-muted)',
       letterSpacing: '0.05em',
       whiteSpace: 'nowrap',
     },
     prefixInput: {
       padding: '10px 14px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRight: 'none',
       fontSize: '14px',
       fontWeight: '700',
-      color: '#111827',
-      backgroundColor: '#ffffff',
+      color: 'var(--text-main)',
+      backgroundColor: 'var(--bg-card)',
       outline: 'none',
       width: '90px',
     },
     prefixArrow: {
       padding: '10px 10px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRight: 'none',
       fontSize: '13px',
-      color: '#6b7280',
-      backgroundColor: '#f9fafb',
+      color: 'var(--text-muted)',
+      backgroundColor: 'var(--bg-app)',
       display: 'flex',
       alignItems: 'center',
     },
     prefixPreview: {
       padding: '10px 14px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRight: 'none',
       fontSize: '13px',
       fontWeight: '600',
-      color: '#6b7280',
-      backgroundColor: '#f9fafb',
+      color: 'var(--text-muted)',
+      backgroundColor: 'var(--bg-app)',
     },
     prefixSaveBtn: {
       display: 'flex',
       alignItems: 'center',
       gap: '6px',
       padding: '10px 18px',
-      backgroundColor: '#111827',
+      backgroundColor: 'var(--text-main)',
       color: '#ffffff',
       border: 'none',
       borderRadius: '0 8px 8px 0',
@@ -590,7 +590,7 @@ const SettingsPage = () => {
     sectionLabel: {
       fontSize: '11px',
       fontWeight: '700',
-      color: '#6b7280',
+      color: 'var(--text-muted)',
       letterSpacing: '0.08em',
       textTransform: 'uppercase',
       marginBottom: '10px',
@@ -601,11 +601,11 @@ const SettingsPage = () => {
     selectInput: {
       width: '100%',
       padding: '10px 14px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRadius: '8px',
       fontSize: '14px',
-      color: '#111827',
-      backgroundColor: '#ffffff',
+      color: 'var(--text-main)',
+      backgroundColor: 'var(--bg-card)',
       outline: 'none',
       cursor: 'pointer',
     },
@@ -615,39 +615,39 @@ const SettingsPage = () => {
     },
     exchangePrefix: {
       padding: '10px 14px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRight: 'none',
       borderRadius: '8px 0 0 8px',
       fontSize: '13px',
-      color: '#6b7280',
-      backgroundColor: '#f9fafb',
+      color: 'var(--text-muted)',
+      backgroundColor: 'var(--bg-app)',
       whiteSpace: 'nowrap',
     },
     exchangeInput: {
       padding: '10px 14px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRight: 'none',
       fontSize: '14px',
       fontWeight: '700',
-      color: '#111827',
-      backgroundColor: '#ffffff',
+      color: 'var(--text-main)',
+      backgroundColor: 'var(--bg-card)',
       outline: 'none',
       width: '70px',
     },
     exchangeSuffix: {
       padding: '10px 14px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRight: 'none',
       fontSize: '13px',
-      color: '#6b7280',
-      backgroundColor: '#f9fafb',
+      color: 'var(--text-muted)',
+      backgroundColor: 'var(--bg-app)',
     },
     exchangeSaveBtn: {
       display: 'flex',
       alignItems: 'center',
       gap: '6px',
       padding: '10px 18px',
-      backgroundColor: '#111827',
+      backgroundColor: 'var(--text-main)',
       color: '#ffffff',
       border: 'none',
       borderRadius: '0 8px 8px 0',
@@ -658,18 +658,18 @@ const SettingsPage = () => {
     exchangeNote: {
       marginTop: '10px',
       padding: '10px 14px',
-      backgroundColor: '#fffbeb',
+      backgroundColor: 'var(--warning-light)',
       borderRadius: '8px',
       fontSize: '13px',
       fontWeight: '500',
-      color: '#92400e',
+      color: 'var(--warning)',
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
     },
     usageNote: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--text-muted)',
       marginTop: '8px',
     },
     accountRow: {
@@ -677,7 +677,7 @@ const SettingsPage = () => {
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '18px 0',
-      borderBottom: '1px solid #f3f4f6',
+      borderBottom: '1px solid var(--border-color)',
     },
     accountRowLast: {
       display: 'flex',
@@ -688,12 +688,12 @@ const SettingsPage = () => {
     accountRowLabel: {
       fontSize: '14px',
       fontWeight: '600',
-      color: '#111827',
+      color: 'var(--text-main)',
       margin: '0 0 3px 0',
     },
     accountRowSub: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--text-muted)',
       margin: 0,
     },
     accountIDBox: {
@@ -703,11 +703,11 @@ const SettingsPage = () => {
     },
     accountIDValue: {
       padding: '6px 12px',
-      backgroundColor: '#f3f4f6',
+      backgroundColor: 'var(--bg-app)',
       borderRadius: '6px',
       fontSize: '12px',
       fontFamily: 'monospace',
-      color: '#374151',
+      color: 'var(--text-main)',
       maxWidth: '180px',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -715,9 +715,9 @@ const SettingsPage = () => {
     },
     copyBtn: {
       padding: '5px 8px',
-      border: '1px solid #e5e7eb',
+      border: '1px solid var(--border-color)',
       borderRadius: '6px',
-      background: '#fff',
+      background: 'var(--bg-card)',
       cursor: 'pointer',
       fontSize: '13px',
       display: 'flex',
@@ -726,8 +726,8 @@ const SettingsPage = () => {
     },
     roleBadge: {
       padding: '4px 12px',
-      backgroundColor: '#f5f3ff',
-      color: '#7c3aed',
+      backgroundColor: 'var(--purple-light)',
+      color: 'var(--purple)',
       borderRadius: '6px',
       fontSize: '13px',
       fontWeight: '600',
@@ -735,8 +735,8 @@ const SettingsPage = () => {
     },
     activeBadge: {
       padding: '4px 12px',
-      backgroundColor: '#d1fae5',
-      color: '#065f46',
+      backgroundColor: 'var(--success-light)',
+      color: 'var(--success)',
       borderRadius: '6px',
       fontSize: '13px',
       fontWeight: '600',
@@ -750,9 +750,9 @@ const SettingsPage = () => {
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
-      backgroundColor: type === 'success' ? '#ecfdf5' : '#fef2f2',
-      color: type === 'success' ? '#047857' : '#b91c1c',
-      border: type === 'success' ? '1px solid #a7f3d0' : '1px solid #fca5a5',
+      backgroundColor: type === 'success' ? 'var(--success-light)' : '#fef2f2',
+      color: type === 'success' ? 'var(--success)' : '#b91c1c',
+      border: type === 'success' ? '1px solid var(--success-light)' : '1px solid #fca5a5',
     }),
     loadingContainer: {
       display: 'flex',
@@ -760,7 +760,7 @@ const SettingsPage = () => {
       alignItems: 'center',
       minHeight: '200px',
       fontSize: '16px',
-      color: '#6b7280',
+      color: 'var(--text-muted)',
     }
   };
 
@@ -781,8 +781,8 @@ const SettingsPage = () => {
   const renderProfile = () => (
     <form onSubmit={handleSaveProfile} style={styles.card}>
       <div style={styles.cardHeader}>
-        <div style={{ ...styles.cardIconWrap, backgroundColor: '#f5f3ff' }}>
-          <User size={18} color="#7c3aed" />
+        <div style={{ ...styles.cardIconWrap, backgroundColor: 'var(--purple-light)' }}>
+          <User size={18} color="var(--purple)" />
         </div>
         <div>
           <h2 style={styles.cardTitle}>Profile Information</h2>
@@ -908,8 +908,8 @@ const SettingsPage = () => {
       <div style={styles.card}>
         <div style={styles.twoFARow}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
-            <div style={{ ...styles.cardIconWrap, backgroundColor: '#f5f3ff' }}>
-              <ShieldCheck size={18} color="#7c3aed" />
+            <div style={{ ...styles.cardIconWrap, backgroundColor: 'var(--purple-light)' }}>
+              <ShieldCheck size={18} color="var(--purple)" />
             </div>
             <div>
               <h2 style={{ ...styles.cardTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -930,7 +930,7 @@ const SettingsPage = () => {
 
         {twoFactorEnabled ? (
           <div style={styles.warningBoxGreen}>
-            <ShieldCheck size={20} color="#047857" style={{ marginTop: '2px', flexShrink: 0 }} />
+            <ShieldCheck size={20} color="var(--success)" style={{ marginTop: '2px', flexShrink: 0 }} />
             <div>
               <p style={styles.warningTextGreen}>Your account is protected by 2FA</p>
               <p style={styles.warningSubtextGreen}>
@@ -940,7 +940,7 @@ const SettingsPage = () => {
           </div>
         ) : (
           <div style={styles.warningBox}>
-            <ShieldAlert size={20} color="#b45309" style={{ marginTop: '2px', flexShrink: 0 }} />
+            <ShieldAlert size={20} color="var(--warning)" style={{ marginTop: '2px', flexShrink: 0 }} />
             <div>
               <p style={styles.warningText}>Your account is not protected by 2FA</p>
               <p style={styles.warningSubtext}>
@@ -957,8 +957,8 @@ const SettingsPage = () => {
     <>
       <div style={styles.card}>
         <div style={styles.cardHeader}>
-          <div style={{ ...styles.cardIconWrap, backgroundColor: '#ede9fe' }}>
-            <Tag size={18} color="#7c3aed" />
+          <div style={{ ...styles.cardIconWrap, backgroundColor: 'var(--purple-light)' }}>
+            <Tag size={18} color="var(--purple)" />
           </div>
           <div>
             <h2 style={styles.cardTitle}>Order Identification</h2>
@@ -1027,7 +1027,7 @@ const SettingsPage = () => {
               </button>
             </div>
             <div style={styles.exchangeNote}>
-              <Coins size={14} color="#b45309" />
+              <Coins size={14} color="var(--warning)" />
               <span>$10 = {(parseFloat(exchangeRate) || 0) * 10} {country === 'MA' ? 'MAD' : country === 'FR' ? 'EUR' : country === 'TN' ? 'TND' : country === 'DZ' ? 'DZD' : 'USD'}</span>
             </div>
           </div>
@@ -1044,8 +1044,8 @@ const SettingsPage = () => {
     return (
       <div style={styles.card}>
         <div style={styles.cardHeader}>
-          <div style={{ ...styles.cardIconWrap, backgroundColor: '#ede9fe' }}>
-            <Info size={18} color="#7c3aed" />
+          <div style={{ ...styles.cardIconWrap, backgroundColor: 'var(--purple-light)' }}>
+            <Info size={18} color="var(--purple)" />
           </div>
           <div>
             <h2 style={styles.cardTitle}>Account Information</h2>
@@ -1087,7 +1087,7 @@ const SettingsPage = () => {
             <p style={styles.accountRowLabel}>Member Since</p>
             <p style={styles.accountRowSub}>Account creation date</p>
           </div>
-          <span style={{ fontSize: '14px', color: '#374151', fontWeight: '500' }}>{creationDate}</span>
+          <span style={{ fontSize: '14px', color: 'var(--text-main)', fontWeight: '500' }}>{creationDate}</span>
         </div>
       </div>
     );

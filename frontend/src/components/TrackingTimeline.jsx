@@ -65,7 +65,7 @@ export default function TrackingTimeline({ events = [] }) {
         top: '40px',
         bottom: 0,
         width: '2px',
-        backgroundColor: '#e5e7eb'
+        backgroundColor: 'var(--border-color)'
       }} />
 
       {/* Timeline events */}
@@ -95,7 +95,7 @@ export default function TrackingTimeline({ events = [] }) {
                 justifyContent: 'center',
                 width: '28px',
                 height: '28px',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '50%',
                 flexShrink: 0
               }}>

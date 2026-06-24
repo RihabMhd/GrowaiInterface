@@ -23,7 +23,7 @@ function CityTable({ data }) {
       <div style={{ padding: '12px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <MapPin size={13} style={{ color: '#10b981' }} />
+            <MapPin size={13} style={{ color: 'var(--success)' }} />
             <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-main)' }}>
               Cities Loaded
             </span>
@@ -36,7 +36,7 @@ function CityTable({ data }) {
             style={{
               display: 'flex', alignItems: 'center', gap: '4px',
               padding: '4px 10px', borderRadius: '6px',
-              backgroundColor: showRaw ? '#f3f4f6' : 'transparent',
+              backgroundColor: showRaw ? 'var(--bg-app)' : 'transparent',
               border: '1px solid var(--border-color)',
               fontSize: '11px', fontWeight: '500', color: 'var(--text-muted)',
               cursor: 'pointer'
@@ -50,7 +50,7 @@ function CityTable({ data }) {
         {showRaw ? (
           <pre style={{
             margin: 0, padding: '10px 12px', fontSize: '11px', lineHeight: '1.5',
-            backgroundColor: '#1e1e2e', color: '#cdd6f4',
+            backgroundColor: 'var(--bg-card)', color: 'var(--text-main)',
             overflow: 'auto', maxHeight: '250px', fontFamily: 'monospace', borderRadius: '6px'
           }}>
             {formatted}
@@ -69,9 +69,9 @@ function CityTable({ data }) {
               </thead>
               <tbody>
                 {data.map((city, i) => (
-                  <tr key={city.id ?? i} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                  <tr key={city.id ?? i} style={{ borderBottom: '1px solid var(--bg-app)' }}>
                     <td style={{ padding: '5px 10px', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{city.id}</td>
-                    <td style={{ padding: '5px 10px', fontFamily: 'monospace', color: '#7c3aed', fontWeight: '500' }}>{city.ref}</td>
+                    <td style={{ padding: '5px 10px', fontFamily: 'monospace', color: 'var(--purple)', fontWeight: '500' }}>{city.ref}</td>
                     <td style={{ padding: '5px 10px', color: 'var(--text-main)', fontWeight: '500' }}>{city.name}</td>
                   </tr>
                 ))}
@@ -114,7 +114,7 @@ export default function ResponsePayload({ data }) {
           : (
             <pre style={{
               margin: 0, padding: '12px 14px', fontSize: '11px', lineHeight: '1.6',
-              backgroundColor: '#1e1e2e', color: '#cdd6f4',
+              backgroundColor: 'var(--bg-card)', color: 'var(--text-main)',
               overflow: 'auto', maxHeight: '300px', fontFamily: 'monospace'
             }}>
               {(() => { try { return JSON.stringify(typeof data === 'string' ? JSON.parse(data) : data, null, 2); } catch { return String(data || 'No response data'); } })()}

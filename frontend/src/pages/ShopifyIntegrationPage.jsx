@@ -31,9 +31,9 @@ function Toast({ message, type, onDismiss }) {
   }, [onDismiss]);
 
   const colors = {
-    success: { bg: '#EAF3DE', border: '#C0DD97', text: '#3B6D11', Icon: CheckCircle2 },
-    error:   { bg: '#FCEBEB', border: '#F7C1C1', text: '#A32D2D', Icon: XCircle },
-    info:    { bg: '#E6F1FB', border: '#B5D4F4', text: '#185FA5', Icon: AlertCircle },
+        success: { bg: 'var(--success-light)', border: 'var(--success-light)', text: 'var(--success)', Icon: CheckCircle2 },
+        error:   { bg: 'var(--danger-light)', border: 'var(--danger-light)', text: 'var(--danger)', Icon: XCircle },
+        info:    { bg: 'var(--primary-light)', border: 'var(--primary-light)', text: 'var(--primary)', Icon: AlertCircle },
   };
   const { bg, border, text, Icon } = colors[type] || colors.info;
 
@@ -113,7 +113,7 @@ const [syncResult, setSyncResult] = useState(null);
       {/* Top row: logo + name + status + sync + disconnect */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
         <div style={{
-          width: 44, height: 44, borderRadius: 10, background: '#f6fef0',
+          width: 44, height: 44, borderRadius: 10, background: 'var(--success-light)',
           border: '1px solid #d5edba', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
           <ShopifyLogo size={24} />
@@ -131,11 +131,11 @@ const [syncResult, setSyncResult] = useState(null);
         {/* Active badge */}
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 5,
-          fontSize: 11, fontWeight: 600, color: '#3B6D11',
-          background: '#EAF3DE', padding: '3px 10px', borderRadius: 12,
-          border: '1px solid #C0DD97', flexShrink: 0,
+          fontSize: 11, fontWeight: 600, color: 'var(--success)',
+          background: 'var(--success-light)', padding: '3px 10px', borderRadius: 12,
+          border: '1px solid var(--success-light)', flexShrink: 0,
         }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#65a30d', display: 'inline-block' }} />
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }} />
           Active
         </span>
 
@@ -146,15 +146,15 @@ const [syncResult, setSyncResult] = useState(null);
           title="Sync products from this store"
           style={{
             display: 'flex', alignItems: 'center', gap: 5,
-            background: syncing ? '#e0e7d4' : '#f0f7e6',
-            border: '1px solid #c0dd97',
+            background: syncing ? 'var(--success-light)' : 'var(--success-light)',
+            border: '1px solid var(--success-light)',
             borderRadius: 8, padding: '6px 12px', cursor: syncing ? 'not-allowed' : 'pointer',
-            color: syncing ? '#888' : '#3B6D11',
+            color: syncing ? 'var(--text-muted)' : 'var(--success)',
             fontSize: 12, fontWeight: 600,
             transition: 'all 0.15s', flexShrink: 0,
           }}
-          onMouseEnter={e => { if (!syncing) { e.currentTarget.style.background = '#d8efb8'; e.currentTarget.style.borderColor = '#9ac55a'; } }}
-          onMouseLeave={e => { if (!syncing) { e.currentTarget.style.background = '#f0f7e6'; e.currentTarget.style.borderColor = '#c0dd97'; } }}
+          onMouseEnter={e => { if (!syncing) { e.currentTarget.style.background = 'var(--success-light)'; e.currentTarget.style.borderColor = 'var(--success)'; } }}
+          onMouseLeave={e => { if (!syncing) { e.currentTarget.style.background = 'var(--success-light)'; e.currentTarget.style.borderColor = 'var(--success-light)'; } }}
         >
           <RefreshCw size={12} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
           {syncing ? 'Syncing…' : 'Sync products'}
@@ -170,7 +170,7 @@ const [syncResult, setSyncResult] = useState(null);
             display: 'flex', alignItems: 'center', color: 'var(--text-muted, #6b7280)',
             transition: 'all 0.15s', flexShrink: 0,
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#f7c1c1'; e.currentTarget.style.color = '#a32d2d'; }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--danger-light)'; e.currentTarget.style.color = 'var(--danger)'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color, #e5e7eb)'; e.currentTarget.style.color = 'var(--text-muted, #6b7280)'; }}
         >
           <LogOut size={14} />
@@ -201,7 +201,7 @@ const [syncResult, setSyncResult] = useState(null);
         <div style={{ fontSize: 11, color: 'var(--text-muted, #6b7280)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>🏷</span>
           <span>Boutique name for WhatsApp messages</span>
-          <code style={{ fontSize: 10, background: 'rgba(0,0,0,0.06)', padding: '1px 5px', borderRadius: 4, color: 'var(--text-muted, #6b7280)' }}>
+          <code style={{ fontSize: 10, background: 'var(--bg-app)', padding: '1px 5px', borderRadius: 4, color: 'var(--text-muted, #6b7280)' }}>
             {'{{boutique_name}}'}
           </code>
         </div>
@@ -216,7 +216,7 @@ const [syncResult, setSyncResult] = useState(null);
               background: 'var(--bg-app, #f9fafb)', color: 'var(--text-main, #111)',
               outline: 'none', transition: 'border-color 0.15s',
             }}
-            onFocus={e => e.target.style.borderColor = '#65a30d'}
+            onFocus={e => e.target.style.borderColor = 'var(--success)'}
             onBlur={e => e.target.style.borderColor = 'var(--border-color, #e5e7eb)'}
           />
           <button
@@ -224,13 +224,13 @@ const [syncResult, setSyncResult] = useState(null);
             disabled={saving}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              background: saving ? '#a3c76a' : '#65a30d', color: '#fff',
+              background: saving ? 'var(--success)' : 'var(--success)', color: '#fff',
               border: 'none', borderRadius: 8, padding: '8px 16px',
               fontSize: 13, fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
               transition: 'background 0.15s', flexShrink: 0,
             }}
-            onMouseEnter={e => !saving && (e.currentTarget.style.background = '#4d7c0f')}
-            onMouseLeave={e => !saving && (e.currentTarget.style.background = '#65a30d')}
+            onMouseEnter={e => !saving && (e.currentTarget.style.background = 'var(--success)')}
+            onMouseLeave={e => !saving && (e.currentTarget.style.background = 'var(--success)')}
           >
             {saving ? <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={13} />}
             Save
@@ -378,7 +378,7 @@ export default function ShopifyIntegrationPage() {
       {/* ── Header ─────────────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
         <div style={{
-          width: 52, height: 52, borderRadius: 12, background: '#fff',
+          width: 52, height: 52, borderRadius: 12, background: 'var(--bg-card)',
           border: '1px solid var(--border-color, #e5e7eb)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
@@ -391,11 +391,11 @@ export default function ShopifyIntegrationPage() {
             {!loading && anyConnected && (
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
-                fontSize: 11, fontWeight: 600, color: '#3B6D11',
-                background: '#EAF3DE', padding: '3px 10px', borderRadius: 12,
-                border: '1px solid #C0DD97',
+                fontSize: 11, fontWeight: 600, color: 'var(--success)',
+                background: 'var(--success-light)', padding: '3px 10px', borderRadius: 12,
+                border: '1px solid var(--success-light)',
               }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#65a30d', display: 'inline-block' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }} />
                 Connected
               </span>
             )}
@@ -443,18 +443,18 @@ export default function ShopifyIntegrationPage() {
                   onClick={() => setShowAddPanel(true)}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 8,
-                    background: '#65a30d', color: '#fff', border: 'none',
+                    background: 'var(--success)', color: '#fff', border: 'none',
                     borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600,
                     cursor: 'pointer', transition: 'background 0.15s',
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#4d7c0f'}
-                  onMouseLeave={e => e.currentTarget.style.background = '#65a30d'}
+                  onMouseEnter={e => e.currentTarget.style.background = 'var(--success)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'var(--success)'}
                 >
                   <Plus size={15} /> Connect Shopify
                 </button>
               ) : (
                 <div style={{
-                  border: '1px solid #c0dd97', borderRadius: 10,
+                  border: '1px solid var(--success-light)', borderRadius: 10,
                   padding: '14px 16px', background: '#f9fef4',
                   textAlign: 'left', marginTop: 8,
                   animation: 'slideIn 0.18s ease',
@@ -472,10 +472,10 @@ export default function ShopifyIntegrationPage() {
                       style={{
                         flex: 1, padding: '9px 12px', fontSize: 13,
                         border: '1px solid var(--border-color, #e5e7eb)', borderRadius: 8,
-                        background: '#fff', color: 'var(--text-main, #111)',
+                        background: 'var(--bg-card)', color: 'var(--text-main, #111)',
                         outline: 'none',
                       }}
-                      onFocus={e => e.target.style.borderColor = '#65a30d'}
+                      onFocus={e => e.target.style.borderColor = 'var(--success)'}
                       onBlur={e => e.target.style.borderColor = 'var(--border-color, #e5e7eb)'}
                     />
                     <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', whiteSpace: 'nowrap' }}>
@@ -484,7 +484,7 @@ export default function ShopifyIntegrationPage() {
                     <button
                       onClick={handleConnectStore}
                       style={{
-                        background: '#65a30d', color: '#fff', border: 'none',
+                        background: 'var(--success)', color: '#fff', border: 'none',
                         borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 600,
                         cursor: 'pointer', whiteSpace: 'nowrap',
                       }}
@@ -516,7 +516,7 @@ export default function ShopifyIntegrationPage() {
                     color: 'var(--text-muted, #6b7280)', cursor: 'pointer',
                     transition: 'all 0.15s', marginBottom: 12,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#65a30d'; e.currentTarget.style.color = '#65a30d'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--success)'; e.currentTarget.style.color = 'var(--success)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color, #e5e7eb)'; e.currentTarget.style.color = 'var(--text-muted, #6b7280)'; }}
                 >
                   <span style={{
@@ -532,7 +532,7 @@ export default function ShopifyIntegrationPage() {
 
               {showAddPanel && (
                 <div style={{
-                  border: '2px dashed #c0dd97', borderRadius: 12,
+                  border: '2px dashed var(--success-light)', borderRadius: 12,
                   padding: '18px 20px', marginBottom: 12,
                   background: '#f9fef4',
                   animation: 'slideIn 0.18s ease',
@@ -563,10 +563,10 @@ export default function ShopifyIntegrationPage() {
                       style={{
                         flex: 1, padding: '9px 12px', fontSize: 13,
                         border: '1px solid var(--border-color, #e5e7eb)', borderRadius: 8,
-                        background: '#fff', color: 'var(--text-main, #111)',
+                        background: 'var(--bg-card)', color: 'var(--text-main, #111)',
                         outline: 'none', transition: 'border-color 0.15s',
                       }}
-                      onFocus={e => e.target.style.borderColor = '#65a30d'}
+                      onFocus={e => e.target.style.borderColor = 'var(--success)'}
                       onBlur={e => e.target.style.borderColor = 'var(--border-color, #e5e7eb)'}
                     />
                     <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', whiteSpace: 'nowrap', userSelect: 'none' }}>
@@ -576,12 +576,12 @@ export default function ShopifyIntegrationPage() {
                       onClick={handleConnectStore}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 6,
-                        background: '#65a30d', color: '#fff', border: 'none',
+                        background: 'var(--success)', color: '#fff', border: 'none',
                         borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 600,
                         cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap',
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#4d7c0f'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#65a30d'}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--success)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'var(--success)'}
                     >
                       Connect
                     </button>
