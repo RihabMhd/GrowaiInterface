@@ -69,13 +69,16 @@ export default function ConnectCompanyModal({ company, onClose, onSuccess }) {
     setIsLoading(true);
     setError(null);
     try {
-      const credentials = {
-        c_api_id: data.c_api_id,
-        c_api_key: data.c_api_key,
-        ...(data.secret_key && { secret_key: data.secret_key })
+      const payload = {
+        api_id: data.c_api_id,
+        api_key: data.c_api_key,
+        ...(data.secret_key && { secret_key: data.secret_key }),
       };
 
-      await companiesService.connectCompany(company.id, credentials);
+      console.log("AMEEX connect payload:", payload);
+
+      await companiesService.connectCompany(company.id, payload);
+
       onSuccess?.();
       onClose?.();
     } catch (err) {

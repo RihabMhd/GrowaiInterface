@@ -15,8 +15,22 @@ export const companiesService = {
         api.get('/companies').then(r => r.data),
 
     // Admin: active delivery companies
-    getActiveDeliveryCompanies: () =>
-        api.get('/admin/delivery-companies/active').then(r => r.data?.data ?? r.data),
+    // Normalized to always return an array.
+    // Supports backend response shapes:
+    // A) { companies: [...] }
+    // B) { data: [...] }
+    // C) [ ... ]
+    getActiveDeliveryCompanies: async () => {
+        const response = await api.get('/admin/delivery-companies/active');
+        const payload = response?.data;
+
+        if (Array.isArray(payload?.companies)) return payload.companies;
+        if (Array.isArray(payload?.data)) return payload.data;
+        if (Array.isArray(payload)) return payload;
+
+        return [];
+    },
+
 
 
     getCompany: (id) =>

@@ -867,9 +867,26 @@ export default function AdminOrders() {
     } catch (err) { console.error(err); showToast("Bulk assign failed.", "error"); }
   };
 
-  const handleBulkCreateParcel = (ids) => {
-    showToast(`Create parcel for ${ids.length} orders — connect a delivery company first.`, "info");
-    setSelectedIds([]);
+  const handleBulkCreateParcel = async (ids) => {
+    try {
+      // Use the same source of truth as the single-order CreateParcelFlow
+      // (CreateParcelFlow will also display "No active delivery companies." if empty.)
+      const { companiesService } = await import("../services/companiesService");
+      const active = await companiesService.getActiveDeliveryCompanies();
+
+      if (!Array.isArray(active) || active.length === 0) {
+        showToast("No active delivery companies.", "info");
+        return;
+      }
+
+      // Open the shared CreateParcelFlow modal in bulk mode
+      setCreateParcelOrder({ mode: "bulk", ids });
+      setIsCreateParcelOpen(true);
+      setSelectedIds([]);
+    } catch (e) {
+      console.error(e);
+      showToast("Failed to load delivery companies.", "error");
+    }
   };
 
   // ── Row selection ─────────────────────────────────────────────────────────
