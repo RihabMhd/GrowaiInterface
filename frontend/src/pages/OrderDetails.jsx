@@ -263,12 +263,16 @@ const OrderDetails = ({
         color: 'var(--text-main)', marginBottom: 4,
     };
 
-    const [histories, setHistories] = useState(order?.histories ?? []);
+    const histories = order?.histories ?? [];
 
     useEffect(() => {
+        if (!order?.id) return;
         api.get(`/orders/${order.id}?with=histories`)
-            .then(r => setHistories(r.data?.data?.histories ?? r.data?.histories ?? []))
-    }, [order.id]);
+            .then(r => {
+                const full = r.data?.data ?? r.data;
+                if (full) onOrderUpdated?.(full);
+            });
+    }, [order?.id]);
     // ── FIX: Update to use shippingCost and discountAmount ──
     useEffect(() => {
         if (!order) return;
@@ -699,7 +703,7 @@ const OrderDetails = ({
                             <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
                                 {(() => {
                                     const statusHistories = (histories || []).filter(
-                                        h => h.action_type === 'status_changed'
+                                        h => h.action_type === 'status_changed' || h.action_type === 'status'
                                     );
                                     return statusHistories.length > 0 ? (
                                         [...statusHistories].reverse().map((h, i, arr) => {
@@ -726,10 +730,9 @@ const OrderDetails = ({
                                                                 {h.user?.name || 'System'}
                                                             </span>
                                                         </div>
-                                                        {h.action_type !== 'status_changed' &&
-                                                            h.action_type !== 'status_changed' && (
-                                                                <div style={{ marginTop: 3, fontSize: '0.72rem', color: 'var(--text-muted)' }}>{h.description}</div>
-                                                            )}
+                                                        {h.description && (
+                                                            <div style={{ marginTop: 3, fontSize: '0.72rem', color: 'var(--text-muted)' }}>{h.description}</div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );

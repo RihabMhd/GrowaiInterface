@@ -22,7 +22,7 @@ const COMPANY_STATUSES = [
   { slug: "picked_up",          label: "Picked Up",           color: "#8b5cf6", icon: "🤝"  },
   { slug: "delivered",          label: "Delivered",           color: "#10b981", icon: "🎉"  },
   { slug: "delayed",            label: "Delayed",             color: "#f97316", icon: "⏳"  },
-  { slug: "failure",           label: "failure",            color: "#dc2626", icon: "↩️"  },
+  { slug: "failure",            label: "Failure",             color: "#dc2626", icon: "↩️"  },
 ];
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -88,8 +88,8 @@ function ToggleSwitch({ checked, onChange, size = "md" }) {
   const d = size === "sm" ? 13 : 16;
   const on = size === "sm" ? w - d - 3 : 22;
   return (
-    <div onClick={onChange} style={{ width: `${w}px`, height: `${h}px`, borderRadius: `${h/2}px`, cursor: "pointer", background: checked ? "#22c55e" : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.25s", flexShrink: 0, border: checked ? "1px solid #16a34a" : "1px solid rgba(255,255,255,0.15)" }}>
-      <div style={{ position: "absolute", top: "3px", left: checked ? `${on}px` : "3px", width: `${d}px`, height: `${d}px`, borderRadius: "50%", background: "#fff", transition: "left 0.25s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }}/>
+    <div onClick={onChange} style={{ width: `${w}px`, height: `${h}px`, borderRadius: `${h/2}px`, cursor: "pointer", background: checked ? "#22c55e" : "rgba(0,0,0,0.1)", position: "relative", transition: "background 0.25s", flexShrink: 0, border: checked ? "1px solid #16a34a" : "1px solid rgba(0,0,0,0.12)" }}>
+      <div style={{ position: "absolute", top: "3px", left: checked ? `${on}px` : "3px", width: `${d}px`, height: `${d}px`, borderRadius: "50%", background: "#fff", transition: "left 0.25s", boxShadow: "0 1px 4px rgba(0,0,0,0.2)" }}/>
     </div>
   );
 }
@@ -104,7 +104,7 @@ function PhonePreview({ message, customerName = "Ahmed Benali" }) {
     .replace(/{{total}}/g, "3 500");
   const lines = rendered.split("\n").filter(Boolean);
   return (
-    <div style={{ width: "220px", background: "#1a1a2e", borderRadius: "32px", overflow: "hidden", border: "6px solid #0d0d1a", boxShadow: "0 24px 60px rgba(0,0,0,0.6)", flexShrink: 0 }}>
+    <div style={{ width: "220px", background: "#1a1a2e", borderRadius: "32px", overflow: "hidden", border: "6px solid #0d0d1a", boxShadow: "0 24px 60px rgba(0,0,0,0.25)", flexShrink: 0 }}>
       <div style={{ background: "#075e54", padding: "10px 16px 8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(255,255,255,0.2)", display:"flex",alignItems:"center",justifyContent:"center" }}><span style={{fontSize:"14px"}}>👤</span></div>
@@ -127,7 +127,6 @@ function PhonePreview({ message, customerName = "Ahmed Benali" }) {
           })}
           <div style={{ fontSize: "0.5rem", color: "rgba(0,0,0,0.4)", textAlign: "right", marginTop: "4px" }}>10:31 AM ✓✓</div>
         </div>
-        {/* Track button */}
         <div style={{ textAlign: "center", marginTop: "10px" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "#d9fdd3", borderRadius: "6px", padding: "5px 12px", fontSize: "0.58rem", color: "#075e54", fontWeight: "700", border: "1px solid rgba(7,94,84,0.2)" }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#075e54" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -150,21 +149,20 @@ function LangCard({ lang, message, selected, onSelect }) {
   const meta = LANG_FLAGS[lang] || { flag: "🌐", label: lang, abbr: lang.substring(0,2).toUpperCase() };
   const preview = (message || "").substring(0, 55).replace(/\n/g, " ") + ((message || "").length > 55 ? "..." : "");
   return (
-    <div onClick={onSelect} style={{ background: selected ? "rgba(34,197,94,0.08)" : "var(--bg-app,#111)", border: selected ? "1px solid rgba(34,197,94,0.4)" : "1px solid var(--border-color,#2a2a2e)", borderRadius: "12px", padding: "14px 16px", cursor: "pointer", transition: "all 0.15s", position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: "10px", right: "-18px", background: "linear-gradient(135deg,#7239ea,#a855f7)", color: "#fff", fontSize: "0.5rem", fontWeight: "800", padding: "3px 28px", transform: "rotate(45deg)", letterSpacing: "0.05em" }}>UTILITY</div>
+    <div onClick={onSelect} style={{ background: selected ? "rgba(34,197,94,0.06)" : "var(--bg-app,#f5f6fa)", border: selected ? "1px solid rgba(34,197,94,0.4)" : "1px solid var(--border-color,#ebedf3)", borderRadius: "12px", padding: "14px 16px", cursor: "pointer", transition: "all 0.15s", position: "relative", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
         {selected ? (
-          <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(34,197,94,0.2)", border: "2px solid #22c55e", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(34,197,94,0.15)", border: "2px solid #22c55e", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
         ) : (
-          <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <span style={{ fontSize: lang === "FR" || lang === "AR" ? "1rem" : "0.6rem", fontWeight: "700", color: "var(--text-muted,#888)" }}>{lang === "FR" ? "🇫🇷" : lang === "AR" ? "🇩🇿" : meta.abbr}</span>
+          <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(0,0,0,0.04)", border: "1px solid var(--border-color,#ebedf3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <span style={{ fontSize: lang === "FR" || lang === "AR" ? "1rem" : "0.6rem", fontWeight: "700", color: "var(--text-muted,#78787c)" }}>{lang === "FR" ? "🇫🇷" : lang === "AR" ? "🇩🇿" : meta.abbr}</span>
           </div>
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: "0.82rem", fontWeight: "700", color: "var(--text-main,#fff)", marginBottom: "3px" }}>{meta.label}</div>
-          <div style={{ fontSize: "0.71rem", color: "var(--text-muted,#888)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview || <em>No template set</em>}</div>
+          <div style={{ fontSize: "0.82rem", fontWeight: "700", color: "var(--text-main,#3f4254)", marginBottom: "3px" }}>{meta.label}</div>
+          <div style={{ fontSize: "0.71rem", color: "var(--text-muted,#78787c)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview || <em>No template set</em>}</div>
         </div>
       </div>
     </div>
@@ -175,7 +173,6 @@ function LangCard({ lang, message, selected, onSelect }) {
 function CompanyStatusTab({ savedMsg, setSavedMsg }) {
   const LANGS = ["FR", "AR", "FR/AR", "Darija AR", "Darija FR"];
 
-  // per-status enabled toggle
   const [enabled, setEnabled] = useState(() => Object.fromEntries(COMPANY_STATUSES.map(s => [s.slug, true])));
   const [selectedSlug, setSelectedSlug] = useState(COMPANY_STATUSES[0].slug);
   const [selectedLang, setSelectedLang] = useState("FR");
@@ -220,22 +217,19 @@ function CompanyStatusTab({ savedMsg, setSavedMsg }) {
     <div style={{ display: "grid", gridTemplateColumns: "220px 1fr 240px", gap: "16px", alignItems: "start" }}>
 
       {/* LEFT: Company status list with toggles */}
-      <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", overflow: "hidden" }}>
-        <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "0.65rem", fontWeight: "800", letterSpacing: "0.08em", color: "var(--text-muted,#888)", textTransform: "uppercase" }}>Company Statuses</span>
-          <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "rgba(255,255,255,0.06)", display:"flex",alignItems:"center",justifyContent:"center", cursor:"pointer", color:"var(--text-muted)" }}><IconInfo/></div>
+      <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+        <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: "0.65rem", fontWeight: "800", letterSpacing: "0.08em", color: "var(--text-muted,#78787c)", textTransform: "uppercase" }}>Company Statuses</span>
+          <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "rgba(0,0,0,0.04)", display:"flex",alignItems:"center",justifyContent:"center", cursor:"pointer", color:"var(--text-muted,#78787c)" }}><IconInfo/></div>
         </div>
         <div style={{ padding: "6px" }}>
           {COMPANY_STATUSES.map(s => {
             const isSelected = selectedSlug === s.slug;
             return (
               <div key={s.slug} onClick={() => { setSelectedSlug(s.slug); setSelectedLang("FR"); }}
-                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "9px", cursor: "pointer", background: isSelected ? "rgba(114,57,234,0.15)" : "transparent", border: isSelected ? "1px solid rgba(114,57,234,0.3)" : "1px solid transparent", transition: "all 0.15s", marginBottom: "2px" }}>
-                {/* Status icon + color dot */}
-                <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: `${s.color}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem", flexShrink: 0 }}>{s.icon}</div>
-                {/* Label */}
-                <span style={{ fontSize: "0.82rem", fontWeight: isSelected ? "700" : "500", color: isSelected ? "#c4a7ff" : "var(--text-main,#fff)", flex: 1 }}>{s.label}</span>
-                {/* Toggle — stop propagation so clicking toggle doesn't select row */}
+                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "9px", cursor: "pointer", background: isSelected ? "var(--purple-light,#eee5ff)" : "transparent", border: isSelected ? "1px solid rgba(137,80,252,0.2)" : "1px solid transparent", transition: "all 0.15s", marginBottom: "2px" }}>
+                <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem", flexShrink: 0 }}>{s.icon}</div>
+                <span style={{ fontSize: "0.82rem", fontWeight: isSelected ? "700" : "500", color: isSelected ? "var(--purple,#8950fc)" : "var(--text-main,#3f4254)", flex: 1 }}>{s.label}</span>
                 <div onClick={e => { e.stopPropagation(); handleToggleEnabled(s.slug, !enabled[s.slug]); }}>
                   <ToggleSwitch checked={enabled[s.slug]} onChange={() => {}} size="sm"/>
                 </div>
@@ -250,34 +244,31 @@ function CompanyStatusTab({ savedMsg, setSavedMsg }) {
 
         {/* Status name bar */}
         {selected && (
-          <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px" }}>
-            <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: `${selected.color}22`, border: `2px solid ${selected.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0 }}>{selected.icon}</div>
-            <span style={{ flex: 1, fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main,#fff)" }}>{selected.label}</span>
+          <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: `${selected.color}18`, border: `2px solid ${selected.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0 }}>{selected.icon}</div>
+            <span style={{ flex: 1, fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main,#3f4254)" }}>{selected.label}</span>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "0.72rem", color: "var(--text-muted,#888)" }}>Enabled</span>
+              <span style={{ fontSize: "0.72rem", color: "var(--text-muted,#78787c)" }}>Enabled</span>
               <ToggleSwitch checked={enabled[selectedSlug]} onChange={() => handleToggleEnabled(selectedSlug, !enabled[selectedSlug])}/>
             </div>
           </div>
         )}
 
         {/* WhatsApp card */}
-        <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", overflow: "hidden" }}>
-          {/* Card header with Auto-send toggle */}
-          <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#22c55e" }}><IconWhatsApp/></div>
+              <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(34,197,94,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#22c55e" }}><IconWhatsApp/></div>
               <div>
-                <div style={{ fontWeight: "700", fontSize: "0.92rem" }}>WhatsApp Template</div>
-                <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)" }}>Auto-sent when order moves to this status</div>
+                <div style={{ fontWeight: "700", fontSize: "0.92rem", color: "var(--text-main,#3f4254)" }}>WhatsApp Template</div>
+                <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#78787c)" }}>Auto-sent when order moves to this status</div>
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ fontSize: "0.72rem", fontWeight: "600", color: currentAutoSend ? "#22c55e" : "var(--text-muted,#888)" }}>Auto-send {currentAutoSend ? "ON" : "OFF"}</span>
+              <span style={{ fontSize: "0.72rem", fontWeight: "600", color: currentAutoSend ? "#22c55e" : "var(--text-muted,#78787c)" }}>Auto-send {currentAutoSend ? "ON" : "OFF"}</span>
               <ToggleSwitch checked={currentAutoSend} onChange={handleToggleAutoSend}/>
             </div>
           </div>
-
-          {/* Language cards */}
           <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
             {LANGS.map(lang => (
               <LangCard key={lang} lang={lang} message={templates[selectedSlug]?.[lang] || ""} selected={selectedLang === lang} onSelect={() => setSelectedLang(lang)}/>
@@ -287,25 +278,25 @@ function CompanyStatusTab({ savedMsg, setSavedMsg }) {
 
         {/* Template textarea editor */}
         {selected && (
-          <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", overflow: "hidden" }}>
-            <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 {selectedLang === "FR" ? <span style={{fontSize:"1rem"}}>🇫🇷</span> : selectedLang === "AR" ? <span style={{fontSize:"1rem"}}>🇩🇿</span> : <IconGlobe/>}
-                <span style={{ fontWeight: "700", fontSize: "0.85rem" }}>{LANG_FLAGS[selectedLang]?.label || selectedLang}</span>
+                <span style={{ fontWeight: "700", fontSize: "0.85rem", color: "var(--text-main,#3f4254)" }}>{LANG_FLAGS[selectedLang]?.label || selectedLang}</span>
               </div>
-              <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)", display: "flex", gap: "8px" }}>
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#78787c)", display: "flex", gap: "8px" }}>
                 {["{{customer_name}}", "{{order_id}}", "{{shop_name}}", "{{total}}"].map(v => (
-                  <code key={v} style={{ background: "rgba(114,57,234,0.15)", color: "#c4a7ff", borderRadius: "4px", padding: "2px 6px", fontSize: "0.65rem", cursor: "pointer" }}
+                  <code key={v} style={{ background: "var(--purple-light,#eee5ff)", color: "var(--purple,#8950fc)", borderRadius: "4px", padding: "2px 6px", fontSize: "0.65rem", cursor: "pointer" }}
                     onClick={() => handleTemplateChange(currentTemplate + v)}>{v}</code>
                 ))}
               </div>
             </div>
             <textarea value={currentTemplate} onChange={e => handleTemplateChange(e.target.value)}
               placeholder={`Write your WhatsApp message in ${selectedLang}...\nUse {{customer_name}}, {{order_id}}, {{shop_name}}, {{total}}`}
-              style={{ width: "100%", minHeight: "140px", background: "transparent", border: "none", outline: "none", color: "var(--text-main,#fff)", fontSize: "0.85rem", lineHeight: "1.6", padding: "16px 18px", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }}/>
-            <div style={{ padding: "10px 18px", borderTop: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)" }}>{currentTemplate.length} chars</span>
-              <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "7px 16px", borderRadius: "8px", background: saving ? "rgba(114,57,234,0.4)" : "#7239ea", color: "#fff", border: "none", fontSize: "0.78rem", fontWeight: "700", cursor: saving ? "not-allowed" : "pointer" }}>
+              style={{ width: "100%", minHeight: "140px", background: "transparent", border: "none", outline: "none", color: "var(--text-main,#3f4254)", fontSize: "0.85rem", lineHeight: "1.6", padding: "16px 18px", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }}/>
+            <div style={{ padding: "10px 18px", borderTop: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "0.7rem", color: "var(--text-muted,#78787c)" }}>{currentTemplate.length} chars</span>
+              <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "7px 16px", borderRadius: "8px", background: saving ? "rgba(137,80,252,0.4)" : "var(--purple,#8950fc)", color: "#fff", border: "none", fontSize: "0.78rem", fontWeight: "700", cursor: saving ? "not-allowed" : "pointer" }}>
                 <IconSave/>{saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
@@ -315,7 +306,7 @@ function CompanyStatusTab({ savedMsg, setSavedMsg }) {
 
       {/* RIGHT: Phone preview */}
       <div style={{ position: "sticky", top: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-        <div style={{ fontSize: "0.65rem", fontWeight: "700", letterSpacing: "0.08em", color: "var(--text-muted,#888)", textTransform: "uppercase" }}>Preview</div>
+        <div style={{ fontSize: "0.65rem", fontWeight: "700", letterSpacing: "0.08em", color: "var(--text-muted,#78787c)", textTransform: "uppercase" }}>Preview</div>
         <PhonePreview message={currentTemplate}/>
       </div>
     </div>
@@ -382,74 +373,64 @@ export default function Status() {
     finally { setSaving(false); }
   };
 
-  const statusMeta = selectedStatus ? (STATUS_META[selectedStatus.slug] || { color: "#7239ea" }) : {};
+  const statusMeta = selectedStatus ? (STATUS_META[selectedStatus.slug] || { color: "#8950fc" }) : {};
 
   if (loading) return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}>
-      <div style={{ border: "3px solid var(--border-color,#2a2a2e)", borderTop: "3px solid #7239ea", borderRadius: "50%", width: "32px", height: "32px", animation: "spin 1s linear infinite" }}/>
+      <div style={{ border: "3px solid var(--border-color,#ebedf3)", borderTop: "3px solid var(--purple,#8950fc)", borderRadius: "50%", width: "32px", height: "32px", animation: "spin 1s linear infinite" }}/>
       <style>{`@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
   return (
-    <div style={{ color: "var(--text-main,#fff)", minHeight: "100%", paddingBottom: "40px" }}>
-      <style>{`textarea::placeholder{color:rgba(255,255,255,0.2)} input::placeholder{color:rgba(255,255,255,0.2)}`}</style>
+    <div style={{ color: "var(--text-main,#3f4254)", minHeight: "100%", paddingBottom: "40px" }}>
+      <style>{`textarea::placeholder{color:rgba(0,0,0,0.25)} input::placeholder{color:rgba(0,0,0,0.25)}`}</style>
 
       {/* Toast */}
       {savedMsg && (
-        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: "10px", fontWeight: "700", fontSize: "0.85rem", boxShadow: "0 4px 16px rgba(34,197,94,0.4)", display: "flex", gap: "8px", alignItems: "center" }}>
+        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: "10px", fontWeight: "700", fontSize: "0.85rem", boxShadow: "0 4px 16px rgba(34,197,94,0.3)", display: "flex", gap: "8px", alignItems: "center" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           Changes saved!
         </div>
       )}
 
       {/* Page header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
-        <div>
-          <h2 style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "1.4rem", fontWeight: "800", margin: 0 }}>
-            <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(114,57,234,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#7239ea" }}><IconShield/></div>
-            Status
-          </h2>
-          <p style={{ color: "var(--text-muted,#888)", fontSize: "0.82rem", marginTop: "4px" }}>Configure confirmation and delivery statuses with WhatsApp templates</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <div style={{ display: "flex", gap: "4px", background: "var(--bg-app,#f5f6fa)", borderRadius: "12px", padding: "4px", border: "1px solid var(--border-color,#ebedf3)" }}>
+          {[
+            { key: "confirmation", label: "Confirmation Status", icon: <IconShield/> },
+            { key: "company",      label: "Company Status",      icon: <IconBuilding/> },
+          ].map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{ display: "flex", alignItems: "center", gap: "7px", padding: "8px 16px", borderRadius: "9px", fontSize: "0.82rem", fontWeight: "600", background: activeTab === tab.key ? "var(--bg-card,#fff)" : "transparent", color: activeTab === tab.key ? "var(--text-main,#3f4254)" : "var(--text-muted,#78787c)", border: "none", cursor: "pointer", transition: "all 0.15s", boxShadow: activeTab === tab.key ? "0 1px 4px rgba(0,0,0,0.08)" : "none" }}>
+              {tab.icon}{tab.label}
+            </button>
+          ))}
         </div>
-        {activeTab === "confirmation" && (
-          <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 22px", borderRadius: "10px", fontSize: "0.85rem", fontWeight: "700", background: saving ? "rgba(114,57,234,0.5)" : "#7239ea", color: "#fff", border: "none", cursor: saving ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(114,57,234,0.3)" }}>
-            <IconSave/>{saving ? "Saving..." : "Save Changes"}
-          </button>
-        )}
-      </div>
-
-      {/* Tab bar */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
-        {[
-          { key: "confirmation", label: "Confirmation Status", icon: <IconShield/> },
-          { key: "company",      label: "Company Status",      icon: <IconBuilding/> },
-        ].map(tab => (
-          <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "9px 18px", borderRadius: "10px", fontSize: "0.82rem", fontWeight: "700", background: activeTab === tab.key ? "var(--bg-card,#18181b)" : "transparent", color: activeTab === tab.key ? "var(--text-main,#fff)" : "var(--text-muted,#888)", border: activeTab === tab.key ? "1px solid var(--border-color,#2a2a2e)" : "1px solid transparent", cursor: "pointer", transition: "all 0.2s" }}>
-            {tab.icon}{tab.label}
-          </button>
-        ))}
+        <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 22px", borderRadius: "10px", fontSize: "0.85rem", fontWeight: "700", background: saving ? "rgba(137,80,252,0.5)" : "var(--purple,#8950fc)", color: "#fff", border: "none", cursor: saving ? "not-allowed" : "pointer", boxShadow: "0 4px 16px rgba(137,80,252,0.2)" }}>
+          <IconSave/>{saving ? "Saving..." : "Save Changes"}
+        </button>
       </div>
 
       {/* ── CONFIRMATION TAB ── */}
       {activeTab === "confirmation" && (
         <div style={{ display: "grid", gridTemplateColumns: "220px 1fr 240px", gap: "16px", alignItems: "start" }}>
+
           {/* LEFT */}
-          <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", overflow: "hidden" }}>
-            <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "0.65rem", fontWeight: "800", letterSpacing: "0.08em", color: "var(--text-muted,#888)", textTransform: "uppercase" }}>Confirmation Statuses</span>
-              <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "rgba(255,255,255,0.06)", display:"flex",alignItems:"center",justifyContent:"center", cursor:"pointer", color:"var(--text-muted)" }}><IconInfo/></div>
+          <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "0.65rem", fontWeight: "800", letterSpacing: "0.08em", color: "var(--text-muted,#78787c)", textTransform: "uppercase" }}>Confirmation Statuses</span>
+              <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "rgba(0,0,0,0.04)", display:"flex",alignItems:"center",justifyContent:"center", cursor:"pointer", color:"var(--text-muted,#78787c)" }}><IconInfo/></div>
             </div>
             <div style={{ padding: "6px" }}>
               {statuses.map(s => {
-                const meta = STATUS_META[s.slug] || { color: "#7239ea", label: s.name };
+                const meta = STATUS_META[s.slug] || { color: "#8950fc", label: s.name };
                 const isSelected = selectedStatus?.id === s.id;
                 return (
                   <div key={s.id} onClick={() => { setSelectedStatus(s); setSelectedLang("FR"); }}
-                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "9px", cursor: "pointer", background: isSelected ? "rgba(114,57,234,0.15)" : "transparent", border: isSelected ? "1px solid rgba(114,57,234,0.3)" : "1px solid transparent", transition: "all 0.15s", marginBottom: "2px" }}>
-                    <div style={{ display:"flex", flexDirection:"column", gap:"1px", opacity:0.4 }}><IconChevron up/><IconChevron/></div>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: meta.color, flexShrink: 0, boxShadow: `0 0 6px ${meta.color}60` }}/>
-                    <span style={{ fontSize: "0.82rem", fontWeight: isSelected ? "700" : "500", color: isSelected ? "#c4a7ff" : "var(--text-main,#fff)" }}>{s.name || meta.label}</span>
+                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "9px", cursor: "pointer", background: isSelected ? "var(--purple-light,#eee5ff)" : "transparent", border: isSelected ? "1px solid rgba(137,80,252,0.2)" : "1px solid transparent", transition: "all 0.15s", marginBottom: "2px" }}>
+                    <div style={{ display:"flex", flexDirection:"column", gap:"1px", opacity:0.3 }}><IconChevron up/><IconChevron/></div>
+                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: meta.color, flexShrink: 0, boxShadow: `0 0 5px ${meta.color}50` }}/>
+                    <span style={{ fontSize: "0.82rem", fontWeight: isSelected ? "700" : "500", color: isSelected ? "var(--purple,#8950fc)" : "var(--text-main,#3f4254)" }}>{s.name || meta.label}</span>
                   </div>
                 );
               })}
@@ -459,27 +440,28 @@ export default function Status() {
           {/* CENTER */}
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {selectedStatus && (
-              <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px" }}>
-                <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: `${statusMeta.color}22`, border: `2px solid ${statusMeta.color}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: statusMeta.color, boxShadow: `0 0 8px ${statusMeta.color}` }}/>
+              <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", padding: "14px 18px", display: "flex", alignItems: "center", gap: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: `${statusMeta.color}18`, border: `2px solid ${statusMeta.color}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: statusMeta.color, boxShadow: `0 0 6px ${statusMeta.color}80` }}/>
                 </div>
-                <input value={selectedStatus.name || statusMeta.label || ""} onChange={e => setStatuses(prev => prev.map(s => s.id === selectedStatus.id ? { ...s, name: e.target.value } : s))} style={{ flex: 1, background: "transparent", border: "none", outline: "none", fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main,#fff)" }}/>
-                <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: `${statusMeta.color}22`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <input value={selectedStatus.name || statusMeta.label || ""} onChange={e => setStatuses(prev => prev.map(s => s.id === selectedStatus.id ? { ...s, name: e.target.value } : s))} style={{ flex: 1, background: "transparent", border: "none", outline: "none", fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main,#3f4254)" }}/>
+                <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: `${statusMeta.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <div style={{ width: "16px", height: "16px", borderRadius: "4px", background: statusMeta.color }}/>
                 </div>
               </div>
             )}
-            <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", overflow: "hidden" }}>
-              <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
+            <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+              <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#22c55e" }}><IconWhatsApp/></div>
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(34,197,94,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#22c55e" }}><IconWhatsApp/></div>
                   <div>
-                    <div style={{ fontWeight: "700", fontSize: "0.92rem" }}>WhatsApp Template</div>
-                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)" }}>Auto-sent when order moves to this status</div>
+                    <div style={{ fontWeight: "700", fontSize: "0.92rem", color: "var(--text-main,#3f4254)" }}>WhatsApp Template</div>
+                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#78787c)" }}>Auto-sent when order moves to this status</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "0.72rem", fontWeight: "600", color: currentAutoSend ? "#22c55e" : "var(--text-muted,#888)" }}>Auto-send {currentAutoSend ? "ON" : "OFF"}</span>
+                  <span style={{ fontSize: "0.72rem", fontWeight: "600", color: currentAutoSend ? "#22c55e" : "var(--text-muted,#78787c)" }}>Auto-send {currentAutoSend ? "ON" : "OFF"}</span>
                   <ToggleSwitch checked={currentAutoSend} onChange={handleToggleAutoSend}/>
                 </div>
               </div>
@@ -487,24 +469,25 @@ export default function Status() {
                 {LANGS.map(lang => (<LangCard key={lang} lang={lang} message={templates[selectedStatus?.slug]?.[lang] || ""} selected={selectedLang === lang} onSelect={() => setSelectedLang(lang)}/>))}
               </div>
             </div>
+
             {selectedStatus && (
-              <div style={{ background: "var(--bg-card,#18181b)", border: "1px solid var(--border-color,#2a2a2e)", borderRadius: "14px", overflow: "hidden" }}>
-                <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ background: "var(--bg-card,#fff)", border: "1px solid var(--border-color,#ebedf3)", borderRadius: "14px", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     {selectedLang === "FR" ? <span style={{fontSize:"1rem"}}>🇫🇷</span> : selectedLang === "AR" ? <span style={{fontSize:"1rem"}}>🇩🇿</span> : <IconGlobe/>}
-                    <span style={{ fontWeight: "700", fontSize: "0.85rem" }}>{LANG_FLAGS[selectedLang]?.label || selectedLang}</span>
+                    <span style={{ fontWeight: "700", fontSize: "0.85rem", color: "var(--text-main,#3f4254)" }}>{LANG_FLAGS[selectedLang]?.label || selectedLang}</span>
                   </div>
-                  <div style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)", display: "flex", gap: "8px" }}>
+                  <div style={{ fontSize: "0.7rem", display: "flex", gap: "8px" }}>
                     {["{{customer_name}}", "{{order_id}}", "{{shop_name}}", "{{total}}"].map(v => (
-                      <code key={v} style={{ background: "rgba(114,57,234,0.15)", color: "#c4a7ff", borderRadius: "4px", padding: "2px 6px", fontSize: "0.65rem", cursor: "pointer" }} onClick={() => handleTemplateChange(currentTemplate + v)}>{v}</code>
+                      <code key={v} style={{ background: "var(--purple-light,#eee5ff)", color: "var(--purple,#8950fc)", borderRadius: "4px", padding: "2px 6px", fontSize: "0.65rem", cursor: "pointer" }} onClick={() => handleTemplateChange(currentTemplate + v)}>{v}</code>
                     ))}
                   </div>
                 </div>
                 <textarea value={currentTemplate} onChange={e => handleTemplateChange(e.target.value)} placeholder={`Write your WhatsApp message in ${selectedLang}...`}
-                  style={{ width: "100%", minHeight: "140px", background: "transparent", border: "none", outline: "none", color: "var(--text-main,#fff)", fontSize: "0.85rem", lineHeight: "1.6", padding: "16px 18px", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }}/>
-                <div style={{ padding: "10px 18px", borderTop: "1px solid var(--border-color,#2a2a2e)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)" }}>{currentTemplate.length} chars</span>
-                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted,#888)" }}>Use **text** for bold</span>
+                  style={{ width: "100%", minHeight: "140px", background: "transparent", border: "none", outline: "none", color: "var(--text-main,#3f4254)", fontSize: "0.85rem", lineHeight: "1.6", padding: "16px 18px", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }}/>
+                <div style={{ padding: "10px 18px", borderTop: "1px solid var(--border-color,#ebedf3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted,#78787c)" }}>{currentTemplate.length} chars</span>
+                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted,#78787c)" }}>Use **text** for bold</span>
                 </div>
               </div>
             )}
@@ -512,7 +495,7 @@ export default function Status() {
 
           {/* RIGHT */}
           <div style={{ position: "sticky", top: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-            <div style={{ fontSize: "0.65rem", fontWeight: "700", letterSpacing: "0.08em", color: "var(--text-muted,#888)", textTransform: "uppercase" }}>Preview</div>
+            <div style={{ fontSize: "0.65rem", fontWeight: "700", letterSpacing: "0.08em", color: "var(--text-muted,#78787c)", textTransform: "uppercase" }}>Preview</div>
             <PhonePreview message={currentTemplate}/>
           </div>
         </div>
