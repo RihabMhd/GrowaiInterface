@@ -14,6 +14,11 @@ export const companiesService = {
     getCompanies: () =>
         api.get('/companies').then(r => r.data),
 
+    // Admin: active delivery companies
+    getActiveDeliveryCompanies: () =>
+        api.get('/admin/delivery-companies/active').then(r => r.data?.data ?? r.data),
+
+
     getCompany: (id) =>
         api.get(`/companies/${id}`).then(r => r.data),
 

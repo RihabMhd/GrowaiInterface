@@ -5,7 +5,9 @@ import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
 import OrderDetails from './OrderDetails';
 import { useShop } from '../context/ShopContext';
+import CreateParcelFlow from '../components/createParcel/CreateParcelFlow';
 const CURRENCY = "MAD";
+
 
 const ORDER_STATUSES = [
   { value: "nouveau", label: "Nouveau", color: "var(--purple)", icon: "●" },
@@ -727,6 +729,22 @@ export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  // Create Parcel Flow
+  const [isCreateParcelOpen, setIsCreateParcelOpen] = useState(false);
+  const [createParcelOrder, setCreateParcelOrder] = useState(null);
+
+  const handleOpenCreateParcel = (order) => {
+    if (!order) return;
+    setCreateParcelOrder(order);
+    setIsCreateParcelOpen(true);
+  };
+
+  const handleCloseCreateParcel = () => {
+    setIsCreateParcelOpen(false);
+    setCreateParcelOrder(null);
+  };
+
+
   // ── More filter derived state ──────────────────────────────────────────────
   const morePeriods = new Set(MORE_PRESETS.map(p => p.value));
   const isMoreActive = morePeriods.has(periodFilter) || periodFilter?.startsWith("custom:");
@@ -1182,6 +1200,19 @@ export default function AdminOrders() {
         />
       )}
 
+      {/* Shared Create Parcel Modal */}
+      <CreateParcelFlow
+        open={isCreateParcelOpen}
+        onClose={handleCloseCreateParcel}
+        order={createParcelOrder}
+        showToast={(text, type) => showToast(text, type)}
+        onSuccess={() => {
+          // refresh current page/order data
+          fetchOrders();
+          handleCloseCreateParcel();
+        }}
+      />
+
       {/* Order Detail Drawer */}
       {selectedOrder && (
         <div
@@ -1214,6 +1245,7 @@ export default function AdminOrders() {
               }
               onOrderUpdated={handleOrderUpdated}
               activeAgents={activeAgents}
+              onCreateParcel={() => handleOpenCreateParcel(selectedOrder)}
             />
           </div>
         </div>

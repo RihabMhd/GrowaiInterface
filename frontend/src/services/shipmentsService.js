@@ -39,9 +39,16 @@ export const shipmentsService = {
 
   // Get shipments for an order
   getOrderShipments: async (orderId) => {
-    const response = await api.get('/shipments', { 
-      params: { order_id: orderId } 
+    const response = await api.get('/shipments', {
+      params: { order_id: orderId },
     });
     return response.data;
-  }
+  },
+
+  // Admin: create shipment for order
+  createAdminOrderShipment: async (orderId, payload) => {
+    const response = await api.post(`/admin/orders/${orderId}/shipments`, payload);
+    return response.data;
+  },
 };
+
