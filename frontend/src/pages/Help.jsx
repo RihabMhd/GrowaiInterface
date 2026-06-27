@@ -11,13 +11,13 @@ export default function Help() {
       <div className="page-header" style={{ marginBottom: "30px" }}>
         <div>
           <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "35px", height: "35px", borderRadius: "8px", background: "var(--purple-light)", color: "var(--purple)" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="products-title-icon" style={{ width: '32px', height: '32px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />
               </svg>
-            </span>
+            </div>
             {t("help_title")}
           </h2>
           <p className="page-subtitle">{t("help_intro")}</p>

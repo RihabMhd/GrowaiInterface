@@ -68,7 +68,7 @@ export default function ShipmentsPage() {
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-          <div style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center' }}>
+          <div className="products-title-icon">
             <Package size={16} style={{ color: 'var(--text-main)' }} />
           </div>
           <h1 style={{ fontSize: '20px', fontWeight: '700', margin: 0, color: 'var(--text-main)' }}>

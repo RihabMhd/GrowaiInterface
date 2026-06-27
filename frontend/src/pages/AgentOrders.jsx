@@ -229,9 +229,11 @@ export default function AgentOrders() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
         <div>
           <h2 style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "1.4rem", fontWeight: "700", margin: 0 }}>
-            <svg style={{ width: "22px", height: "22px", color: "var(--purple)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
+            <div className="products-title-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" strokeWidth="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
             {isAbandonedPage ? "Mes Commandes Abandonnées" : "Mes Commandes Assignées"}
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "0.78rem", margin: "4px 0 0 0" }}>Traitez vos fiches clients et suivez vos confirmations</p>

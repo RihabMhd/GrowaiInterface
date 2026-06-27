@@ -969,8 +969,10 @@ export default function AdminOrders() {
       {/* Page Header */}
       <div className="page-header" style={{ marginBottom: "12px" }}>
         <div>
-          <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "1.05rem" }}>
-            <svg style={{ width: "18px", height: "18px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
+          <h2 className="page-title" style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "1.05rem" }}>
+            <div className="products-title-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 01-8 0" /></svg>
+            </div>
             {isAbandonedPage ? "Abandoned Orders" : "Orders"}
           </h2>
           <p className="page-subtitle">Manage, assign, and track all orders</p>

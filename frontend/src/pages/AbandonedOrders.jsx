@@ -384,7 +384,9 @@ export default function AbandonedOrders() {
 
       <div className="ab-top">
         <div className="ab-title">
-          <ShoppingCart size={22} />
+          <div className="products-title-icon">
+            <ShoppingCart size={16} style={{ color: 'var(--text-main)' }} />
+          </div>
           <h2>Abandoned Orders</h2>
           <span>{meta.total || 0} records</span>
         </div>

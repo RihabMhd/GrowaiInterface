@@ -17,7 +17,7 @@ export default function AffiliatesPage() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
             <div className="products-title-icon" style={{ width: '32px', height: '32px' }}>
-              <Share2 size={16} style={{ color: 'var(--purple)' }} />
+              <Share2 size={16} style={{ color: 'var(--text-main)' }} />
             </div>
             <h1 className="products-title" style={{ margin: 0 }}>Affiliates</h1>
           </div>

@@ -394,6 +394,20 @@ export default function Status() {
         </div>
       )}
 
+      {/* Page title & subtitle */}
+      <div style={{ marginBottom: "20px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div className="products-title-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-main)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: "700", color: "var(--text-main,#3f4254)" }}>Status</h1>
+        </div>
+        <p style={{ margin: "4px 0 0 34px", fontSize: "0.85rem", color: "var(--text-muted,#78787c)" }}>Configure confirmation and delivery statuses with WhatsApp templates</p>
+      </div>
+
       {/* Page header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
         <div style={{ display: "flex", gap: "4px", background: "var(--bg-app,#f5f6fa)", borderRadius: "12px", padding: "4px", border: "1px solid var(--border-color,#ebedf3)" }}>

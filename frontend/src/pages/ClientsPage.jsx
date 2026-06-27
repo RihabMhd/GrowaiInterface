@@ -97,8 +97,10 @@ export default function ClientsPage() {
       {/* Header */}
       <div className="page-header" style={{ marginBottom: '12px' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-            <Users size={16} style={{ color: 'var(--text-main)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2px' }}>
+            <div className="products-title-icon" style={{ width: '32px', height: '32px' }}>
+              <Users size={16} style={{ color: 'var(--text-main)' }} />
+            </div>
             <h1 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '700' }}>Clients</h1>
           </div>
           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>

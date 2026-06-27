@@ -411,13 +411,15 @@ export default function Dashboard() {
       }}>
         {/* Title */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--purple)">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-            </svg>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div className="products-title-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text-main)">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+            </div>
             <h2 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700, color: "var(--text-main,#1a1a1a)" }}>
               Dashboard
             </h2>
