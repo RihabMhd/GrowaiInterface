@@ -7,62 +7,20 @@ import {
   RotateCcw, 
   AlertCircle 
 } from 'lucide-react';
+import { getShipmentStatusMeta } from '../config/orderStatuses';
 
-const STATUS_CONFIG = {
-  pending: {
-    label: 'En attente',
-    color: 'var(--text-muted)',
-    bgColor: 'var(--bg-app)',
-    icon: Clock,
-    textColor: 'var(--text-main)'
-  },
-  picked_up: {
-    label: 'Collecté',
-    color: 'var(--primary)',
-    bgColor: 'var(--primary-light)',
-    icon: Truck,
-    textColor: 'var(--primary)'
-  },
-  in_transit: {
-    label: 'En transit',
-    color: 'var(--primary)',
-    bgColor: 'var(--primary-light)',
-    icon: MapPin,
-    textColor: 'var(--primary)'
-  },
-  out_for_delivery: {
-    label: 'En livraison',
-    color: 'var(--warning)',
-    bgColor: 'var(--warning-light)',
-    icon: Truck,
-    textColor: 'var(--warning)'
-  },
-  delivered: {
-    label: 'Livré',
-    color: 'var(--success)',
-    bgColor: 'var(--success-light)',
-    icon: CheckCircle2,
-    textColor: 'var(--success)'
-  },
-  returned: {
-    label: 'Retourné',
-    color: 'var(--danger)',
-    bgColor: '#fff7ed',
-    icon: RotateCcw,
-    textColor: '#7c2d12'
-  },
-  failed: {
-    label: 'Échoué',
-    color: 'var(--danger)',
-    bgColor: '#fef2f2',
-    icon: AlertCircle,
-    textColor: '#7f1d1d'
-  }
+const ICON_MAP = {
+  Clock,
+  Truck,
+  MapPin,
+  CheckCircle2,
+  RotateCcw,
+  AlertCircle,
 };
 
 export default function ShipmentStatusBadge({ status, size = 'md' }) {
-  const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
-  const Icon = config.icon;
+  const meta = getShipmentStatusMeta(status);
+  const Icon = ICON_MAP[meta.icon] || Clock;
   
   const sizeMap = {
     sm: { fontSize: '11px', padding: '4px 8px', iconSize: 12 },
@@ -78,8 +36,8 @@ export default function ShipmentStatusBadge({ status, size = 'md' }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: '6px',
-        backgroundColor: config.bgColor,
-        color: config.textColor,
+        backgroundColor: meta.bgColor,
+        color: meta.textColor,
         padding: sizeConfig.padding,
         borderRadius: '6px',
         fontSize: sizeConfig.fontSize,
@@ -87,8 +45,8 @@ export default function ShipmentStatusBadge({ status, size = 'md' }) {
         whiteSpace: 'nowrap'
       }}
     >
-      <Icon size={sizeConfig.iconSize} strokeWidth={2} style={{ color: config.color }} />
-      <span>{config.label}</span>
+      <Icon size={sizeConfig.iconSize} strokeWidth={2} style={{ color: meta.color }} />
+      <span>{meta.label}</span>
     </div>
   );
 }

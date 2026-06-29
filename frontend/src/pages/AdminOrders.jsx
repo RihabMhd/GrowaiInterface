@@ -1,40 +1,17 @@
-import { useState, useEffect, useContext, useRef } from "react";
+﻿import { useState, useEffect, useContext, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
+
+import { ORDER_STATUSES, getStatusMeta, ORDER_SOURCES } from "../config/orderStatuses";
+
+
 import OrderDetails from './OrderDetails';
 import { useShop } from '../context/ShopContext';
 import CreateParcelFlow from '../components/createParcel/CreateParcelFlow';
 const CURRENCY = "MAD";
 
-
-const ORDER_STATUSES = [
-  { value: "nouveau", label: "Nouveau", color: "var(--purple)", icon: "●" },
-  { value: "confirmed", label: "Confirmé", color: "var(--success)", icon: "●" },
-  { value: "no_response", label: "Pas de réponse", color: "var(--primary)", icon: "◎" },
-  { value: "rappel", label: "Rappel", color: "var(--purple)", icon: "☎" },
-  { value: "cancelled", label: "Annulé", color: "var(--danger)", icon: "⊗" },
-  { value: "doublon", label: "Doublon", color: "var(--warning)", icon: "◈" },
-  { value: "wrong_number", label: "Mauvais numéro", color: "var(--warning)", icon: "⚠" },
-];
-const ORDER_SOURCES = [
-  { value: "Shopify", label: "Shopify", color: "var(--purple)", icon: "●" },
-  { value: "Facebook", label: "Facebook", color: "var(--success)", icon: "●" },
-  { value: "Instagram", label: "Instagram", color: "var(--primary)", icon: "◎" },
-  { value: "TikTok", label: "TikTok", color: "var(--purple)", icon: "☎" },
-  { value: "Snapchat", label: "Snapchat", color: "var(--danger)", icon: "⊗" },
-  { value: "WhatsApp", label: "WhatsApp", color: "var(--warning)", icon: "◈" },
-  { value: "GoogleSheets", label: "Google Sheets", color: "var(--warning)", icon: "⚠" },
-];
-
-const FULFILLMENT_STATUSES = [
-  { value: "unfulfilled", label: "Unfulfilled", color: "var(--warning)" },
-  { value: "fulfilled", label: "Fulfilled", color: "var(--success)" },
-  { value: "in_transit", label: "In Transit", color: "var(--primary)" },
-  { value: "delivered", label: "Delivered", color: "var(--success)" },
-  { value: "delivery_failed", label: "Failed", color: "var(--danger)" },
-];
 
 const PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
@@ -46,18 +23,6 @@ const MORE_PRESETS = [
   { label: "Last 90 days", value: "last_90_days" },
 ];
 
-const getStatusMeta = (val) =>
-  ORDER_STATUSES.find(s => s.value === val) || { label: val || "Pending", color: "var(--warning)", icon: "●" };
-
-const getFulfillmentMeta = (val) =>
-  FULFILLMENT_STATUSES.find(s => s.value === val) || { label: val || "Unfulfilled", color: "var(--warning)" };
-
-const inputStyle = {
-  width: "100%", padding: "11px 14px", borderRadius: "8px",
-  background: "var(--bg-app)", border: "1px solid var(--border-color)",
-  color: "var(--text-main)", fontSize: "0.85rem", outline: "none",
-  transition: "border-color 0.2s", boxSizing: "border-box",
-};
 
 const Icons = {
   total: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>),
@@ -266,17 +231,90 @@ function StatusDropdown({ orderId, currentStatus, onChange }) {
 }
 
 // ── Fulfillment Badge ─────────────────────────────────────────────────────────
-function FulfillmentBadge({ status }) {
-  const meta = getFulfillmentMeta(status);
+function FulfillmentBadge({ fulfillment, language }) {
+  const code =
+    (fulfillment && typeof fulfillment === "object" && typeof fulfillment.code === "string")
+      ? fulfillment.code
+      : (typeof fulfillment === "string" ? fulfillment : null);
+
+  const translationsByLang = {
+    EN: {
+      DELIVERED: "Delivered",
+      FULFILLED: "Fulfilled",
+      IN_TRANSIT: "In Transit",
+      UNFULFILLED: "Unfulfilled",
+      NO_ANSWER: "No Answer",
+      RETURNED: "Returned",
+      NO_RESPONSE: "No Response",
+      DELIVERY_FAILED: "Failed",
+    },
+    FR: {
+      DELIVERED: "Livré",
+      FULFILLED: "Remboursé",
+      IN_TRANSIT: "En transit",
+      UNFULFILLED: "Non livré",
+      NO_ANSWER: "Pas de réponse",
+      RETURNED: "Retourné",
+      NO_RESPONSE: "Pas de réponse",
+      DELIVERY_FAILED: "Échoué",
+    },
+    AR: {
+      DELIVERED: "تم التسليم",
+      FULFILLED: "تم الوفاء",
+      IN_TRANSIT: "قيد النقل",
+      UNFULFILLED: "غير مُسلّم",
+      NO_ANSWER: "لا رد",
+      RETURNED: "تمت الإعادة",
+      NO_RESPONSE: "لا رد",
+      DELIVERY_FAILED: "فشل التسليم",
+    },
+  };
+
+  const langKey = language === "FR" ? "FR" : language === "AR" ? "AR" : "EN";
+  const direct = translationsByLang[langKey]?.[code];
+  const label =
+    direct ||
+    (() => {
+      const normalized = String(code || "").toLowerCase();
+      const map = translationsByLang[langKey];
+      const fallbackMap = {
+        delivered: map?.DELIVERED,
+        fulfilled: map?.FULFILLED,
+        in_transit: map?.IN_TRANSIT,
+        unfulfilled: map?.UNFULFILLED,
+        no_answer: map?.NO_ANSWER,
+        returned: map?.RETURNED,
+        no_response: map?.NO_RESPONSE,
+        delivery_failed: map?.DELIVERY_FAILED,
+      };
+      return fallbackMap[normalized] || (code ? String(code) : "UNFULFILLED");
+    })();
+
+  const metaColor = fulfillment && typeof fulfillment === "object" && fulfillment.color ? fulfillment.color : "var(--text-muted,#6b7280)";
+  const metaIcon = fulfillment && typeof fulfillment === "object" && fulfillment.icon ? fulfillment.icon : null;
+
   return (
-    <span style={{
-      display: "inline-flex", alignItems: "center", gap: "5px",
-      padding: "3px 9px", borderRadius: "20px",
-      background: `color-mix(in srgb, ${meta.color} 8%, transparent)`, border: `1px solid color-mix(in srgb, ${meta.color} 20%, transparent)`,
-      fontSize: "0.7rem", fontWeight: "700", color: meta.color,
-    }}>
-      <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: meta.color }} />
-      {meta.label}
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: metaIcon ? "6px" : "5px",
+        padding: "3px 9px",
+        borderRadius: "20px",
+        background: `color-mix(in srgb, ${metaColor} 8%, transparent)`,
+        border: `1px solid color-mix(in srgb, ${metaColor} 20%, transparent)`,
+        fontSize: "0.7rem",
+        fontWeight: "700",
+        color: metaColor,
+        whiteSpace: "nowrap",
+      }}
+    >
+      {metaIcon ? (
+        <span style={{ display: "inline-flex", width: "14px", justifyContent: "center" }}>{metaIcon}</span>
+      ) : (
+        <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: metaColor }} />
+      )}
+      {label}
     </span>
   );
 }
@@ -693,6 +731,7 @@ export default function AdminOrders() {
   const location = useLocation();
   const isAbandonedPage = location.pathname.includes("abandonnees");
   const { activeShopId } = useShop();
+  const { language } = useLanguage();
 
   // Data
   const [orders, setOrders] = useState([]);
@@ -713,7 +752,16 @@ export default function AdminOrders() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [fulfillmentFilter, setFulfillmentFilter] = useState("all");
+
   const [deliverCompaniesFilter, setDeliverCompaniesFilter] = useState("all");
+
+  // Delivery company → parcel statuses (cached per company id during session)
+  const [deliveryStatusOptionsByCompany, setDeliveryStatusOptionsByCompany] = useState({});
+  const [deliveryStatusLoading, setDeliveryStatusLoading] = useState(false);
+  const [deliveryStatusError, setDeliveryStatusError] = useState(null);
+
+  const [fulfillmentOptions, setFulfillmentOptions] = useState([{ value: "all", label: "All Fulfillment" }]);
+
   const [productFilter, setProductFilter] = useState("all");
   const [agentFilter, setAgentFilter] = useState("all");
   const [periodFilter, setPeriodFilter] = useState("all");
@@ -799,8 +847,68 @@ export default function AdminOrders() {
     } catch (err) { console.error(err); }
   };
 
+  useEffect(() => {
+    const loadDeliveryStatuses = async () => {
+      if (!deliverCompaniesFilter || deliverCompaniesFilter === "all") {
+        setFulfillmentOptions([{ value: "all", label: "All Fulfillment" }]);
+        return;
+      }
+
+      const cached = deliveryStatusOptionsByCompany?.[deliverCompaniesFilter];
+      if (cached && Array.isArray(cached.statuses) && cached.statuses.length > 0) {
+        const mapped = cached.statuses.map(s => ({
+          value: String(s.code || s.value || "").toUpperCase(),
+          label: translateFulfillment(s.code || s.value || "", language) || s.label || String(s.code || s.value || ""),
+        }));
+        setFulfillmentOptions([{ value: "all", label: "All Fulfillment" }, ...mapped.filter(x => x.value)]);
+        return;
+      }
+
+      try {
+        setDeliveryStatusLoading(true);
+        setDeliveryStatusError(null);
+
+        console.log("[Fulfillment] company =", deliverCompaniesFilter);
+        const response = await api.get(`/delivery-companies/${deliverCompaniesFilter}/statuses`);
+        console.log("[Fulfillment] response =", response.data);
+        const payload = response?.data;
+
+        const statuses = payload?.statuses || payload?.data || payload?.items || (Array.isArray(payload) ? payload : []);
+        const normalized = Array.isArray(statuses) ? statuses : [];
+
+        console.log("[Fulfillment] normalized =", normalized);
+
+        setDeliveryStatusOptionsByCompany(prev => ({
+          ...prev,
+          [deliverCompaniesFilter]: { statuses: normalized },
+        }));
+
+        const mapped = normalized.map(s => ({
+          value: String(s.code || s.value || "").toUpperCase(),
+          label: translateFulfillment(s.code || s.value || "", language) || s.label || String(s.code || s.value || ""),
+        }));
+
+        console.log("[Fulfillment] mapped =", mapped);
+
+        console.log("[Fulfillment] options to set =", [{ value: "all", label: "All Fulfillment" }, ...mapped.filter(x => x.value)]);
+        setFulfillmentOptions([{ value: "all", label: "All Fulfillment" }, ...mapped.filter(x => x.value)]);
+      } catch (err) {
+        console.error(err);
+        setDeliveryStatusError(err);
+        setFulfillmentOptions([{ value: "all", label: "All Fulfillment" }]);
+      } finally {
+        setDeliveryStatusLoading(false);
+      }
+    };
+
+    // If deliver company changed, reset fulfillment filter so UX matches the new option list
+    setFulfillmentFilter("all");
+    loadDeliveryStatuses();
+  }, [deliverCompaniesFilter]);
+
   useEffect(() => { setCurrentPage(1); fetchOrders(1); }, [location.pathname, search, statusFilter, perPage]);
   useEffect(() => { fetchOrders(currentPage); }, [currentPage]);
+  useEffect(() => { fetchCompanies(); }, []);
   useEffect(() => {
     if (!activeShopId) return;
     fetchProducts();
@@ -895,13 +1003,92 @@ export default function AdminOrders() {
   const toggleOne = (id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
   // ── Client-side filters ───────────────────────────────────────────────────
+  const translateFulfillment = (code, lang) => {
+    const c = String(code || "").trim();
+    const translationsByLang = {
+      EN: {
+        DELIVERED: "Delivered",
+        FULFILLED: "Fulfilled",
+        IN_TRANSIT: "In Transit",
+        UNFULFILLED: "Unfulfilled",
+        NO_ANSWER: "No Answer",
+        RETURNED: "Returned",
+        NO_RESPONSE: "No Response",
+        DELIVERY_FAILED: "Failed",
+      },
+      FR: {
+        DELIVERED: "Livré",
+        FULFILLED: "Remboursé",
+        IN_TRANSIT: "En transit",
+        UNFULFILLED: "Non livré",
+        NO_ANSWER: "Pas de réponse",
+        RETURNED: "Retourné",
+        NO_RESPONSE: "Pas de réponse",
+        DELIVERY_FAILED: "Échoué",
+      },
+      AR: {
+        DELIVERED: "تم التسليم",
+        FULFILLED: "تم الوفاء",
+        IN_TRANSIT: "قيد النقل",
+        UNFULFILLED: "غير مُسلّم",
+        NO_ANSWER: "لا رد",
+        RETURNED: "تمت الإعادة",
+        NO_RESPONSE: "لا رد",
+        DELIVERY_FAILED: "فشل التسليم",
+      },
+    };
+
+    const langKey = lang === "FR" ? "FR" : lang === "AR" ? "AR" : "EN";
+    const map = translationsByLang[langKey];
+    if (map && map[c]) return map[c];
+    // last resort: if backend uses lowercase keys like delivered/unfulfilled, map them
+    const normalized = c.toLowerCase();
+    const fallbackMap = {
+      delivered: translationsByLang[langKey].DELIVERED,
+      fulfilled: translationsByLang[langKey].FULFILLED,
+      in_transit: translationsByLang[langKey].IN_TRANSIT,
+      unfulfilled: translationsByLang[langKey].UNFULFILLED,
+      no_answer: translationsByLang[langKey].NO_ANSWER,
+      returned: translationsByLang[langKey].RETURNED,
+      no_response: translationsByLang[langKey].NO_RESPONSE,
+      delivery_failed: translationsByLang[langKey].DELIVERY_FAILED,
+    };
+    return fallbackMap[normalized] || c;
+  };
+
+  const getFulfillmentFromOrder = (order) => {
+    const shipment = order?.shipments?.[0];
+    if (!shipment) return null;
+
+    // New backend format: { code, label, color, icon, ... }
+    if (shipment?.fulfillment && typeof shipment.fulfillment === "object") return shipment.fulfillment;
+
+    // Some providers may attach it directly
+    if (typeof shipment?.code === "string") {
+      return {
+        code: shipment.code,
+        label: shipment.label,
+        color: shipment.color,
+        icon: shipment.icon,
+      };
+    }
+
+    // Backward compatibility: treat provider status string as the fulfillment code
+    return shipment?.status || "unfulfilled";
+  };
+
   const filteredOrders = orders.filter(order => {
     if (productFilter !== "all" && !order.items?.some(i => i.product_id === parseInt(productFilter))) return false;
     if (agentFilter !== "all" && String(order.assigned_to) !== agentFilter) return false;
+
     if (fulfillmentFilter !== "all") {
-      const s = order.shipments?.[0]?.status || "unfulfilled";
-      if (s.toLowerCase() !== fulfillmentFilter.toLowerCase()) return false;
+      const fulfillment = getFulfillmentFromOrder(order);
+      const fulfillmentCode = (typeof fulfillment === "object" && fulfillment?.code) ? fulfillment.code : fulfillment;
+      const fc = String(fulfillmentCode || "").toLowerCase();
+      const target = String(fulfillmentFilter || "").toLowerCase();
+      if (fc !== target) return false;
     }
+
     if (periodFilter !== "all") {
       const d = new Date(order.created_at);
       const now = new Date();
@@ -1057,8 +1244,16 @@ export default function AdminOrders() {
           options={[{ value: "all", label: "All Sources" }, ...ORDER_SOURCES.map(s => ({ value: s.value, label: s.label, dot: s.color }))]} />
         <CustomSelect id="status" value={statusFilter} onChange={setStatusFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Status"
           options={[{ value: "all", label: "All Status" }, ...ORDER_STATUSES.map(s => ({ value: s.value, label: s.label, dot: s.color }))]} />
-        <CustomSelect id="fulfillment" value={fulfillmentFilter} onChange={setFulfillmentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="Fulfillment"
-          options={[{ value: "all", label: "All Fulfillment" }, ...FULFILLMENT_STATUSES.map(s => ({ value: s.value, label: s.label, dot: s.color }))]} />
+        {console.log("[Fulfillment] options before render =", fulfillmentOptions)}
+        <CustomSelect
+          id="fulfillment"
+          value={fulfillmentFilter}
+          onChange={setFulfillmentFilter}
+          openDropdown={openDropdown}
+          setOpenDropdown={setOpenDropdown}
+          placeholder="Fulfillment"
+          options={fulfillmentOptions}
+        />
         <CustomSelect id="deliveryCompanies" value={deliverCompaniesFilter} onChange={setDeliverCompaniesFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Companies"
           options={[{ value: "all", label: "All Companies" }, ...companies.map(c => ({ value: String(c.id), label: c.name }))]} />
         <CustomSelect id="agent" value={agentFilter} onChange={setAgentFilter} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} placeholder="All Agents"
@@ -1106,7 +1301,6 @@ export default function AdminOrders() {
             <tbody>
               {filteredOrders.map(order => {
                 const isSelected = selectedIds.includes(order.id);
-                const fulfillmentStatus = order.shipments?.[0]?.status || "unfulfilled";
                 const trackingNumber = order.shipments?.[0]?.tracking_number;
                 const city = order.client?.city || order.shipments?.[0]?.city || "—";
                 return (
@@ -1162,7 +1356,7 @@ export default function AdminOrders() {
                       <StatusDropdown orderId={order.id} currentStatus={order.status} onChange={handleUpdateStatus} />
                     </td>
                     <td style={{ padding: "10px 12px" }}>
-                      <FulfillmentBadge status={fulfillmentStatus} />
+                      <FulfillmentBadge fulfillment={getFulfillmentFromOrder(order)} language={language} />
                     </td>
                     <td style={{ padding: "10px 12px", fontWeight: "700", whiteSpace: "nowrap" }}>
                       {parseFloat(order.total_price || 0).toFixed(2)} MAD
@@ -1272,3 +1466,5 @@ export default function AdminOrders() {
     </div>
   );
 }
+
+

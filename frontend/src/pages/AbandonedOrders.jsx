@@ -17,19 +17,13 @@ import {
 } from "lucide-react";
 import api from "../api/axios";
 import OrderDetails from "./OrderDetails";
+import { ABANDONED_ORDER_STATUSES, ABANDONED_ORDER_STATUS_META } from "../config/orderStatuses";
 
 const PERIODS = [
   { value: "24h", label: "Last 24h" },
   { value: "7d", label: "Last 7 days" },
   { value: "30d", label: "Last 30 days" },
   { value: "all", label: "All time" },
-];
-
-const STATUSES = [
-  { value: "all", label: "All statuses" },
-  { value: "open", label: "Open" },
-  { value: "recovered", label: "Recovered" },
-  { value: "recovery_sent", label: "Recovery sent" },
 ];
 
 const LANGUAGES = [
@@ -80,12 +74,7 @@ function KpiCard({ icon, title, value, sub, tone }) {
 }
 
 function StatusBadge({ status }) {
-  const map = {
-    open: { label: "Open", cls: "open" },
-    recovered: { label: "Recovered", cls: "recovered" },
-    recovery_sent: { label: "Recovery sent", cls: "sent" },
-  };
-  const item = map[status] || map.open;
+  const item = ABANDONED_ORDER_STATUS_META[status] || ABANDONED_ORDER_STATUS_META.open;
   return <span className={`ab-status ${item.cls}`}>{item.label}</span>;
 }
 
@@ -412,7 +401,7 @@ export default function AbandonedOrders() {
           {PERIODS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
         </select>
         <select className="ab-select" value={status} onChange={(e) => updateParams({ status: e.target.value })}>
-          {STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+          {ABANDONED_ORDER_STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
         </select>
         <label className="ab-phone">
           <input type="checkbox" checked={hasPhone} onChange={(e) => updateParams({ has_phone: e.target.checked ? 1 : null })} />

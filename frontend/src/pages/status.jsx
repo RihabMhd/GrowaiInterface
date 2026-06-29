@@ -1,29 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import api from "../api/axios";
 
-// ── Confirmation status meta ──────────────────────────────────────────────────
-const STATUS_META = {
-  pending:    { color: "#3b82f6", label: "Nouveau" },
-  confirmed:  { color: "#22c55e", label: "Confirmé" },
-  no_answer:  { color: "#f59e0b", label: "Pas de réponse" },
-  callback:   { color: "#a855f7", label: "Rappel" },
-  cancelled:  { color: "#ef4444", label: "Annulé" },
-  duplicate:  { color: "#94a3b8", label: "Doublon" },
-  wrong_num:  { color: "#f97316", label: "Mauvais numéro" },
-};
+import { STATUS_META, COMPANY_STATUSES } from "../config/orderStatuses";
 
-// ── Company / delivery statuses ───────────────────────────────────────────────
-const COMPANY_STATUSES = [
-  { slug: "label_created",      label: "Label Created",       color: "#64748b", icon: "🏷️"  },
-  { slug: "confirmed",          label: "Confirmed",           color: "#22c55e", icon: "✅"  },
-  { slug: "ready_for_pickup",   label: "Ready for Pickup",    color: "#3b82f6", icon: "📦"  },
-  { slug: "out_for_delivery",   label: "Out for Delivery",    color: "#f59e0b", icon: "🚚"  },
-  { slug: "attempted_delivery", label: "Attempted Delivery",  color: "#ef4444", icon: "🔄"  },
-  { slug: "picked_up",          label: "Picked Up",           color: "#8b5cf6", icon: "🤝"  },
-  { slug: "delivered",          label: "Delivered",           color: "#10b981", icon: "🎉"  },
-  { slug: "delayed",            label: "Delayed",             color: "#f97316", icon: "⏳"  },
-  { slug: "failure",            label: "Failure",             color: "#dc2626", icon: "↩️"  },
-];
+// ── Confirmation status meta ──────────────────────────────────────────────────
+
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 const IconShield = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>);
@@ -36,7 +17,7 @@ const IconSave = () => (<svg width="15" height="15" viewBox="0 0 24 24" fill="no
 
 // ── Default templates ─────────────────────────────────────────────────────────
 const DEFAULT_TEMPLATES = {
-  pending: {
+  new: {
     FR: "🛍 Bonjour **{{customer_name}}** ✅ Votre commande **#{{order_id}}** est bien enregistrée chez **{{shop_name}}**.\n📦 Produit : {{product_name}}\n💰 Total : {{total}} DZD\n\n📞 Notre équipe vous appelle bientôt pour confirmer.",
     AR: "🛍 مرحبا **{{customer_name}}** ✅ تم تسجيل طلبك رقم **#{{order_id}}** في **{{shop_name}}**.\n📦 المنتج : {{product_name}}\n💰 المجموع : {{total}} دج\n\n📞 فريقنا سيتصل بك قريباً للتأكيد.",
     "FR/AR": "🛍 Bonjour **{{customer_name}}** ✅ Votre commande **#{{order_id}}** est bien en...",
@@ -204,13 +185,24 @@ function CompanyStatusTab({ savedMsg, setSavedMsg }) {
   };
 
   const handleSave = async () => {
+    if (!selectedStatus) return;
     setSaving(true);
+    setSavedMsg(false);
+    setErrorMsg(null);
     try {
-      await api.put(`/company-statuses/${selectedSlug}`, { auto_send: currentAutoSend, templates: templates[selectedSlug] });
+      await api.post(`/order-statuses/${selectedStatus.id}/save-template`, {
+        whatsapp_message: currentTemplate,
+        auto_send: currentAutoSend,
+        templates: templates[selectedStatus.slug],
+      });
+      await load();
       setSavedMsg(true);
       setTimeout(() => setSavedMsg(false), 2500);
-    } catch { setSavedMsg(true); setTimeout(() => setSavedMsg(false), 2500); }
-    finally { setSaving(false); }
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || "Save failed. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -323,6 +315,7 @@ export default function Status() {
   const [autoSend, setAutoSend] = useState({});
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(true);
   const LANGS = ["FR", "AR", "FR/AR", "Darija AR", "Darija FR"];
 
@@ -366,11 +359,22 @@ export default function Status() {
   const handleSave = async () => {
     if (!selectedStatus) return;
     setSaving(true);
+    setSavedMsg(false);
+    setErrorMsg(null);
     try {
-      await api.put(`/order-statuses/${selectedStatus.id}`, { whatsapp_message: currentTemplate, auto_send: currentAutoSend, templates: templates[selectedStatus.slug] });
-      setSavedMsg(true); setTimeout(() => setSavedMsg(false), 2500);
-    } catch { setSavedMsg(true); setTimeout(() => setSavedMsg(false), 2500); }
-    finally { setSaving(false); }
+      await api.post(`/order-statuses/${selectedStatus.id}/save-template`, {
+        whatsapp_message: currentTemplate,
+        auto_send: currentAutoSend,
+        templates: templates[selectedStatus.slug],
+      });
+      await load();
+      setSavedMsg(true);
+      setTimeout(() => setSavedMsg(false), 2500);
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || "Save failed. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const statusMeta = selectedStatus ? (STATUS_META[selectedStatus.slug] || { color: "#8950fc" }) : {};
@@ -395,6 +399,12 @@ export default function Status() {
       )}
 
       {/* Page title & subtitle */}
+      {errorMsg && (
+        <div style={{ position: "fixed", top: "20px", right: "20px", zIndex: 9999, background: "#ef4444", color: "#fff", padding: "12px 20px", borderRadius: "10px", fontWeight: "700", fontSize: "0.85rem", boxShadow: "0 4px 16px rgba(239,68,68,0.3)", display: "flex", gap: "8px", alignItems: "center" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          {errorMsg}
+        </div>
+      )}
       <div style={{ marginBottom: "20px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div className="products-title-icon">
@@ -437,14 +447,14 @@ export default function Status() {
             </div>
             <div style={{ padding: "6px" }}>
               {statuses.map(s => {
-                const meta = STATUS_META[s.slug] || { color: "#8950fc", label: s.name };
+                const meta = STATUS_META[s.slug] || { color: "#8950fc", label: s.slug };
                 const isSelected = selectedStatus?.id === s.id;
                 return (
                   <div key={s.id} onClick={() => { setSelectedStatus(s); setSelectedLang("FR"); }}
                     style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "9px", cursor: "pointer", background: isSelected ? "var(--purple-light,#eee5ff)" : "transparent", border: isSelected ? "1px solid rgba(137,80,252,0.2)" : "1px solid transparent", transition: "all 0.15s", marginBottom: "2px" }}>
                     <div style={{ display:"flex", flexDirection:"column", gap:"1px", opacity:0.3 }}><IconChevron up/><IconChevron/></div>
                     <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: meta.color, flexShrink: 0, boxShadow: `0 0 5px ${meta.color}50` }}/>
-                    <span style={{ fontSize: "0.82rem", fontWeight: isSelected ? "700" : "500", color: isSelected ? "var(--purple,#8950fc)" : "var(--text-main,#3f4254)" }}>{s.name || meta.label}</span>
+                    <span style={{ fontSize: "0.82rem", fontWeight: isSelected ? "700" : "500", color: isSelected ? "var(--purple,#8950fc)" : "var(--text-main,#3f4254)" }}>{meta.label}</span>
                   </div>
                 );
               })}
@@ -458,7 +468,8 @@ export default function Status() {
                 <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: `${statusMeta.color}18`, border: `2px solid ${statusMeta.color}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: statusMeta.color, boxShadow: `0 0 6px ${statusMeta.color}80` }}/>
                 </div>
-                <input value={selectedStatus.name || statusMeta.label || ""} onChange={e => setStatuses(prev => prev.map(s => s.id === selectedStatus.id ? { ...s, name: e.target.value } : s))} style={{ flex: 1, background: "transparent", border: "none", outline: "none", fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main,#3f4254)" }}/>
+                <input value={selectedStatus?.slug ? (STATUS_META[selectedStatus.slug]?.label || selectedStatus.slug) : (statusMeta.label || "")} onChange={e => setStatuses(prev => prev.map(s => s.id === selectedStatus.id ? { ...s, name: e.target.value } : s))} style={{ flex: 1, background: "transparent", border: "none", outline: "none", fontSize: "1.1rem", fontWeight: "700", color: "var(--text-main,#3f4254)" }}/>
+
                 <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: `${statusMeta.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <div style={{ width: "16px", height: "16px", borderRadius: "4px", background: statusMeta.color }}/>
                 </div>
@@ -522,3 +533,4 @@ export default function Status() {
     </div>
   );
 }
+

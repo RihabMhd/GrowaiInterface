@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/axios";
+import { ORDER_STATUSES, getStatusMeta } from "../config/orderStatuses";
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 const Icons = {
@@ -34,14 +35,7 @@ const Icons = {
   )
 };
 
-const getStatusStyle = (s) => {
-  switch (s) {
-    case "confirmed": case "delivered": return { bg: "var(--success-light)", text: "var(--success)" };
-    case "cancelled": case "returned":  return { bg: "var(--danger-light)",  text: "var(--danger)" };
-    case "processing": case "shipped":  return { bg: "var(--primary-light)", text: "var(--primary)" };
-    default:                            return { bg: "var(--warning-light)", text: "var(--warning)" };
-  }
-};
+
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AgentOrders() {
@@ -282,10 +276,9 @@ export default function AgentOrders() {
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
           style={{ padding: "8px 12px", borderRadius: "8px", background: "var(--bg-app)", border: "1px solid var(--border-color)", color: "var(--text-main)", fontSize: "0.8rem", outline: "none", cursor: "pointer" }}>
           <option value="all">Tous les Statuts</option>
-          <option value="pending">En attente</option>
-          <option value="confirmed">Confirmé</option>
-          <option value="cancelled">Annulé</option>
-          <option value="processing">En traitement</option>
+          {ORDER_STATUSES.map(s => (
+            <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
         </select>
 
         <select value={periodFilter} onChange={e => setPeriodFilter(e.target.value)}
@@ -318,7 +311,7 @@ export default function AgentOrders() {
             </thead>
             <tbody>
               {filteredOrders.map(order => {
-                const statusStyle = getStatusStyle(order.status);
+                const meta = getStatusMeta(order.status);
                 return (
                   <tr key={order.id} style={{ borderBottom: "1px solid var(--border-color)" }}>
                     <td style={{ padding: "12px 16px", fontWeight: "700" }}>
@@ -337,7 +330,7 @@ export default function AgentOrders() {
                     </td>
                     <td style={{ padding: "12px 16px", fontWeight: "700" }}>{order.total_price} {order.currency || currencySymbol}</td>
                     <td style={{ padding: "12px 16px" }}>
-                      <span style={{ display: "inline-block", padding: "4px 8px", borderRadius: "5px", background: statusStyle.bg, color: statusStyle.text, fontSize: "0.68rem", fontWeight: "700" }}>
+                      <span style={{ display: "inline-block", padding: "4px 8px", borderRadius: "5px", background: `color-mix(in srgb, ${meta.color} 10%, transparent)`, color: meta.color, fontSize: "0.68rem", fontWeight: "700" }}>
                         {order.status.toUpperCase()}
                       </span>
                     </td>
@@ -585,7 +578,7 @@ export default function AgentOrders() {
                 </div>
               ) : (
                 <div style={{ background: "var(--bg-app)", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.75rem", color: "var(--text-muted)", textCenter: "center" }}>
-                  Statut figé sur <strong style={{ color: getStatusStyle(selectedOrder.status).text }}>{selectedOrder.status.toUpperCase()}</strong> — only pending orders can be updated.
+                  Statut figé sur <strong style={{ color: getStatusMeta(selectedOrder.status).color }}>{selectedOrder.status.toUpperCase()}</strong> — only pending orders can be updated.
                 </div>
               )}
             </div>

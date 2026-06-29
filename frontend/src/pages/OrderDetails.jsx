@@ -3,18 +3,12 @@ import '../OrderDetails.css';
 import api from "../api/axios";
 import { useShop } from '../context/ShopContext';
 
+import { ORDER_STATUSES, getStatusMeta, SOURCE_ICON_MAP, FINANCIAL_STATUS_META } from "../config/orderStatuses";
+
 // ── Utility ──────────────────────────────────────────────────────────────────
 
 const SourceIcon = ({ source }) => {
-    const map = {
-        shopify: { label: 'S', color: '#95bf47' },
-        facebook: { label: 'f', color: '#1877f2' },
-        tiktok: { label: 'T', color: '#010101' },
-        instagram: { label: 'ig', color: '#e1306c' },
-        whatsapp: { label: 'W', color: '#25d366' },
-        manual: { label: 'M', color: 'var(--purple)' },
-    };
-    const s = map[source?.toLowerCase()] || map.manual;
+    const s = SOURCE_ICON_MAP[source?.toLowerCase()] || SOURCE_ICON_MAP.manual;
     return (
         <span style={{
             background: s.color, color: '#fff', width: 20, height: 20,
@@ -27,13 +21,7 @@ const SourceIcon = ({ source }) => {
 };
 
 const FinancialBadge = ({ status }) => {
-    const map = {
-        unpaid: { label: 'Unpaid', cls: 'financial-unpaid' },
-        pending: { label: 'Pending', cls: 'financial-pending' },
-        paid: { label: 'Paid', cls: 'financial-paid' },
-        refunded: { label: 'Refunded', cls: 'financial-refunded' },
-    };
-    const s = map[status?.toLowerCase()] || map.unpaid;
+    const s = FINANCIAL_STATUS_META[status?.toLowerCase()] || FINANCIAL_STATUS_META.unpaid;
     return <span className={`financial-badge ${s.cls}`}>{s.label}</span>;
 };
 
@@ -58,15 +46,6 @@ const formatDateShort = (dateStr) => {
     });
 };
 
-const ORDER_STATUSES_OD = [
-    { value: 'nouveau', label: 'Nouveau', color: 'var(--purple)' },
-    { value: 'confirmed', label: 'Confirmé', color: 'var(--success)' },
-    { value: 'no_response', label: 'Pas de réponse', color: '#00a3ff' },
-    { value: 'rappel', label: 'Rappel', color: '#9b6dff' },
-    { value: 'cancelled', label: 'Annulé', color: 'var(--danger)' },
-    { value: 'doublon', label: 'Doublon', color: 'var(--warning)' },
-    { value: 'wrong_number', label: 'Mauvais numéro', color: '#fd7e14' },
-];
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
@@ -237,8 +216,7 @@ const OrderDetails = ({
     const fulfillmentLabel = fulfillmentStatus.replace('_', ' ');
     const fulfillmentColor = fulfillmentStatus === 'fulfilled' ? 'var(--success)' : 'var(--warning)';
 
-    const currentStatusMeta = ORDER_STATUSES_OD.find(s => s.value === status)
-        || { label: status, color: 'var(--purple)' };
+    const currentStatusMeta = getStatusMeta(status);
 
     const card = {
         background: 'var(--bg-card)',
@@ -363,7 +341,7 @@ const OrderDetails = ({
                             background: 'var(--bg-card)', border: '1px solid #e8e8ee', borderRadius: 10,
                             padding: 6, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', minWidth: 180,
                         }}>
-                            {ORDER_STATUSES_OD.map(s => (
+                            {ORDER_STATUSES.map(s => (
                                 <div
                                     key={s.value}
                                     onClick={() => handleStatusChange(s.value)}
@@ -707,7 +685,7 @@ const OrderDetails = ({
                                     );
                                     return statusHistories.length > 0 ? (
                                         [...statusHistories].reverse().map((h, i, arr) => {
-                                            const newMeta = ORDER_STATUSES_OD.find(s => s.value === h.new_value) || { label: h.new_value || h.action_type, color: 'var(--purple)' };
+                                            const newMeta = getStatusMeta(h.new_value);
                                             return (
                                                 <div key={h.id ?? i} style={{ display: 'flex', gap: 12, paddingBottom: 20, position: 'relative' }}>
                                                     {i < arr.length - 1 && (
@@ -911,3 +889,7 @@ const OrderDetails = ({
 };
 
 export default OrderDetails;
+
+
+
+

@@ -10,6 +10,7 @@ import {
 import { shipmentsService } from '../services/shipmentsService';
 import { companiesService } from '../services/companiesService';
 import ShipmentStatusBadge from '../components/ShipmentStatusBadge';
+import { SHIPMENT_STATUSES } from '../config/orderStatuses';
 
 export default function ShipmentsPage() {
   const navigate = useNavigate();
@@ -52,16 +53,6 @@ export default function ShipmentsPage() {
     shipment.order_id?.toString().includes(searchTerm) ||
     shipment.recipient_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const statuses = [
-    { value: 'pending', label: 'En attente' },
-    { value: 'picked_up', label: 'Collecté' },
-    { value: 'in_transit', label: 'En transit' },
-    { value: 'out_for_delivery', label: 'En livraison' },
-    { value: 'delivered', label: 'Livré' },
-    { value: 'returned', label: 'Retourné' },
-    { value: 'failed', label: 'Échoué' }
-  ];
 
   return (
     <div style={{ padding: '28px 32px', background: 'var(--bg-app)' }}>
@@ -114,7 +105,7 @@ export default function ShipmentsPage() {
           />
         </div>
 
-        {/* Status Filter */}
+        {/* Status Filter - uses canonical fulfillment statuses */}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -134,7 +125,7 @@ export default function ShipmentsPage() {
           }}
         >
           <option value="">All Status</option>
-          {statuses.map(status => (
+          {SHIPMENT_STATUSES.map(status => (
             <option key={status.value} value={status.value}>
               {status.label}
             </option>
@@ -277,7 +268,8 @@ export default function ShipmentsPage() {
                     {shipment.deliveryCompany?.name || 'Unknown'}
                   </td>
                   <td style={{ padding: '14px 16px' }}>
-                    <ShipmentStatusBadge status={shipment.status} size="sm" />
+                    {/* Uses fulfillment_status (canonical) for badge display */}
+                    <ShipmentStatusBadge status={shipment.fulfillment_status || shipment.status} size="sm" />
                   </td>
                   <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--text-main)' }}>
                     {shipment.recipient_name}

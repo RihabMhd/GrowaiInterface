@@ -96,7 +96,9 @@ export default function ShipmentDetailsPage() {
     );
   }
 
-  const canCancel = ['pending', 'picked_up', 'in_transit'].includes(shipment.status);
+  // Use fulfillment_status (canonical) for logic
+  const fulfillmentStatus = shipment.fulfillment_status || shipment.status;
+  const canCancel = ['unfulfilled', 'label_created', 'label_purchased', 'label_printed', 'confirmed', 'in_transit'].includes(fulfillmentStatus);
   const shippedAt = shipment.shipped_at ? new Date(shipment.shipped_at) : null;
   const deliveredAt = shipment.delivered_at ? new Date(shipment.delivered_at) : null;
 
@@ -222,10 +224,22 @@ export default function ShipmentDetailsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div>
               <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', margin: '0 0 4px 0', textTransform: 'uppercase' }}>
-                Status
+                Fulfillment Status
               </p>
-              <ShipmentStatusBadge status={shipment.status} size="md" />
+              {/* Canonical fulfillment status badge */}
+              <ShipmentStatusBadge status={fulfillmentStatus} size="md" />
             </div>
+
+            {shipment.provider_status && (
+              <div>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', margin: '0 0 4px 0', textTransform: 'uppercase' }}>
+                  Carrier Status
+                </p>
+                <p style={{ fontSize: '13px', color: 'var(--text-main)', margin: 0, fontFamily: 'monospace', fontWeight: '600' }}>
+                  {shipment.provider_status}
+                </p>
+              </div>
+            )}
 
             <div>
               <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', margin: '0 0 4px 0', textTransform: 'uppercase' }}>
@@ -397,7 +411,8 @@ export default function ShipmentDetailsPage() {
 
         <TrackingTimeline events={tracking?.events || [
           {
-            status: shipment.status,
+            status: fulfillmentStatus,
+            provider_status: shipment.provider_status,
             timestamp: shipment.updated_at,
             notes: shipment.delivery_notes
           }

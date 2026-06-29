@@ -1,42 +1,32 @@
 import React from 'react';
 import { CheckCircle2, Clock, Truck, MapPin, RotateCcw, AlertCircle, Zap } from 'lucide-react';
+import { getShipmentStatusMeta } from '../config/orderStatuses';
 
-const getStatusIcon = (status) => {
-  switch (status) {
-    case 'delivered':
-      return CheckCircle2;
-    case 'picked_up':
-      return Truck;
-    case 'in_transit':
-      return MapPin;
-    case 'out_for_delivery':
-      return Zap;
-    case 'returned':
-      return RotateCcw;
-    case 'failed':
-      return AlertCircle;
-    default:
-      return Clock;
-  }
+const ICON_MAP = {
+  Clock,
+  Truck,
+  MapPin,
+  CheckCircle2,
+  RotateCcw,
+  AlertCircle,
+  Zap,
 };
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'delivered':
-      return '#10b981';
-    case 'picked_up':
-      return '#3b82f6';
-    case 'in_transit':
-      return '#06b6d4';
-    case 'out_for_delivery':
-      return '#f59e0b';
-    case 'returned':
-      return '#f97316';
-    case 'failed':
-      return '#ef4444';
-    default:
-      return '#6b7280';
-  }
+const RAW_COLORS = {
+  unfulfilled:        '#6B7280',
+  label_created:      '#9CA3AF',
+  label_purchased:    '#818CF8',
+  label_printed:      '#6366F1',
+  confirmed:          '#22C55E',
+  in_transit:         '#3B82F6',
+  out_for_delivery:   '#F59E0B',
+  delivered:          '#10B981',
+  attempted_delivery: '#F97316',
+  delivery_failed:    '#EF4444',
+  delayed:            '#F97316',
+  returned:           '#8B5CF6',
+  partial:            '#EAB308',
+  fulfilled:          '#059669',
 };
 
 export default function TrackingTimeline({ events = [] }) {
@@ -71,8 +61,9 @@ export default function TrackingTimeline({ events = [] }) {
       {/* Timeline events */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {events.map((event, index) => {
-          const Icon = getStatusIcon(event.status);
-          const color = getStatusColor(event.status);
+          const meta = getShipmentStatusMeta(event.status);
+          const Icon = ICON_MAP[meta.icon] || Clock;
+          const color = RAW_COLORS[event.status] || '#6b7280';
           const date = new Date(event.timestamp || event.created_at);
           const formattedDate = date.toLocaleDateString('en-US', {
             year: 'numeric',
@@ -116,8 +107,20 @@ export default function TrackingTimeline({ events = [] }) {
                     color: 'var(--text-main)',
                     margin: 0
                   }}>
-                    {event.status ? event.status.replace(/_/g, ' ').toUpperCase() : 'Update'}
+                    {meta.label || 'Update'}
                   </p>
+                  {event.provider_status && (
+                    <span style={{
+                      fontSize: '11px',
+                      color: 'var(--text-muted)',
+                      fontFamily: 'monospace',
+                      backgroundColor: 'var(--bg-app)',
+                      padding: '2px 6px',
+                      borderRadius: '4px'
+                    }}>
+                      Provider: {event.provider_status}
+                    </span>
+                  )}
                   <span style={{
                     fontSize: '12px',
                     color: 'var(--text-muted)'
