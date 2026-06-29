@@ -31,11 +31,11 @@ export default function Login() {
   };
 
   const googleLogin = () => {
-    window.location.href = "http://localhost:8000/api/auth/google/redirect";
+    window.location.href = import.meta.env.VITE_API_URL;
   };
 
   const facebookLogin = () => {
-    window.location.href = "http://localhost:8000/api/auth/facebook/redirect";
+    window.location.href = import.meta.env.VITE_API_URL;
   };
 
   return (
