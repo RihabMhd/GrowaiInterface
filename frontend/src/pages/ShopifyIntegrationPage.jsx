@@ -323,7 +323,8 @@ export default function ShopifyIntegrationPage() {
       showToast('Please enter a store handle.', 'error');
       return;
     }
-    window.location.href = `/api/auth/shopify/redirect?shop=${encodeURIComponent(handle)}.myshopify.com`;
+    window.location.href =
+  `${import.meta.env.VITE_API_URL}/auth/shopify/redirect?shop=${encodeURIComponent(handle)}.myshopify.com`;
   };
 
   const handleDisconnect = async (shopId) => {
