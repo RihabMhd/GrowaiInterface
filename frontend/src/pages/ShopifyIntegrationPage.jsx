@@ -31,9 +31,9 @@ function Toast({ message, type, onDismiss }) {
   }, [onDismiss]);
 
   const colors = {
-        success: { bg: 'var(--success-light)', border: 'var(--success-light)', text: 'var(--success)', Icon: CheckCircle2 },
-        error:   { bg: 'var(--danger-light)', border: 'var(--danger-light)', text: 'var(--danger)', Icon: XCircle },
-        info:    { bg: 'var(--primary-light)', border: 'var(--primary-light)', text: 'var(--primary)', Icon: AlertCircle },
+    success: { bg: 'var(--success-light)', border: 'var(--success-light)', text: 'var(--success)', Icon: CheckCircle2 },
+    error: { bg: 'var(--danger-light)', border: 'var(--danger-light)', text: 'var(--danger)', Icon: XCircle },
+    info: { bg: 'var(--primary-light)', border: 'var(--primary-light)', text: 'var(--primary)', Icon: AlertCircle },
   };
   const { bg, border, text, Icon } = colors[type] || colors.info;
 
@@ -75,10 +75,10 @@ function ShopifyLogo({ size = 28 }) {
 // ---------------------------------------------------------------------------
 function StoreCard({ shop, onDisconnect, onSaveBoutiqueName, onSync }) {
   const [boutiqueName, setBoutiqueName] = useState(shop.boutique_name || '');
-  const [saving, setSaving]             = useState(false);
-  const [syncing, setSyncing]           = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [syncingOrders, setSyncingOrders] = useState(false);
-const [syncResult, setSyncResult] = useState(null);
+  const [syncResult, setSyncResult] = useState(null);
 
   const handleSave = async () => {
     setSaving(true);
@@ -246,10 +246,10 @@ const [syncResult, setSyncResult] = useState(null);
 // ---------------------------------------------------------------------------
 function FeatureBadges() {
   const features = [
-    { label: 'Order Sync',          icon: <ShoppingCart size={12} />, color: '#65a30d' },
-    { label: 'Product Import',      icon: <Package size={12} />,      color: '#65a30d' },
-    { label: 'Inventory Tracking',  icon: <BarChart3 size={12} />,    color: '#65a30d' },
-    { label: 'Webhooks',            icon: <Webhook size={12} />,      color: '#65a30d' },
+    { label: 'Order Sync', icon: <ShoppingCart size={12} />, color: '#65a30d' },
+    { label: 'Product Import', icon: <Package size={12} />, color: '#65a30d' },
+    { label: 'Inventory Tracking', icon: <BarChart3 size={12} />, color: '#65a30d' },
+    { label: 'Webhooks', icon: <Webhook size={12} />, color: '#65a30d' },
   ];
 
   return (
@@ -274,12 +274,12 @@ function FeatureBadges() {
 // Main page
 // ---------------------------------------------------------------------------
 export default function ShopifyIntegrationPage() {
-  const [shops, setShops]               = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [toast, setToast]               = useState(null);
+  const [shops, setShops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
   const [anyConnected, setAnyConnected] = useState(false);
   const [showAddPanel, setShowAddPanel] = useState(false);
-  const [storeHandle, setStoreHandle]   = useState('');
+  const [storeHandle, setStoreHandle] = useState('');
 
   const showToast = (message, type = 'info') => setToast({ message, type });
 
@@ -287,318 +287,321 @@ export default function ShopifyIntegrationPage() {
   const loadShops = useCallback(async () => {
     setLoading(true);
     try {
-      // GET /api/shopify/shops  →  { shops: [...] }
       const data = await apiFetch('/shopify/shops');
       const list = Array.isArray(data.shops) ? data.shops
-                 : Array.isArray(data)        ? data
-                 : [];
+        : Array.isArray(data) ? data
+          : [];
       setShops(list);
       setAnyConnected(list.length > 0);
-    } catch {
+    } catch (err) {
+      console.error(err);
+
+      showToast(err.message || "Failed to load Shopify stores", "error");
+
       setShops([]);
       setAnyConnected(false);
     } finally {
-      setLoading(false);
-    }
-  }, []);
+    setLoading(false);
+  }
+}, []);
 
-  // Check URL params on mount (OAuth callback)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('connected') === '1') {
-      showToast('Shopify store connected successfully!', 'success');
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-    if (params.get('error') === '1') {
-      showToast('Shopify connection failed. Please try again.', 'error');
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }, []);
+// Check URL params on mount (OAuth callback)
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('connected') === '1') {
+    showToast('Shopify store connected successfully!', 'success');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+  if (params.get('error') === '1') {
+    showToast('Shopify connection failed. Please try again.', 'error');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}, []);
 
-  useEffect(() => { loadShops(); }, [loadShops]);
+useEffect(() => { loadShops(); }, [loadShops]);
 
-  const handleConnectStore = () => {
-    const handle = storeHandle.trim().replace(/\.myshopify\.com.*$/, '');
-    if (!handle) {
-      showToast('Please enter a store handle.', 'error');
-      return;
-    }
-    window.location.href =
-  `${import.meta.env.VITE_API_URL}/auth/shopify/redirect?shop=${encodeURIComponent(handle)}.myshopify.com`;
-  };
+const handleConnectStore = () => {
+  const handle = storeHandle.trim().replace(/\.myshopify\.com.*$/, '');
+  if (!handle) {
+    showToast('Please enter a store handle.', 'error');
+    return;
+  }
+  window.location.href =
+    `${import.meta.env.VITE_API_URL}/auth/shopify/redirect?shop=${encodeURIComponent(handle)}.myshopify.com`;
+};
 
-  const handleDisconnect = async (shopId) => {
-    if (!window.confirm('Disconnect this Shopify store?')) return;
-    try {
-      await apiFetch(`/shopify/shops/${shopId}`, { method: 'DELETE' });
-      showToast('Store disconnected.', 'success');
-      loadShops();
-    } catch (err) {
-      showToast(err.message || 'Failed to disconnect.', 'error');
-    }
-  };
+const handleDisconnect = async (shopId) => {
+  if (!window.confirm('Disconnect this Shopify store?')) return;
+  try {
+    await apiFetch(`/shopify/shops/${shopId}`, { method: 'DELETE' });
+    showToast('Store disconnected.', 'success');
+    loadShops();
+  } catch (err) {
+    showToast(err.message || 'Failed to disconnect.', 'error');
+  }
+};
 
-  const handleSaveBoutiqueName = async (shopId, name) => {
-    try {
-      await apiFetch(`/shopify/shops/${shopId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ boutique_name: name }),
-      });
-      showToast('Boutique name saved!', 'success');
-      setShops(prev => prev.map(s => s.id === shopId ? { ...s, boutique_name: name } : s));
-    } catch (err) {
-      showToast(err.message || 'Failed to save.', 'error');
-    }
-  };
+const handleSaveBoutiqueName = async (shopId, name) => {
+  try {
+    await apiFetch(`/shopify/shops/${shopId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ boutique_name: name }),
+    });
+    showToast('Boutique name saved!', 'success');
+    setShops(prev => prev.map(s => s.id === shopId ? { ...s, boutique_name: name } : s));
+  } catch (err) {
+    showToast(err.message || 'Failed to save.', 'error');
+  }
+};
 
-  /**
-   * Trigger product sync for one specific shop.
-   * Calls POST /api/shopify/shops/{shop}/sync-products.
-   * The shop ID comes from the shop object already loaded from the server —
-   * there is no fallback to any default or first shop.
-   */
-  const handleSync = async (shopId) => {
-    try {
-      await apiFetch(`/shopify/shops/${shopId}/sync-products`, { method: 'POST' });
-      showToast('Product sync queued. Products will appear shortly.', 'success');
-      // Reload shop list so last_synced_at updates after the job completes,
-      // if the server already stamped it (sync is async, so this is best-effort).
-      setTimeout(loadShops, 3000);
-    } catch (err) {
-      showToast(err.message || 'Sync failed. Please try again.', 'error');
-    }
-  };
+/**
+ * Trigger product sync for one specific shop.
+ * Calls POST /api/shopify/shops/{shop}/sync-products.
+ * The shop ID comes from the shop object already loaded from the server —
+ * there is no fallback to any default or first shop.
+ */
+const handleSync = async (shopId) => {
+  try {
+    await apiFetch(`/shopify/shops/${shopId}/sync-products`, { method: 'POST' });
+    showToast('Product sync queued. Products will appear shortly.', 'success');
+    // Reload shop list so last_synced_at updates after the job completes,
+    // if the server already stamped it (sync is async, so this is best-effort).
+    setTimeout(loadShops, 3000);
+  } catch (err) {
+    showToast(err.message || 'Sync failed. Please try again.', 'error');
+  }
+};
 
-  return (
-    <div className="main-content" style={{ padding: '28px 32px', background: 'var(--bg-app, #f9fafb)', maxWidth: 680 }}>
-      <style>{`
+return (
+  <div className="main-content" style={{ padding: '28px 32px', background: 'var(--bg-app, #f9fafb)', maxWidth: 680 }}>
+    <style>{`
         @keyframes spin    { from { transform: rotate(0deg);   } to { transform: rotate(360deg); } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
-      {/* ── Header ─────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: 12, background: 'var(--bg-card)',
-          border: '1px solid var(--border-color, #e5e7eb)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-        }}>
-          <ShopifyLogo size={28} />
+    {/* ── Header ─────────────────────────────────────────────── */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
+      <div style={{
+        width: 52, height: 52, borderRadius: 12, background: 'var(--bg-card)',
+        border: '1px solid var(--border-color, #e5e7eb)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+      }}>
+        <ShopifyLogo size={28} />
+      </div>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--text-main, #111)' }}>Shopify</h1>
+          {!loading && anyConnected && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              fontSize: 11, fontWeight: 600, color: 'var(--success)',
+              background: 'var(--success-light)', padding: '3px 10px', borderRadius: 12,
+              border: '1px solid var(--success-light)',
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }} />
+              Connected
+            </span>
+          )}
         </div>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--text-main, #111)' }}>Shopify</h1>
-            {!loading && anyConnected && (
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                fontSize: 11, fontWeight: 600, color: 'var(--success)',
-                background: 'var(--success-light)', padding: '3px 10px', borderRadius: 12,
-                border: '1px solid var(--success-light)',
+        <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted, #6b7280)' }}>
+          Sync orders, products &amp; inventory from your Shopify store
+        </p>
+      </div>
+    </div>
+
+    {/* ── Store list ─────────────────────────────────────────── */}
+    {loading ? (
+      <div style={{ textAlign: 'center', padding: 48, color: 'var(--text-muted, #6b7280)' }}>
+        <Loader2 size={22} style={{ animation: 'spin 1s linear infinite', marginBottom: 8 }} />
+        <div style={{ fontSize: 13 }}>Loading…</div>
+      </div>
+    ) : (
+      <>
+        {shops.map(shop => (
+          <StoreCard
+            key={shop.id}
+            shop={shop}
+            onDisconnect={handleDisconnect}
+            onSaveBoutiqueName={handleSaveBoutiqueName}
+            onSync={handleSync}
+          />
+        ))}
+
+        {/* No stores yet → connect prompt */}
+        {shops.length === 0 && (
+          <div style={{
+            border: '2px dashed var(--border-color, #e5e7eb)', borderRadius: 12,
+            padding: '32px 24px', textAlign: 'center', marginBottom: 12,
+          }}>
+            <ShopifyLogo size={36} />
+            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--text-main, #111)', margin: '12px 0 4px' }}>
+              No Shopify store connected
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted, #6b7280)', marginBottom: 20 }}>
+              Connect your store via secure OAuth — no API keys needed.
+            </div>
+
+            {!showAddPanel ? (
+              <button
+                onClick={() => setShowAddPanel(true)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  background: 'var(--success)', color: '#fff', border: 'none',
+                  borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600,
+                  cursor: 'pointer', transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--success)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--success)'}
+              >
+                <Plus size={15} /> Connect Shopify
+              </button>
+            ) : (
+              <div style={{
+                border: '1px solid var(--success-light)', borderRadius: 10,
+                padding: '14px 16px', background: '#f9fef4',
+                textAlign: 'left', marginTop: 8,
+                animation: 'slideIn 0.18s ease',
               }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }} />
-                Connected
-              </span>
+                <div style={{ fontSize: 12, color: 'var(--text-muted, #6b7280)', marginBottom: 8 }}>
+                  Enter your Shopify store handle to connect.
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input
+                    value={storeHandle}
+                    onChange={e => setStoreHandle(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleConnectStore()}
+                    placeholder="my-store"
+                    autoFocus
+                    style={{
+                      flex: 1, padding: '9px 12px', fontSize: 13,
+                      border: '1px solid var(--border-color, #e5e7eb)', borderRadius: 8,
+                      background: 'var(--bg-card)', color: 'var(--text-main, #111)',
+                      outline: 'none',
+                    }}
+                    onFocus={e => e.target.style.borderColor = 'var(--success)'}
+                    onBlur={e => e.target.style.borderColor = 'var(--border-color, #e5e7eb)'}
+                  />
+                  <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', whiteSpace: 'nowrap' }}>
+                    .myshopify.com
+                  </span>
+                  <button
+                    onClick={handleConnectStore}
+                    style={{
+                      background: 'var(--success)', color: '#fff', border: 'none',
+                      borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Connect
+                  </button>
+                  <button
+                    onClick={() => { setShowAddPanel(false); setStoreHandle(''); }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted, #6b7280)', display: 'flex' }}
+                  >
+                    <XCircle size={16} />
+                  </button>
+                </div>
+              </div>
             )}
           </div>
-          <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted, #6b7280)' }}>
-            Sync orders, products &amp; inventory from your Shopify store
-          </p>
-        </div>
-      </div>
+        )}
 
-      {/* ── Store list ─────────────────────────────────────────── */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: 48, color: 'var(--text-muted, #6b7280)' }}>
-          <Loader2 size={22} style={{ animation: 'spin 1s linear infinite', marginBottom: 8 }} />
-          <div style={{ fontSize: 13 }}>Loading…</div>
-        </div>
-      ) : (
-        <>
-          {shops.map(shop => (
-            <StoreCard
-              key={shop.id}
-              shop={shop}
-              onDisconnect={handleDisconnect}
-              onSaveBoutiqueName={handleSaveBoutiqueName}
-              onSync={handleSync}
-            />
-          ))}
-
-          {/* No stores yet → connect prompt */}
-          {shops.length === 0 && (
-            <div style={{
-              border: '2px dashed var(--border-color, #e5e7eb)', borderRadius: 12,
-              padding: '32px 24px', textAlign: 'center', marginBottom: 12,
-            }}>
-              <ShopifyLogo size={36} />
-              <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--text-main, #111)', margin: '12px 0 4px' }}>
-                No Shopify store connected
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted, #6b7280)', marginBottom: 20 }}>
-                Connect your store via secure OAuth — no API keys needed.
-              </div>
-
-              {!showAddPanel ? (
-                <button
-                  onClick={() => setShowAddPanel(true)}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    background: 'var(--success)', color: '#fff', border: 'none',
-                    borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600,
-                    cursor: 'pointer', transition: 'background 0.15s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--success)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'var(--success)'}
-                >
-                  <Plus size={15} /> Connect Shopify
-                </button>
-              ) : (
-                <div style={{
-                  border: '1px solid var(--success-light)', borderRadius: 10,
-                  padding: '14px 16px', background: '#f9fef4',
-                  textAlign: 'left', marginTop: 8,
-                  animation: 'slideIn 0.18s ease',
+        {/* "Add another store" toggle + inline panel */}
+        {shops.length > 0 && (
+          <>
+            {!showAddPanel && (
+              <button
+                onClick={() => setShowAddPanel(true)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  background: 'none', border: '2px dashed var(--border-color, #e5e7eb)',
+                  borderRadius: 12, padding: '14px 20px', fontSize: 13, fontWeight: 500,
+                  color: 'var(--text-muted, #6b7280)', cursor: 'pointer',
+                  transition: 'all 0.15s', marginBottom: 12,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--success)'; e.currentTarget.style.color = 'var(--success)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color, #e5e7eb)'; e.currentTarget.style.color = 'var(--text-muted, #6b7280)'; }}
+              >
+                <span style={{
+                  width: 22, height: 22, borderRadius: '50%',
+                  border: '1.5px solid currentColor',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted, #6b7280)', marginBottom: 8 }}>
-                    Enter your Shopify store handle to connect.
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <input
-                      value={storeHandle}
-                      onChange={e => setStoreHandle(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && handleConnectStore()}
-                      placeholder="my-store"
-                      autoFocus
-                      style={{
-                        flex: 1, padding: '9px 12px', fontSize: 13,
-                        border: '1px solid var(--border-color, #e5e7eb)', borderRadius: 8,
-                        background: 'var(--bg-card)', color: 'var(--text-main, #111)',
-                        outline: 'none',
-                      }}
-                      onFocus={e => e.target.style.borderColor = 'var(--success)'}
-                      onBlur={e => e.target.style.borderColor = 'var(--border-color, #e5e7eb)'}
-                    />
-                    <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', whiteSpace: 'nowrap' }}>
-                      .myshopify.com
-                    </span>
-                    <button
-                      onClick={handleConnectStore}
-                      style={{
-                        background: 'var(--success)', color: '#fff', border: 'none',
-                        borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 600,
-                        cursor: 'pointer', whiteSpace: 'nowrap',
-                      }}
-                    >
-                      Connect
-                    </button>
-                    <button
-                      onClick={() => { setShowAddPanel(false); setStoreHandle(''); }}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted, #6b7280)', display: 'flex' }}
-                    >
-                      <XCircle size={16} />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+                  <Plus size={12} />
+                </span>
+                Add another store
+              </button>
+            )}
 
-          {/* "Add another store" toggle + inline panel */}
-          {shops.length > 0 && (
-            <>
-              {!showAddPanel && (
-                <button
-                  onClick={() => setShowAddPanel(true)}
-                  style={{
-                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    background: 'none', border: '2px dashed var(--border-color, #e5e7eb)',
-                    borderRadius: 12, padding: '14px 20px', fontSize: 13, fontWeight: 500,
-                    color: 'var(--text-muted, #6b7280)', cursor: 'pointer',
-                    transition: 'all 0.15s', marginBottom: 12,
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--success)'; e.currentTarget.style.color = 'var(--success)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color, #e5e7eb)'; e.currentTarget.style.color = 'var(--text-muted, #6b7280)'; }}
-                >
-                  <span style={{
-                    width: 22, height: 22, borderRadius: '50%',
-                    border: '1.5px solid currentColor',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <Plus size={12} />
+            {showAddPanel && (
+              <div style={{
+                border: '2px dashed var(--success-light)', borderRadius: 12,
+                padding: '18px 20px', marginBottom: 12,
+                background: '#f9fef4',
+                animation: 'slideIn 0.18s ease',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', fontWeight: 500 }}>
+                    Enter your Shopify store handle to connect a specific store.
                   </span>
-                  Add another store
-                </button>
-              )}
-
-              {showAddPanel && (
-                <div style={{
-                  border: '2px dashed var(--success-light)', borderRadius: 12,
-                  padding: '18px 20px', marginBottom: 12,
-                  background: '#f9fef4',
-                  animation: 'slideIn 0.18s ease',
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', fontWeight: 500 }}>
-                      Enter your Shopify store handle to connect a specific store.
-                    </span>
-                    <button
-                      onClick={() => { setShowAddPanel(false); setStoreHandle(''); }}
-                      style={{
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        color: 'var(--text-muted, #6b7280)', display: 'flex', alignItems: 'center',
-                        padding: 4, borderRadius: 6,
-                      }}
-                      title="Cancel"
-                    >
-                      <XCircle size={16} />
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <input
-                      value={storeHandle}
-                      onChange={e => setStoreHandle(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && handleConnectStore()}
-                      placeholder="my-store"
-                      autoFocus
-                      style={{
-                        flex: 1, padding: '9px 12px', fontSize: 13,
-                        border: '1px solid var(--border-color, #e5e7eb)', borderRadius: 8,
-                        background: 'var(--bg-card)', color: 'var(--text-main, #111)',
-                        outline: 'none', transition: 'border-color 0.15s',
-                      }}
-                      onFocus={e => e.target.style.borderColor = 'var(--success)'}
-                      onBlur={e => e.target.style.borderColor = 'var(--border-color, #e5e7eb)'}
-                    />
-                    <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', whiteSpace: 'nowrap', userSelect: 'none' }}>
-                      .myshopify.com
-                    </span>
-                    <button
-                      onClick={handleConnectStore}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 6,
-                        background: 'var(--success)', color: '#fff', border: 'none',
-                        borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 600,
-                        cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap',
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'var(--success)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'var(--success)'}
-                    >
-                      Connect
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => { setShowAddPanel(false); setStoreHandle(''); }}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--text-muted, #6b7280)', display: 'flex', alignItems: 'center',
+                      padding: 4, borderRadius: 6,
+                    }}
+                    title="Cancel"
+                  >
+                    <XCircle size={16} />
+                  </button>
                 </div>
-              )}
-            </>
-          )}
-        </>
-      )}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input
+                    value={storeHandle}
+                    onChange={e => setStoreHandle(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleConnectStore()}
+                    placeholder="my-store"
+                    autoFocus
+                    style={{
+                      flex: 1, padding: '9px 12px', fontSize: 13,
+                      border: '1px solid var(--border-color, #e5e7eb)', borderRadius: 8,
+                      background: 'var(--bg-card)', color: 'var(--text-main, #111)',
+                      outline: 'none', transition: 'border-color 0.15s',
+                    }}
+                    onFocus={e => e.target.style.borderColor = 'var(--success)'}
+                    onBlur={e => e.target.style.borderColor = 'var(--border-color, #e5e7eb)'}
+                  />
+                  <span style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)', whiteSpace: 'nowrap', userSelect: 'none' }}>
+                    .myshopify.com
+                  </span>
+                  <button
+                    onClick={handleConnectStore}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      background: 'var(--success)', color: '#fff', border: 'none',
+                      borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', transition: 'background 0.15s', whiteSpace: 'nowrap',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--success)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'var(--success)'}
+                  >
+                    Connect
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </>
+    )}
 
-      {/* ── Feature badges ─────────────────────────────────────── */}
-      <FeatureBadges />
+    {/* ── Feature badges ─────────────────────────────────────── */}
+    <FeatureBadges />
 
-      {/* Toast */}
-      {toast && <Toast {...toast} onDismiss={() => setToast(null)} />}
-    </div>
-  );
+    {/* Toast */}
+    {toast && <Toast {...toast} onDismiss={() => setToast(null)} />}
+  </div>
+);
 }
