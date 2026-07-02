@@ -12,7 +12,17 @@ import { useShop } from '../context/ShopContext';
 import CreateParcelFlow from '../components/createParcel/CreateParcelFlow';
 const CURRENCY = "MAD";
 
-
+const inputStyle = {
+  width: "100%",
+  padding: "10px 12px",
+  border: "1px solid var(--border-color, #d1d5db)",
+  borderRadius: "8px",
+  background: "var(--bg-card, #fff)",
+  color: "var(--text-primary, #111827)",
+  fontSize: "14px",
+  outline: "none",
+  boxSizing: "border-box",
+};
 const PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
 const MORE_PRESETS = [
